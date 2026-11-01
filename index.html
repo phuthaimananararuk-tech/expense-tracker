@@ -30,9 +30,9 @@
     <!-- Header -->
     <header class="bg-emerald-600 text-white p-4 text-center shadow-sm relative flex items-center justify-between">
       <div></div>
-      <div>
-        <h1 class="text-lg font-bold tracking-wide">YUET (v1.0)</h1>
-        <p class="text-[10px] text-emerald-100 mt-0.5">by Phuthai Mananararuk & Gemini</p>
+      <div class="flex items-baseline space-x-1.5">
+        <h1 class="text-xl font-bold tracking-wide">YUET</h1>
+        <span class="text-[10px] font-light text-emerald-100">(v1.0)</span>
       </div>
       <div class="flex items-center space-x-2">
         <button id="open-settings-btn" class="text-white hover:bg-emerald-700 p-1.5 rounded-lg transition hidden" title="ตั้งค่าระบบ">
@@ -45,10 +45,10 @@
     </header>
 
     <!-- Main Content Body -->
-    <main class="p-5 flex-1 flex flex-col justify-center">
+    <main class="p-5 flex-1 flex flex-col justify-between">
 
       <!-- ==================== VIEW 1: LOGIN ==================== -->
-      <section id="login-view" class="space-y-4">
+      <section id="login-view" class="space-y-4 my-auto">
         <h2 class="text-lg font-bold text-gray-700 text-center mb-2">เข้าสู่ระบบ</h2>
         <div>
           <label class="block text-xs font-semibold text-gray-600 mb-1">อีเมล</label>
@@ -77,7 +77,7 @@
       </section>
 
       <!-- ==================== VIEW 2: REGISTER ==================== -->
-      <section id="register-view" class="hidden space-y-4">
+      <section id="register-view" class="hidden space-y-4 my-auto">
         <h2 class="text-lg font-bold text-gray-700 text-center mb-2">สมัครสมาชิก</h2>
         <div>
           <label class="block text-xs font-semibold text-gray-600 mb-1">อีเมล</label>
@@ -97,39 +97,31 @@
         </div>
       </section>
 
-      <!-- ==================== VIEW 3: DASHBOARD ==================== -->
-      <section id="dashboard-view" class="hidden space-y-3">
+      <!-- ==================== VIEW 3: HOME / ACTION CENTER ==================== -->
+      <section id="dashboard-view" class="hidden space-y-4">
         
-        <!-- Summary Cards (4 Cards) -->
-        <div class="grid grid-cols-2 gap-2 text-center">
-          <div class="bg-emerald-50 p-2.5 rounded-xl border border-emerald-100">
-            <p class="text-[10px] font-semibold text-emerald-600 uppercase">รายรับ</p>
-            <p id="total-income" class="text-xs font-bold text-emerald-700 mt-0.5">฿0.00</p>
-          </div>
-          <div class="bg-rose-50 p-2.5 rounded-xl border border-rose-100">
-            <p class="text-[10px] font-semibold text-rose-600 uppercase">รายจ่าย</p>
-            <p id="total-expense" class="text-xs font-bold text-rose-700 mt-0.5">฿0.00</p>
-          </div>
-          <div class="bg-blue-50 p-2.5 rounded-xl border border-blue-100">
-            <p class="text-[10px] font-semibold text-blue-600 uppercase">คงเหลือ (บัญชี)</p>
-            <p id="total-balance" class="text-xs font-bold text-blue-700 mt-0.5">฿0.00</p>
-          </div>
-          <div class="bg-amber-50 p-2.5 rounded-xl border border-amber-100">
-            <p class="text-[10px] font-semibold text-amber-600 uppercase">เงินรอคืน (เพื่อน)</p>
-            <p id="total-pending" class="text-xs font-bold text-amber-700 mt-0.5">฿0.00</p>
-          </div>
+        <!-- Top Navigation to Dashboard & History -->
+        <div class="grid grid-cols-2 gap-2">
+          <button onclick="goToDashboardSummaryView()" class="bg-blue-50 hover:bg-blue-100 text-blue-700 border border-blue-200 py-2 rounded-xl text-xs font-bold transition shadow-sm flex items-center justify-center space-x-1">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
+            <span>📊 แดชบอร์ดสรุปยอด</span>
+          </button>
+          <button onclick="goToHistoryView()" class="bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-200 py-2 rounded-xl text-xs font-bold transition shadow-sm flex items-center justify-center space-x-1">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+            <span>📜 ประวัติรายการ</span>
+          </button>
         </div>
 
         <!-- 4 Action Buttons -->
         <div class="grid grid-cols-4 gap-1 bg-gray-200 p-1 rounded-lg">
-          <button type="button" id="btn-mode-expense" onclick="switchDashboardMode('expense')" class="py-1.5 text-[11px] font-semibold rounded-md transition bg-rose-600 text-white shadow-sm">รายจ่าย</button>
-          <button type="button" id="btn-mode-income" onclick="switchDashboardMode('income')" class="py-1.5 text-[11px] font-semibold rounded-md transition text-gray-700">รายรับ</button>
-          <button type="button" id="btn-mode-transfer" onclick="switchDashboardMode('transfer')" class="py-1.5 text-[11px] font-semibold rounded-md transition text-gray-700">โอนเงิน</button>
-          <button type="button" id="btn-mode-settle" onclick="switchDashboardMode('settle')" class="py-1.5 text-[11px] font-semibold rounded-md transition text-gray-700">รับเงินคืน</button>
+          <button type="button" id="btn-mode-expense" onclick="switchDashboardMode('expense')" class="py-2 text-[11px] font-semibold rounded-md transition bg-rose-600 text-white shadow-sm">รายจ่าย</button>
+          <button type="button" id="btn-mode-income" onclick="switchDashboardMode('income')" class="py-2 text-[11px] font-semibold rounded-md transition text-gray-700">รายรับ</button>
+          <button type="button" id="btn-mode-transfer" onclick="switchDashboardMode('transfer')" class="py-2 text-[11px] font-semibold rounded-md transition text-gray-700">โอนเงิน</button>
+          <button type="button" id="btn-mode-settle" onclick="switchDashboardMode('settle')" class="py-2 text-[11px] font-semibold rounded-md transition text-gray-700">รับเงินคืน</button>
         </div>
 
         <!-- FORM 1: Expense & Income Form -->
-        <form id="tx-form" class="bg-gray-50 p-3 rounded-xl border border-gray-200 space-y-2">
+        <form id="tx-form" class="bg-gray-50 p-3.5 rounded-xl border border-gray-200 space-y-2.5">
           <div>
             <label class="block text-[11px] text-gray-500 mb-1">เลือกบัญชี</label>
             <div id="account-buttons-container" class="flex flex-wrap gap-1.5"></div>
@@ -174,13 +166,13 @@
             </div>
           </div>
 
-          <button type="submit" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-medium py-2 rounded-lg text-xs shadow transition">
+          <button type="submit" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-medium py-2.5 rounded-lg text-xs shadow transition">
             + บันทึกรายการ
           </button>
         </form>
 
         <!-- FORM 2: Transfer Form -->
-        <form id="transfer-form" class="hidden bg-gray-50 p-3 rounded-xl border border-gray-200 space-y-2.5">
+        <form id="transfer-form" class="hidden bg-gray-50 p-3.5 rounded-xl border border-gray-200 space-y-3">
           <div class="grid grid-cols-2 gap-2">
             <div>
               <label class="block text-[11px] text-gray-500 mb-1">จากบัญชี (ต้นทาง)</label>
@@ -205,13 +197,13 @@
             <label class="block text-[11px] text-gray-500 mb-1">บันทึกช่วยจำ (ไม่บังคับ)</label>
             <input type="text" id="tr-note" placeholder="เช่น กด ATM, ย้ายเงินเก็บ" class="w-full px-2 py-1.5 text-xs border rounded-lg bg-white">
           </div>
-          <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 rounded-lg text-xs shadow transition">
+          <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2.5 rounded-lg text-xs shadow transition">
             🔄 บันทึกการโอนเงิน
           </button>
         </form>
 
         <!-- FORM 3: Settle Form (รับเงินคืน) -->
-        <form id="settle-form" class="hidden bg-amber-50 p-3 rounded-xl border border-amber-200 space-y-2.5">
+        <form id="settle-form" class="hidden bg-amber-50 p-3.5 rounded-xl border border-amber-200 space-y-3">
           <div>
             <label class="block text-[11px] text-gray-600 mb-1">เลือกบัญชีที่เงินเข้า</label>
             <div id="settle-account-buttons" class="flex flex-wrap gap-1.5"></div>
@@ -228,7 +220,7 @@
           </div>
           <div>
             <label class="block text-[11px] text-gray-600 mb-1">เลือกรายการที่เพื่อนต้องการเคลียร์ยอด (ติ๊กเลือก)</label>
-            <div id="pending-items-container" class="space-y-1.5 max-h-28 overflow-y-auto pr-1 border bg-white p-2 rounded-lg">
+            <div id="pending-items-container" class="space-y-1.5 max-h-36 overflow-y-auto pr-1 border bg-white p-2 rounded-lg">
               <p class="text-center text-xs text-gray-400 py-3">ไม่มีรายการที่รอเพื่อนคืนเงิน</p>
             </div>
           </div>
@@ -236,36 +228,59 @@
             <label class="block text-[11px] text-gray-600 mb-1">บันทึกช่วยจำ (ไม่บังคับ)</label>
             <input type="text" id="settle-note" placeholder="เช่น เพื่อนโอนคืนค่าอาหาร" class="w-full px-2 py-1.5 text-xs border rounded-lg bg-white">
           </div>
-          <button type="submit" class="w-full bg-amber-600 hover:bg-amber-700 text-white font-medium py-2 rounded-lg text-xs shadow transition">
+          <button type="submit" class="w-full bg-amber-600 hover:bg-amber-700 text-white font-medium py-2.5 rounded-lg text-xs shadow transition">
             ✓ ยืนยันรับเงินคืน
           </button>
         </form>
 
-        <!-- Today's Transactions History -->
-        <div>
-          <div class="flex justify-between items-center mb-1">
-            <h3 class="text-xs font-bold text-gray-600 uppercase">รายการวันนี้ (<span id="today-date-label"></span>)</h3>
-            <button onclick="goToHistoryView()" class="text-xs text-emerald-600 font-semibold hover:underline">ดูประวัติทั้งหมด →</button>
-          </div>
-          <ul id="today-tx-list" class="space-y-1.5 max-h-28 overflow-y-auto pr-1">
-            <li class="text-center text-xs text-gray-400 py-2">กำลังโหลดข้อมูล...</li>
-          </ul>
-        </div>
-
       </section>
 
-      <!-- ==================== VIEW 4: FULL HISTORY ==================== -->
-      <section id="history-view" class="hidden space-y-4">
+      <!-- ==================== VIEW 4: DASHBOARD SUMMARY VIEW ==================== -->
+      <section id="dashboard-summary-view" class="hidden space-y-4">
         <div class="flex items-center justify-between border-b pb-2">
+          <h2 class="text-sm font-bold text-gray-700 uppercase">แดชบอร์ดสรุปยอด</h2>
+          <button onclick="goToDashboardView()" class="text-xs font-semibold text-emerald-600 hover:underline">← กลับหน้าหลัก</button>
+        </div>
+        
+        <!-- Summary Cards (4 Cards) -->
+        <div class="grid grid-cols-2 gap-3 text-center pt-2">
+          <div class="bg-emerald-50 p-3.5 rounded-xl border border-emerald-100 shadow-sm">
+            <p class="text-[11px] font-semibold text-emerald-600 uppercase">รายรับ</p>
+            <p id="total-income" class="text-sm font-bold text-emerald-700 mt-1">฿0.00</p>
+          </div>
+          <div class="bg-rose-50 p-3.5 rounded-xl border border-rose-100 shadow-sm">
+            <p class="text-[11px] font-semibold text-rose-600 uppercase">รายจ่าย</p>
+            <p id="total-expense" class="text-sm font-bold text-rose-700 mt-1">฿0.00</p>
+          </div>
+          <div class="bg-blue-50 p-3.5 rounded-xl border border-blue-100 shadow-sm">
+            <p class="text-[11px] font-semibold text-blue-600 uppercase">คงเหลือ (บัญชี)</p>
+            <p id="total-balance" class="text-sm font-bold text-blue-700 mt-1">฿0.00</p>
+          </div>
+          <div class="bg-amber-50 p-3.5 rounded-xl border border-amber-100 shadow-sm">
+            <p class="text-[11px] font-semibold text-amber-600 uppercase">เงินรอคืน (เพื่อน)</p>
+            <p id="total-pending" class="text-sm font-bold text-amber-700 mt-1">฿0.00</p>
+          </div>
+        </div>
+
+        <div class="bg-gray-50 border border-dashed border-gray-300 p-6 rounded-2xl text-center text-gray-400 text-xs mt-4">
+          พื้นที่สำหรับกราฟสรุปและฟีเจอร์เสริมในอนาคต 🚀
+        </div>
+      </section>
+
+      <!-- ==================== VIEW 5: FULL HISTORY (SCROLLABLE & DATE DIVIDED) ==================== -->
+      <section id="history-view" class="hidden space-y-3 flex flex-col h-[520px]">
+        <div class="flex items-center justify-between border-b pb-2 flex-shrink-0">
           <h2 class="text-sm font-bold text-gray-700 uppercase">ประวัติรายการทั้งหมด</h2>
           <button onclick="goToDashboardView()" class="text-xs font-semibold text-emerald-600 hover:underline">← กลับหน้าหลัก</button>
         </div>
-        <ul id="full-tx-list" class="space-y-2 max-h-96 overflow-y-auto pr-1">
-          <li class="text-center text-xs text-gray-400 py-6">กำลังโหลดข้อมูล...</li>
-        </ul>
+        
+        <!-- Scrollable History Container -->
+        <div id="full-tx-list" class="space-y-2 overflow-y-auto pr-1 flex-1">
+          <p class="text-center text-xs text-gray-400 py-6">กำลังโหลดข้อมูล...</p>
+        </div>
       </section>
 
-      <!-- ==================== VIEW 5: SETTINGS ==================== -->
+      <!-- ==================== VIEW 6: SETTINGS ==================== -->
       <section id="settings-view" class="hidden space-y-4">
         <div class="flex items-center justify-between border-b pb-2">
           <h2 class="text-sm font-bold text-gray-700 uppercase">ตั้งค่าระบบ</h2>
@@ -391,11 +406,12 @@
     let transferFromId = null;
     let transferToId = null;
     let currentTxType = 'expense';
-    let currentDashboardMode = 'expense'; // 'expense', 'income', 'transfer', 'settle'
+    let currentDashboardMode = 'expense';
 
     const loginView = document.getElementById('login-view');
     const registerView = document.getElementById('register-view');
     const dashboardView = document.getElementById('dashboard-view');
+    const dashboardSummaryView = document.getElementById('dashboard-summary-view');
     const historyView = document.getElementById('history-view');
     const settingsView = document.getElementById('settings-view');
 
@@ -407,6 +423,7 @@
       loginView.classList.add('hidden');
       registerView.classList.add('hidden');
       dashboardView.classList.add('hidden');
+      dashboardSummaryView.classList.add('hidden');
       historyView.classList.add('hidden');
       settingsView.classList.add('hidden');
       logoutBtn.classList.add('hidden');
@@ -423,6 +440,10 @@
         logoutBtn.classList.remove('hidden');
         openSettingsBtn.classList.remove('hidden');
         authStatusBar.innerText = `เข้าสู่ระบบ: ${currentUser.email || currentUser.displayName}`;
+      } else if (viewName === 'dashboardSummary') {
+        dashboardSummaryView.classList.remove('hidden');
+        logoutBtn.classList.remove('hidden');
+        openSettingsBtn.classList.remove('hidden');
       } else if (viewName === 'history') {
         historyView.classList.remove('hidden');
         logoutBtn.classList.remove('hidden');
@@ -435,6 +456,7 @@
     }
 
     function goToDashboardView() { showView('dashboard'); }
+    function goToDashboardSummaryView() { showView('dashboardSummary'); }
     function goToHistoryView() { showView('history'); }
     function goToSettingsView() { showView('settings'); }
 
@@ -518,7 +540,6 @@
       document.getElementById('tx-date').value = todayStr;
       document.getElementById('tr-date').value = todayStr;
       document.getElementById('settle-date').value = todayStr;
-      document.getElementById('today-date-label').innerText = todayStr;
 
       const settingsDoc = await db.collection('users').doc(userId).collection('settings').doc('config').get();
       if (settingsDoc.exists) {
@@ -595,20 +616,19 @@
       const stForm = document.getElementById('settle-form');
       const reimburseSec = document.getElementById('reimburse-section');
 
-      // Reset styles
-      [bExp, bInc, bTr, bSt].forEach(b => b.className = "py-1.5 text-[11px] font-semibold rounded-md transition text-gray-700");
+      [bExp, bInc, bTr, bSt].forEach(b => b.className = "py-2 text-[11px] font-semibold rounded-md transition text-gray-700");
       txForm.classList.add('hidden');
       trForm.classList.add('hidden');
       stForm.classList.add('hidden');
 
       if (mode === 'expense') {
-        bExp.className = "py-1.5 text-[11px] font-semibold rounded-md transition bg-rose-600 text-white shadow-sm";
+        bExp.className = "py-2 text-[11px] font-semibold rounded-md transition bg-rose-600 text-white shadow-sm";
         txForm.classList.remove('hidden');
         reimburseSec.classList.remove('hidden');
         currentTxType = 'expense';
         renderCategoryButtons();
       } else if (mode === 'income') {
-        bInc.className = "py-1.5 text-[11px] font-semibold rounded-md transition bg-emerald-600 text-white shadow-sm";
+        bInc.className = "py-2 text-[11px] font-semibold rounded-md transition bg-emerald-600 text-white shadow-sm";
         txForm.classList.remove('hidden');
         reimburseSec.classList.add('hidden');
         document.getElementById('is-reimburse').checked = false;
@@ -616,11 +636,11 @@
         currentTxType = 'income';
         renderCategoryButtons();
       } else if (mode === 'transfer') {
-        bTr.className = "py-1.5 text-[11px] font-semibold rounded-md transition bg-blue-600 text-white shadow-sm";
+        bTr.className = "py-2 text-[11px] font-semibold rounded-md transition bg-blue-600 text-white shadow-sm";
         trForm.classList.remove('hidden');
         renderTransferButtons();
       } else if (mode === 'settle') {
-        bSt.className = "py-1.5 text-[11px] font-semibold rounded-md transition bg-amber-600 text-white shadow-sm";
+        bSt.className = "py-2 text-[11px] font-semibold rounded-md transition bg-amber-600 text-white shadow-sm";
         stForm.classList.remove('hidden');
         renderSettleAccountButtons();
         renderPendingItemsList();
@@ -679,7 +699,6 @@
       toContainer.innerHTML = '';
 
       accountsList.forEach(acc => {
-        // From buttons
         const btnFrom = document.createElement('button');
         btnFrom.type = 'button';
         btnFrom.onclick = () => { transferFromId = acc.id; renderTransferButtons(); };
@@ -687,7 +706,6 @@
         btnFrom.innerText = acc.name;
         fromContainer.appendChild(btnFrom);
 
-        // To buttons
         const btnTo = document.createElement('button');
         btnTo.type = 'button';
         btnTo.onclick = () => { transferToId = acc.id; renderTransferButtons(); };
@@ -792,7 +810,7 @@
     document.getElementById('transfer-form').addEventListener('submit', async (e) => {
       e.preventDefault();
       if (!currentUser || !transferFromId || !transferToId) return alert("กรุณาเลือกบัญชีต้นทางและปลายทาง");
-      if (transferFromId === transferToId) return alert("บัญชีต้นทางและปลายทางต้องไม่, เหมือนกัน");
+      if (transferFromId === transferToId) return alert("บัญชีต้นทางและปลายทางต้องไม่เหมือนกัน");
 
       const amount = parseFloat(document.getElementById('tr-amount').value);
       const note = document.getElementById('tr-note').value.trim();
@@ -895,7 +913,6 @@
           remainingToAllocate -= deduct;
         }
 
-        // Add Settlement record
         const settleRef = db.collection('users').doc(currentUser.uid).collection('transactions').doc();
         batch.set(settleRef, {
           kind: 'settlement',
@@ -907,7 +924,6 @@
           createdAt: firebase.firestore.FieldValue.serverTimestamp()
         });
 
-        // Update account balance
         const accRef = db.collection('users').doc(currentUser.uid).collection('accounts').doc(selectedSettleAccountId);
         const accDoc = await accRef.get();
         if (accDoc.exists) {
@@ -922,23 +938,18 @@
       } catch (err) { alert("รับเงินคืนไม่สำเร็จ: " + err.message); }
     });
 
-    // LOAD TRANSACTIONS
+    // LOAD TRANSACTIONS (Method 1: ordered by createdAt desc) WITH DATE DIVIDERS
     function loadTransactionsRealtime(userId) {
-      const todayStr = new Date().toISOString().split('T')[0];
-      const todayListEl = document.getElementById('today-tx-list');
       const fullListEl = document.getElementById('full-tx-list');
 
       if (unsubscribeTx) unsubscribeTx();
 
       unsubscribeTx = db.collection('users').doc(userId).collection('transactions')
-        .orderBy('date', 'desc').orderBy('createdAt', 'desc')
+        .orderBy('createdAt', 'desc')
         .onSnapshot((snapshot) => {
           let totalIncome = 0;
           let totalExpense = 0;
           let totalPending = 0;
-          let todayHtml = '';
-          let fullHtml = '';
-          let todayCount = 0;
           let fullCount = 0;
 
           allTransactions = [];
@@ -946,83 +957,92 @@
             const item = { id: doc.id, ...doc.data() };
             allTransactions.push(item);
 
-            let itemLi = '';
-            const isToday = item.date === todayStr;
-
             if (item.kind === 'transaction') {
               const isInc = item.type === 'income';
               if (isInc) totalIncome += item.amount;
               else totalExpense += (item.isReimburse ? (item.myShare || 0) : item.amount);
 
               if (item.isReimburse && item.remainingPending > 0) totalPending += item.remainingPending;
-
-              const acc = accountsList.find(a => a.id === item.accountId);
-              const accName = acc ? acc.name : 'บัญชี';
-              const catName = item.categoryName || 'ทั่วไป';
-
-              let badge = '';
-              if (item.isReimburse) {
-                badge = item.remainingPending > 0 
-                  ? `<span class="text-[9px] bg-amber-100 text-amber-800 px-1 py-0.5 rounded ml-1">รอคืน ฿${item.remainingPending.toLocaleString()}</span>`
-                  : `<span class="text-[9px] bg-emerald-100 text-emerald-800 px-1 py-0.5 rounded ml-1">คืนครบ ✓</span>`;
-              }
-
-              itemLi = `
-                <li onclick="openEditModal('${item.id}')" class="flex justify-between items-center p-2.5 bg-gray-50 hover:bg-gray-100 cursor-pointer border border-gray-100 rounded-lg text-xs transition">
-                  <div class="flex flex-col">
-                    <span class="font-medium text-gray-700">${escapeHtml(item.note || 'ไม่มีบันทึกช่วยจำ')} ${badge}</span>
-                    <span class="text-[10px] text-gray-400">${accName} • [${catName}] • ${item.date}</span>
-                  </div>
-                  <div class="flex items-center space-x-2">
-                    <span class="font-bold ${isInc ? 'text-emerald-600' : 'text-rose-600'}">
-                      ${isInc ? '+' : '-'}${userSettings.currency}${item.amount.toLocaleString(undefined, {minimumFractionDigits: 2})}
-                    </span>
-                    <button onclick="event.stopPropagation(); deleteTransaction('${item.id}')" class="text-gray-300 hover:text-rose-500 font-bold px-1 text-sm">×</button>
-                  </div>
-                </li>`;
-            } else if (item.kind === 'transfer') {
-              itemLi = `
-                <li class="flex justify-between items-center p-2.5 bg-blue-50/50 border border-blue-100 rounded-lg text-xs">
-                  <div class="flex flex-col">
-                    <span class="font-medium text-blue-700">🔄 โอนเงิน: ${escapeHtml(item.fromAccountName)} ➔ ${escapeHtml(item.toAccountName)}</span>
-                    <span class="text-[10px] text-gray-400">${escapeHtml(item.note || 'โอนเงินระหว่างบัญชี')} • ${item.date}</span>
-                  </div>
-                  <div class="flex items-center space-x-2">
-                    <span class="font-bold text-blue-600">${userSettings.currency}${item.amount.toLocaleString(undefined, {minimumFractionDigits: 2})}</span>
-                    <button onclick="deleteTransaction('${item.id}')" class="text-gray-300 hover:text-rose-500 font-bold px-1 text-sm">×</button>
-                  </div>
-                </li>`;
             } else if (item.kind === 'settlement') {
               totalIncome += item.amount;
-              const acc = accountsList.find(a => a.id === item.accountId);
-              const accName = acc ? acc.name : 'บัญชี';
-
-              itemLi = `
-                <li class="flex justify-between items-center p-2.5 bg-amber-50/50 border border-amber-100 rounded-lg text-xs">
-                  <div class="flex flex-col">
-                    <span class="font-medium text-amber-700">💵 รับเงินคืนจากเพื่อน (${accName})</span>
-                    <span class="text-[10px] text-gray-400">${escapeHtml(item.note || 'เคลียร์ยอดสำรองจ่าย')} • ${item.date}</span>
-                  </div>
-                  <div class="flex items-center space-x-2">
-                    <span class="font-bold text-emerald-600">+${userSettings.currency}${item.amount.toLocaleString(undefined, {minimumFractionDigits: 2})}</span>
-                    <button onclick="deleteTransaction('${item.id}')" class="text-gray-300 hover:text-rose-500 font-bold px-1 text-sm">×</button>
-                  </div>
-                </li>`;
-            }
-
-            fullHtml += itemLi;
-            fullCount++;
-
-            if (isToday) {
-              todayHtml += itemLi;
-              todayCount++;
             }
           });
 
-          if (todayCount === 0) todayHtml = '<li class="text-center text-xs text-gray-400 py-2">ยังไม่มีรายการวันนี้</li>';
-          if (fullCount === 0) fullHtml = '<li class="text-center text-xs text-gray-400 py-6">ยังไม่มีประวัติรายการ</li>';
+          // Group by Date for History View with Dividers
+          let grouped = {};
+          allTransactions.forEach(item => {
+            const d = item.date || 'ไม่ระบุวันที่';
+            if (!grouped[d]) grouped[d] = [];
+            grouped[d].push(item);
+          });
 
-          todayListEl.innerHTML = todayHtml;
+          let fullHtml = '';
+          const sortedDates = Object.keys(grouped).sort((a, b) => b.localeCompare(a)); // Newest date first
+
+          sortedDates.forEach(dateStr => {
+            fullHtml += `<div class="sticky top-0 bg-gray-100 px-3 py-1 text-[11px] font-bold text-gray-600 rounded-md my-2 shadow-xs">📅 วันที่ ${dateStr}</div>`;
+            
+            grouped[dateStr].forEach(item => {
+              fullCount++;
+              if (item.kind === 'transaction') {
+                const isInc = item.type === 'income';
+                const acc = accountsList.find(a => a.id === item.accountId);
+                const accName = acc ? acc.name : 'บัญชี';
+                const catName = item.categoryName || 'ทั่วไป';
+
+                let badge = '';
+                if (item.isReimburse) {
+                  badge = item.remainingPending > 0 
+                    ? `<span class="text-[9px] bg-amber-100 text-amber-800 px-1 py-0.5 rounded ml-1">รอคืน ฿${item.remainingPending.toLocaleString()}</span>`
+                    : `<span class="text-[9px] bg-emerald-100 text-emerald-800 px-1 py-0.5 rounded ml-1">คืนครบ ✓</span>`;
+                }
+
+                fullHtml += `
+                  <div onclick="openEditModal('${item.id}')" class="flex justify-between items-center p-2.5 bg-gray-50 hover:bg-gray-100 cursor-pointer border border-gray-100 rounded-lg text-xs transition">
+                    <div class="flex flex-col">
+                      <span class="font-medium text-gray-700">${escapeHtml(item.note || 'ไม่มีบันทึกช่วยจำ')} ${badge}</span>
+                      <span class="text-[10px] text-gray-400">${accName} • [${catName}]</span>
+                    </div>
+                    <div class="flex items-center space-x-2">
+                      <span class="font-bold ${isInc ? 'text-emerald-600' : 'text-rose-600'}">
+                        ${isInc ? '+' : '-'}${userSettings.currency}${item.amount.toLocaleString(undefined, {minimumFractionDigits: 2})}
+                      </span>
+                      <button onclick="event.stopPropagation(); deleteTransaction('${item.id}')" class="text-gray-300 hover:text-rose-500 font-bold px-1 text-sm">×</button>
+                    </div>
+                  </div>`;
+              } else if (item.kind === 'transfer') {
+                fullHtml += `
+                  <div class="flex justify-between items-center p-2.5 bg-blue-50/50 border border-blue-100 rounded-lg text-xs">
+                    <div class="flex flex-col">
+                      <span class="font-medium text-blue-700">🔄 โอนเงิน: ${escapeHtml(item.fromAccountName)} ➔ ${escapeHtml(item.toAccountName)}</span>
+                      <span class="text-[10px] text-gray-400">${escapeHtml(item.note || 'โอนเงินระหว่างบัญชี')}</span>
+                    </div>
+                    <div class="flex items-center space-x-2">
+                      <span class="font-bold text-blue-600">${userSettings.currency}${item.amount.toLocaleString(undefined, {minimumFractionDigits: 2})}</span>
+                      <button onclick="deleteTransaction('${item.id}')" class="text-gray-300 hover:text-rose-500 font-bold px-1 text-sm">×</button>
+                    </div>
+                  </div>`;
+              } else if (item.kind === 'settlement') {
+                const acc = accountsList.find(a => a.id === item.accountId);
+                const accName = acc ? acc.name : 'บัญชี';
+
+                fullHtml += `
+                  <div class="flex justify-between items-center p-2.5 bg-amber-50/50 border border-amber-100 rounded-lg text-xs">
+                    <div class="flex flex-col">
+                      <span class="font-medium text-amber-700">💵 รับเงินคืนจากเพื่อน (${accName})</span>
+                      <span class="text-[10px] text-gray-400">${escapeHtml(item.note || 'เคลียร์ยอดสำรองจ่าย')}</span>
+                    </div>
+                    <div class="flex items-center space-x-2">
+                      <span class="font-bold text-emerald-600">+${userSettings.currency}${item.amount.toLocaleString(undefined, {minimumFractionDigits: 2})}</span>
+                      <button onclick="deleteTransaction('${item.id}')" class="text-gray-300 hover:text-rose-500 font-bold px-1 text-sm">×</button>
+                    </div>
+                  </div>`;
+              }
+            });
+          });
+
+          if (fullCount === 0) fullHtml = '<p class="text-center text-xs text-gray-400 py-6">ยังไม่มีประวัติรายการ</p>';
+
           fullListEl.innerHTML = fullHtml;
 
           const totalAccountBalance = accountsList.reduce((sum, a) => sum + a.balance, 0);
