@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ระบบบันทึกรายรับ-รายจ่าย</title>
+  <title>ระบบบันทึกรายรับ-รายจ่าย & สำรองจ่าย</title>
   
   <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
@@ -25,21 +25,19 @@
 <body class="bg-gray-50 text-gray-800 min-h-screen flex flex-col items-center justify-start p-4">
 
   <!-- Main Container -->
-  <div class="w-full max-w-md bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden min-h-[650px] flex flex-col justify-between my-auto relative">
+  <div class="w-full max-w-md bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden min-h-[680px] flex flex-col justify-between my-auto relative">
     
     <!-- Header -->
     <header class="bg-emerald-600 text-white p-4 text-center shadow-sm relative flex items-center justify-between">
       <div></div>
       <div>
-        <h1 id="app-title" class="text-xl font-bold tracking-wide">Expense Tracker</h1>
-        <p class="text-xs text-emerald-100 mt-0.5">บันทึกรายรับ-รายจ่ายส่วนตัว</p>
+        <h1 class="text-xl font-bold tracking-wide">Expense Tracker</h1>
+        <p class="text-xs text-emerald-100 mt-0.5">บันทึกรายรับ-รายจ่าย & สำรองจ่าย</p>
       </div>
       <div class="flex items-center space-x-2">
-        <!-- Settings Button -->
-        <button id="open-settings-btn" class="text-white hover:bg-emerald-700 p-1.5 rounded-lg transition hidden">
+        <button id="open-settings-btn" class="text-white hover:bg-emerald-700 p-1.5 rounded-lg transition hidden" title="ตั้งค่าระบบ">
           <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
         </button>
-        <!-- Logout Button -->
         <button id="logout-btn" class="hidden bg-emerald-700 hover:bg-emerald-800 text-xs text-white py-1.5 px-2.5 rounded-lg transition">
           ออก
         </button>
@@ -102,39 +100,44 @@
       <!-- ==================== VIEW 3: DASHBOARD ==================== -->
       <section id="dashboard-view" class="hidden space-y-4">
         
-        <!-- Summary Cards -->
-        <div class="grid grid-cols-3 gap-2 text-center">
+        <!-- Summary Cards (4 Cards) -->
+        <div class="grid grid-cols-2 gap-2 text-center">
           <div class="bg-emerald-50 p-2.5 rounded-xl border border-emerald-100">
             <p class="text-[10px] font-semibold text-emerald-600 uppercase">รายรับ</p>
-            <p id="total-income" class="text-xs font-bold text-emerald-700 mt-1">฿0.00</p>
+            <p id="total-income" class="text-xs font-bold text-emerald-700 mt-0.5">฿0.00</p>
           </div>
           <div class="bg-rose-50 p-2.5 rounded-xl border border-rose-100">
             <p class="text-[10px] font-semibold text-rose-600 uppercase">รายจ่าย</p>
-            <p id="total-expense" class="text-xs font-bold text-rose-700 mt-1">฿0.00</p>
+            <p id="total-expense" class="text-xs font-bold text-rose-700 mt-0.5">฿0.00</p>
           </div>
           <div class="bg-blue-50 p-2.5 rounded-xl border border-blue-100">
-            <p class="text-[10px] font-semibold text-blue-600 uppercase">คงเหลือ</p>
-            <p id="total-balance" class="text-xs font-bold text-blue-700 mt-1">฿0.00</p>
+            <p class="text-[10px] font-semibold text-blue-600 uppercase">คงเหลือ (บัญชี)</p>
+            <p id="total-balance" class="text-xs font-bold text-blue-700 mt-0.5">฿0.00</p>
+          </div>
+          <div class="bg-amber-50 p-2.5 rounded-xl border border-amber-100">
+            <p class="text-[10px] font-semibold text-amber-600 uppercase">เงินรอคืน (เพื่อน)</p>
+            <p id="total-pending" class="text-xs font-bold text-amber-700 mt-0.5">฿0.00</p>
           </div>
         </div>
 
-        <!-- Add Transaction Form -->
+        <!-- Mode Tabs: บันทึกรายการ vs รับเงินคืน -->
+        <div class="grid grid-cols-2 bg-gray-200 p-1 rounded-lg">
+          <button type="button" id="mode-tx-btn" onclick="switchDashboardMode('tx')" class="py-1.5 text-xs font-semibold rounded-md transition bg-white text-gray-800 shadow-sm">➕ บันทึกรายรับ-จ่าย</button>
+          <button type="button" id="mode-settle-btn" onclick="switchDashboardMode('settle')" class="py-1.5 text-xs font-semibold rounded-md transition text-gray-600">💵 รับเงินคืนจากเพื่อน</button>
+        </div>
+
+        <!-- FORM 1: Add Transaction -->
         <form id="add-form" class="bg-gray-50 p-3 rounded-xl border border-gray-200 space-y-2.5">
-          <h3 class="text-xs font-bold text-gray-600 uppercase">บันทึกรายการใหม่</h3>
-          
-          <!-- Switch Button: รายจ่าย / รายรับ -->
-          <div class="grid grid-cols-2 bg-gray-200 p-1 rounded-lg">
-            <button type="button" id="type-expense-btn" onclick="setTxType('expense')" class="py-1.5 text-xs font-medium rounded-md transition bg-rose-600 text-white shadow-sm">รายจ่าย (-)</button>
-            <button type="button" id="type-income-btn" onclick="setTxType('income')" class="py-1.5 text-xs font-medium rounded-md transition text-gray-600">รายรับ (+)</button>
+          <div class="grid grid-cols-2 bg-gray-200 p-0.5 rounded-lg">
+            <button type="button" id="type-expense-btn" onclick="setTxType('expense')" class="py-1 text-xs font-medium rounded transition bg-rose-600 text-white shadow-sm">รายจ่าย (-)</button>
+            <button type="button" id="type-income-btn" onclick="setTxType('income')" class="py-1 text-xs font-medium rounded transition text-gray-600">รายรับ (+)</button>
           </div>
 
-          <!-- Account Selection Buttons -->
           <div>
             <label class="block text-[11px] text-gray-500 mb-1">เลือกบัญชี</label>
             <div id="account-buttons-container" class="flex flex-wrap gap-1.5"></div>
           </div>
 
-          <!-- Category Selection Buttons -->
           <div>
             <label class="block text-[11px] text-gray-500 mb-1">เลือกหมวดหมู่</label>
             <div id="category-buttons-container" class="flex flex-wrap gap-1.5"></div>
@@ -156,8 +159,48 @@
             <input type="text" id="tx-note" placeholder="เช่น ค่าอาหารกลางวัน" required class="w-full px-2 py-1.5 text-xs border rounded-lg bg-white focus:ring-1 focus:ring-emerald-500">
           </div>
 
+          <!-- Reimbursement Toggle Section -->
+          <div id="reimburse-section" class="border-t pt-2 space-y-2">
+            <label class="flex items-center space-x-2 cursor-pointer">
+              <input type="checkbox" id="is-reimburse" onchange="toggleReimburseFields()" class="rounded text-emerald-600 focus:ring-emerald-500 w-4 h-4">
+              <span class="text-xs font-medium text-amber-700">📌 มีสำรองจ่ายแทนเพื่อน / หารค่าใช้จ่าย</span>
+            </label>
+            <div id="reimburse-fields" class="hidden bg-amber-50 p-2 rounded-lg border border-amber-100 space-y-1.5">
+              <div class="flex justify-between text-[11px] text-amber-800">
+                <span>ยอดจ่ายจริง: <b id="lbl-total-pay">0</b></span>
+                <span>ส่วนของเพื่อน (รอคืน): <b id="lbl-friend-pay" class="text-amber-900">0</b></span>
+              </div>
+              <div>
+                <label class="block text-[10px] text-gray-600">ยอดเงินที่เป็นของเราจริง (หักออกจากรายจ่าย)</label>
+                <input type="number" id="my-share-amount" step="any" min="0" placeholder="0.00" class="w-full px-2 py-1 text-xs border rounded bg-white">
+              </div>
+            </div>
+          </div>
+
           <button type="submit" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-medium py-2 rounded-lg text-xs shadow transition">
             + บันทึกรายการ
+          </button>
+        </form>
+
+        <!-- FORM 2: Receive Settlement (รับเงินคืนจากเพื่อน) -->
+        <form id="settle-form" class="hidden bg-amber-50 p-3 rounded-xl border border-amber-200 space-y-2.5">
+          <h3 class="text-xs font-bold text-amber-800 uppercase">บันทึกรับเงินคืนจากเพื่อน</h3>
+          <div>
+            <label class="block text-[11px] text-gray-600 mb-1">เลือกบัญชีที่เงินเข้า</label>
+            <div id="settle-account-buttons" class="flex flex-wrap gap-1.5"></div>
+          </div>
+          <div>
+            <label class="block text-[11px] text-gray-600 mb-1">ยอดเงินที่ได้รับคืนทั้งหมด (<span class="currency-symbol">฿</span>)</label>
+            <input type="number" id="settle-received-amount" step="any" min="0" placeholder="0.00" required class="w-full px-2 py-1.5 text-xs border rounded-lg bg-white">
+          </div>
+          <div>
+            <label class="block text-[11px] text-gray-600 mb-1">เลือกรายการที่เพื่อนต้องการเคลียร์ยอด (ติ๊กเลือก)</label>
+            <div id="pending-items-container" class="space-y-1.5 max-h-36 overflow-y-auto pr-1 border bg-white p-2 rounded-lg">
+              <p class="text-center text-xs text-gray-400 py-3">ไม่มีรายการที่รอเพื่อนคืนเงิน</p>
+            </div>
+          </div>
+          <button type="submit" class="w-full bg-amber-600 hover:bg-amber-700 text-white font-medium py-2 rounded-lg text-xs shadow transition">
+            ✓ ยืนยันรับเงินคืน
           </button>
         </form>
 
@@ -167,7 +210,7 @@
             <h3 class="text-xs font-bold text-gray-600 uppercase">รายการวันนี้ (<span id="today-date-label"></span>)</h3>
             <button onclick="goToHistoryView()" class="text-xs text-emerald-600 font-semibold hover:underline">ดูประวัติทั้งหมด →</button>
           </div>
-          <ul id="today-tx-list" class="space-y-1.5 max-h-36 overflow-y-auto pr-1">
+          <ul id="today-tx-list" class="space-y-1.5 max-h-32 overflow-y-auto pr-1">
             <li class="text-center text-xs text-gray-400 py-3">กำลังโหลดข้อมูล...</li>
           </ul>
         </div>
@@ -206,7 +249,7 @@
         <!-- Setting 2: Accounts Management -->
         <div class="space-y-2 border-t pt-3">
           <h3 class="text-xs font-bold text-gray-700 uppercase">จัดการบัญชีเงิน</h3>
-          <div id="accounts-settings-list" class="space-y-1.5 max-h-28 overflow-y-auto pr-1"></div>
+          <div id="accounts-settings-list" class="space-y-1.5 max-h-24 overflow-y-auto pr-1"></div>
           <div class="bg-gray-50 p-2 rounded-xl border border-gray-200 space-y-1.5">
             <p class="text-[11px] font-semibold text-gray-600">เพิ่มบัญชีใหม่</p>
             <div class="grid grid-cols-2 gap-2">
@@ -220,9 +263,7 @@
         <!-- Setting 3: Categories Management -->
         <div class="space-y-2 border-t pt-3">
           <h3 class="text-xs font-bold text-gray-700 uppercase">จัดการหมวดหมู่ (Categories)</h3>
-          
           <div class="grid grid-cols-2 gap-3">
-            <!-- Expense Categories -->
             <div class="space-y-1.5">
               <p class="text-[11px] font-semibold text-rose-600">หมวดหมู่รายจ่าย</p>
               <div id="expense-cats-list" class="space-y-1 max-h-24 overflow-y-auto pr-1"></div>
@@ -231,8 +272,6 @@
                 <button type="button" onclick="addNewCategory('expense')" class="bg-rose-600 text-white px-2 py-1 rounded text-xs">+</button>
               </div>
             </div>
-
-            <!-- Income Categories -->
             <div class="space-y-1.5">
               <p class="text-[11px] font-semibold text-emerald-600">หมวดหมู่รายรับ</p>
               <div id="income-cats-list" class="space-y-1 max-h-24 overflow-y-auto pr-1"></div>
@@ -263,14 +302,13 @@
     // 1. FIREBASE CONFIGURATION
     // =========================================================================
     const firebaseConfig = {
-  apiKey: "AIzaSyCuu9m390tra3oEca4PygcD1pO6-L7u7XE",
-  authDomain: "eard-604d1.firebaseapp.com",
-  projectId: "eard-604d1",
-  storageBucket: "eard-604d1.firebasestorage.app",
-  messagingSenderId: "114087782046",
-  appId: "1:114087782046:web:3c7c8dce10134cefba3d8f",
-  measurementId: "G-RBTCMEJRNE"
-};
+      apiKey: "YOUR_API_KEY",
+      authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
+      projectId: "YOUR_PROJECT_ID",
+      storageBucket: "YOUR_PROJECT_ID.appspot.com",
+      messagingSenderId: "YOUR_SENDER_ID",
+      appId: "YOUR_APP_ID"
+    };
 
     firebase.initializeApp(firebaseConfig);
     const auth = firebase.auth();
@@ -286,10 +324,13 @@
     let userSettings = { currency: '฿' };
     let accountsList = [];
     let categoriesList = [];
+    let allTransactions = [];
     
     let selectedAccountId = null;
     let selectedCategoryId = null;
-    let currentTxType = 'expense'; // 'expense' or 'income'
+    let selectedSettleAccountId = null;
+    let currentTxType = 'expense';
+    let dashboardMode = 'tx'; // 'tx' or 'settle'
 
     // DOM Elements
     const loginView = document.getElementById('login-view');
@@ -382,11 +423,9 @@
         await res.user.sendEmailVerification();
         
         const batch = db.batch();
-        // สร้างบัญชีเริ่มต้น "เงินสด"
         const accRef = db.collection('users').doc(res.user.uid).collection('accounts').doc();
         batch.set(accRef, { name: 'เงินสด', balance: 0, isDefault: true, createdAt: firebase.firestore.FieldValue.serverTimestamp() });
 
-        // สร้างหมวดหมู่เริ่มต้น
         const expCatRef = db.collection('users').doc(res.user.uid).collection('categories').doc();
         batch.set(expCatRef, { name: 'รายจ่ายทั่วไป', type: 'expense', createdAt: firebase.firestore.FieldValue.serverTimestamp() });
 
@@ -394,7 +433,6 @@
         batch.set(incCatRef, { name: 'รายรับทั่วไป', type: 'income', createdAt: firebase.firestore.FieldValue.serverTimestamp() });
 
         await batch.commit();
-
         alert(`ส่งลิงก์ยืนยันไปที่ ${email} แล้ว`);
         await auth.signOut();
         showView('login');
@@ -428,7 +466,6 @@
       document.getElementById('tx-date').value = todayStr;
       document.getElementById('today-date-label').innerText = todayStr;
 
-      // Load Settings
       const settingsDoc = await db.collection('users').doc(userId).collection('settings').doc('config').get();
       if (settingsDoc.exists) {
         userSettings = settingsDoc.data();
@@ -438,7 +475,6 @@
       }
       updateCurrencyUI();
 
-      // Load Accounts Realtime
       unsubscribeAcc = db.collection('users').doc(userId).collection('accounts').orderBy('createdAt', 'asc')
         .onSnapshot((snapshot) => {
           accountsList = [];
@@ -452,66 +488,122 @@
           if (!selectedAccountId || !accountsList.some(a => a.id === selectedAccountId)) {
             selectedAccountId = accountsList[0].id;
           }
+          if (!selectedSettleAccountId || !accountsList.some(a => a.id === selectedSettleAccountId)) {
+            selectedSettleAccountId = accountsList[0].id;
+          }
           renderAccountButtons();
+          renderSettleAccountButtons();
           renderSettingsAccounts();
         });
 
-      // Load Categories Realtime
       unsubscribeCat = db.collection('users').doc(userId).collection('categories').orderBy('createdAt', 'asc')
         .onSnapshot((snapshot) => {
           categoriesList = [];
           snapshot.forEach(doc => categoriesList.push({ id: doc.id, ...doc.data() }));
 
-          // ตรวจสอบกรณีไม่มีหมวดหมู่เหลือเลย
           const hasExp = categoriesList.some(c => c.type === 'expense');
           const hasInc = categoriesList.some(c => c.type === 'income');
           const batch = db.batch();
           let needCommit = false;
 
           if (!hasExp) {
-            const ref = db.collection('users').doc(userId).collection('categories').doc();
-            batch.set(ref, { name: 'รายจ่ายทั่วไป', type: 'expense', createdAt: firebase.firestore.FieldValue.serverTimestamp() });
+            batch.set(db.collection('users').doc(userId).collection('categories').doc(), { name: 'รายจ่ายทั่วไป', type: 'expense', createdAt: firebase.firestore.FieldValue.serverTimestamp() });
             needCommit = true;
           }
           if (!hasInc) {
-            const ref = db.collection('users').doc(userId).collection('categories').doc();
-            batch.set(ref, { name: 'รายรับทั่วไป', type: 'income', createdAt: firebase.firestore.FieldValue.serverTimestamp() });
+            batch.set(db.collection('users').doc(userId).collection('categories').doc(), { name: 'รายรับทั่วไป', type: 'income', createdAt: firebase.firestore.FieldValue.serverTimestamp() });
             needCommit = true;
           }
-          if (needCommit) {
-            batch.commit();
-            return;
-          }
+          if (needCommit) { batch.commit(); return; }
 
           renderCategoryButtons();
           renderSettingsCategories();
         });
 
-      // Load Transactions Realtime
       loadTransactionsRealtime(userId);
       showView('dashboard');
     }
 
     function updateCurrencyUI() {
-      const symbols = document.querySelectorAll('.currency-symbol');
-      symbols.forEach(el => el.innerText = userSettings.currency);
+      document.querySelectorAll('.currency-symbol').forEach(el => el.innerText = userSettings.currency);
     }
 
     // =========================================================================
-    // 5. TRANSACTION & ACCOUNT & CATEGORY LOGIC
+    // 5. DASHBOARD & REIMBURSEMENT MODES
     // =========================================================================
+    function switchDashboardMode(mode) {
+      dashboardMode = mode;
+      const txBtn = document.getElementById('mode-tx-btn');
+      const settleBtn = document.getElementById('mode-settle-btn');
+      const addForm = document.getElementById('add-form');
+      const settleForm = document.getElementById('settle-form');
+
+      if (mode === 'tx') {
+        txBtn.className = "py-1.5 text-xs font-semibold rounded-md transition bg-white text-gray-800 shadow-sm";
+        settleBtn.className = "py-1.5 text-xs font-semibold rounded-md transition text-gray-600";
+        addForm.classList.remove('hidden');
+        settleForm.classList.add('hidden');
+      } else {
+        settleBtn.className = "py-1.5 text-xs font-semibold rounded-md transition bg-white text-amber-800 shadow-sm";
+        txBtn.className = "py-1.5 text-xs font-semibold rounded-md transition text-gray-600";
+        settleForm.classList.remove('hidden');
+        addForm.classList.add('hidden');
+        renderPendingItemsList();
+      }
+    }
+
     function setTxType(type) {
       currentTxType = type;
       const expBtn = document.getElementById('type-expense-btn');
       const incBtn = document.getElementById('type-income-btn');
+      const reimburseSec = document.getElementById('reimburse-section');
+
       if (type === 'expense') {
-        expBtn.className = "py-1.5 text-xs font-medium rounded-md transition bg-rose-600 text-white shadow-sm";
-        incBtn.className = "py-1.5 text-xs font-medium rounded-md transition text-gray-600";
+        expBtn.className = "py-1 text-xs font-medium rounded transition bg-rose-600 text-white shadow-sm";
+        incBtn.className = "py-1 text-xs font-medium rounded transition text-gray-600";
+        reimburseSec.classList.remove('hidden');
       } else {
-        expBtn.className = "py-1.5 text-xs font-medium rounded-md transition text-gray-600";
-        incBtn.className = "py-1.5 text-xs font-medium rounded-md transition bg-emerald-600 text-white shadow-sm";
+        expBtn.className = "py-1 text-xs font-medium rounded transition text-gray-600";
+        incBtn.className = "py-1 text-xs font-medium rounded transition bg-emerald-600 text-white shadow-sm";
+        reimburseSec.classList.add('hidden');
+        document.getElementById('is-reimburse').checked = false;
+        toggleReimburseFields();
       }
       renderCategoryButtons();
+    }
+
+    function toggleReimburseFields() {
+      const isChecked = document.getElementById('is-reimburse').checked;
+      const fields = document.getElementById('reimburse-fields');
+      if (isChecked) {
+        fields.classList.remove('hidden');
+        updateReimburseMath();
+      } else {
+        fields.classList.add('hidden');
+      }
+    }
+
+    document.getElementById('tx-amount').addEventListener('input', updateReimburseMath);
+    document.getElementById('my-share-amount').addEventListener('input', () => {
+      const total = parseFloat(document.getElementById('tx-amount').value) || 0;
+      const myShare = parseFloat(document.getElementById('my-share-amount').value) || 0;
+      if (myShare > total) {
+        document.getElementById('my-share-amount').value = total;
+      }
+      updateReimburseMath();
+    });
+
+    function updateReimburseMath() {
+      const total = parseFloat(document.getElementById('tx-amount').value) || 0;
+      const myShareInput = document.getElementById('my-share-amount');
+      if (myShareInput.value === '') {
+        myShareInput.value = total;
+      }
+      const myShare = parseFloat(myShareInput.value) || 0;
+      const friendShare = Math.max(0, total - myShare);
+
+      document.getElementById('lbl-total-pay').innerText = `${userSettings.currency}${total.toLocaleString()}`;
+      document.getElementById('lbl-friend-pay').innerText = `${userSettings.currency}${friendShare.toLocaleString()}`;
     }
 
     function renderAccountButtons() {
@@ -523,6 +615,20 @@
         btn.type = 'button';
         btn.onclick = () => { selectedAccountId = acc.id; renderAccountButtons(); };
         btn.className = `px-2.5 py-1 rounded-lg text-xs font-medium transition border ${isSelected ? 'bg-emerald-600 text-white border-emerald-600 shadow-sm' : 'bg-white text-gray-700 border-gray-200 hover:bg-gray-50'}`;
+        btn.innerText = `${acc.name} (${userSettings.currency}${acc.balance.toLocaleString()})`;
+        container.appendChild(btn);
+      });
+    }
+
+    function renderSettleAccountButtons() {
+      const container = document.getElementById('settle-account-buttons');
+      container.innerHTML = '';
+      accountsList.forEach(acc => {
+        const isSelected = acc.id === selectedSettleAccountId;
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.onclick = () => { selectedSettleAccountId = acc.id; renderSettleAccountButtons(); };
+        btn.className = `px-2.5 py-1 rounded-lg text-xs font-medium transition border ${isSelected ? 'bg-amber-600 text-white border-amber-600 shadow-sm' : 'bg-white text-gray-700 border-gray-200 hover:bg-gray-50'}`;
         btn.innerText = `${acc.name} (${userSettings.currency}${acc.balance.toLocaleString()})`;
         container.appendChild(btn);
       });
@@ -548,45 +654,134 @@
       });
     }
 
-    // Submit Transaction (Prepared with fields for future sorting: type, categoryId, categoryName, date)
+    // =========================================================================
+    // 6. TRANSACTION SUBMIT & REIMBURSEMENT LOGIC
+    // =========================================================================
     document.getElementById('add-form').addEventListener('submit', async (e) => {
       e.preventDefault();
       if (!currentUser || !selectedAccountId || !selectedCategoryId) return alert("กรุณาเลือกบัญชีและหมวดหมู่");
 
-      const amount = parseFloat(document.getElementById('tx-amount').value);
+      const totalAmount = parseFloat(document.getElementById('tx-amount').value);
       const note = document.getElementById('tx-note').value.trim();
       const date = document.getElementById('tx-date').value;
       const selectedCat = categoriesList.find(c => c.id === selectedCategoryId);
 
-      if (isNaN(amount) || amount <= 0) return alert("กรุณากรอกจำนวนเงินให้ถูกต้อง");
+      if (isNaN(totalAmount) || totalAmount <= 0) return alert("กรุณากรอกจำนวนเงินให้ถูกต้อง");
+
+      const isReimburse = currentTxType === 'expense' && document.getElementById('is-reimburse').checked;
+      let myShare = totalAmount;
+      let friendShare = 0;
+      let remainingPending = 0;
+
+      if (isReimburse) {
+        myShare = parseFloat(document.getElementById('my-share-amount').value) || 0;
+        friendShare = Math.max(0, totalAmount - myShare);
+        remainingPending = friendShare;
+      }
 
       try {
         await db.collection('users').doc(currentUser.uid).collection('transactions').add({
-          type: currentTxType,               // รองรับการ Sort ตาม type (expense/income)
-          amount: amount,
+          type: currentTxType,
+          amount: totalAmount,         // ยอดจริงที่ออกจากบัญชี
+          myShare: myShare,            // ยอดที่เป็นรายจ่ายของเราจริง
+          friendShare: friendShare,    // ยอดที่เพื่อนต้องคืน
+          remainingPending: remainingPending, // ยอดค้างคืนปัจจุบัน
+          isReimburse: isReimburse,
           note: note,
-          date: date,                        // รองรับการ Sort ตาม date
+          date: date,
           accountId: selectedAccountId,
-          categoryId: selectedCategoryId,    // รองรับการ Sort ตาม categoryId
-          categoryName: selectedCat ? selectedCat.name : '', // สะดวกต่อการแสดงผลและ Sort
+          categoryId: selectedCategoryId,
+          categoryName: selectedCat ? selectedCat.name : '',
           createdAt: firebase.firestore.FieldValue.serverTimestamp()
         });
 
-        // Update account balance
+        // Update account balance (หักออกเต็มยอดรวมที่จ่ายจริง)
         const accRef = db.collection('users').doc(currentUser.uid).collection('accounts').doc(selectedAccountId);
         await db.runTransaction(async (transaction) => {
           const accDoc = await transaction.get(accRef);
           if (!accDoc.exists) throw "Account does not exist!";
-          const newBalance = currentTxType === 'income' ? accDoc.data().balance + amount : accDoc.data().balance - amount;
+          const newBalance = currentTxType === 'income' ? accDoc.data().balance + totalAmount : accDoc.data().balance - totalAmount;
           transaction.update(accRef, { balance: newBalance });
         });
 
         document.getElementById('tx-amount').value = '';
         document.getElementById('tx-note').value = '';
+        document.getElementById('is-reimburse').checked = false;
+        toggleReimburseFields();
       } catch (err) { alert("บันทึกไม่สำเร็จ: " + err.message); }
     });
 
-    // Load Transactions
+    // Render Pending Items for Settlement Form
+    function renderPendingItemsList() {
+      const container = document.getElementById('pending-items-container');
+      const pendingTxs = allTransactions.filter(t => t.isReimburse && t.remainingPending > 0);
+
+      if (pendingTxs.length === 0) {
+        container.innerHTML = '<p class="text-center text-xs text-gray-400 py-3">ไม่มีรายการที่รอเพื่อนคืนเงิน</p>';
+        return;
+      }
+
+      container.innerHTML = '';
+      pendingTxs.forEach(t => {
+        const div = document.createElement('div');
+        div.className = "flex items-center justify-between p-1.5 border-b text-xs hover:bg-gray-50";
+        div.innerHTML = `
+          <label class="flex items-center space-x-2 cursor-pointer flex-1">
+            <input type="checkbox" name="settle-item" value="${t.id}" data-max="${t.remainingPending}" class="rounded text-amber-600 focus:ring-amber-500 w-4 h-4">
+            <div class="flex flex-col">
+              <span class="font-medium text-gray-700">${escapeHtml(t.note)}</span>
+              <span class="text-[10px] text-gray-400">ค้างอยู่: ${userSettings.currency}${t.remainingPending.toLocaleString()} (จากทั้งหมด ${userSettings.currency}${t.friendShare.toLocaleString()}) • ${t.date}</span>
+            </div>
+          </label>
+        `;
+        container.appendChild(div);
+      });
+    }
+
+    // Submit Settlement (รับเงินคืน)
+    document.getElementById('settle-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      if (!currentUser || !selectedSettleAccountId) return alert("กรุณาเลือกบัญชีที่เงินเข้า");
+
+      const receivedAmount = parseFloat(document.getElementById('settle-received-amount').value);
+      if (isNaN(receivedAmount) || receivedAmount <= 0) return alert("กรุณากรอกจำนวนเงินที่ได้รับคืนให้ถูกต้อง");
+
+      const checkboxes = document.querySelectorAll('input[name="settle-item"]:checked');
+      if (checkboxes.length === 0) return alert("กรุณาเลือกอย่างน้อย 1 รายการที่ต้องการเคลียร์ยอด");
+
+      try {
+        let remainingToAllocate = receivedAmount;
+        const batch = db.batch();
+
+        for (const cb of checkboxes) {
+          if (remainingToAllocate <= 0) break;
+          const txId = cb.value;
+          const maxPending = parseFloat(cb.getAttribute('data-max'));
+          const deduct = Math.min(remainingToAllocate, maxPending);
+
+          const txRef = db.collection('users').doc(currentUser.uid).collection('transactions').doc(txId);
+          const txDoc = allTransactions.find(t => t.id === txId);
+          const newRemaining = txDoc.remainingPending - deduct;
+
+          batch.update(txRef, { remainingPending: newRemaining });
+          remainingToAllocate -= deduct;
+        }
+
+        // Update account balance (เงินเข้าบัญชีตามที่เพื่อนโอนคืน)
+        const accRef = db.collection('users').doc(currentUser.uid).collection('accounts').doc(selectedSettleAccountId);
+        const accDoc = await accRef.get();
+        if (accDoc.exists) {
+          batch.update(accRef, { balance: accDoc.data().balance + receivedAmount });
+        }
+
+        await batch.commit();
+        alert("บันทึกรับเงินคืนเรียบร้อย!");
+        document.getElementById('settle-received-amount').value = '';
+        switchDashboardMode('tx');
+      } catch (err) { alert("รับเงินคืนไม่สำเร็จ: " + err.message); }
+    });
+
+    // Load Transactions & Calculate Metrics
     function loadTransactionsRealtime(userId) {
       const todayStr = new Date().toISOString().split('T')[0];
       const todayListEl = document.getElementById('today-tx-list');
@@ -594,39 +789,60 @@
 
       if (unsubscribeTx) unsubscribeTx();
 
-      // โครงสร้าง Query รองรับการ Sort ตาม date และ createdAt ไว้เรียบร้อย
       unsubscribeTx = db.collection('users').doc(userId).collection('transactions')
         .orderBy('date', 'desc').orderBy('createdAt', 'desc')
         .onSnapshot((snapshot) => {
           let totalIncome = 0;
           let totalExpense = 0;
+          let totalPending = 0;
           let todayHtml = '';
           let fullHtml = '';
           let todayCount = 0;
           let fullCount = 0;
 
+          allTransactions = [];
           snapshot.forEach((doc) => {
-            const item = doc.data();
-            const id = doc.id;
+            const item = { id: doc.id, ...doc.data() };
+            allTransactions.push(item);
+
             const isInc = item.type === 'income';
+            
+            if (isInc) {
+              totalIncome += item.amount;
+            } else {
+              // นับรายจ่ายจริงด้วย myShare (ไม่รวมส่วนสำรองจ่ายให้เพื่อน)
+              totalExpense += (item.isReimburse ? (item.myShare || 0) : item.amount);
+            }
+
+            if (item.isReimburse && item.remainingPending > 0) {
+              totalPending += item.remainingPending;
+            }
+
             const acc = accountsList.find(a => a.id === item.accountId);
             const accName = acc ? acc.name : 'บัญชีทั่วไป';
             const catName = item.categoryName || 'ทั่วไป';
 
-            if (isInc) totalIncome += item.amount;
-            else totalExpense += item.amount;
+            // Badge สถานะสำรองจ่าย
+            let reimburseBadge = '';
+            if (item.isReimburse) {
+              if (item.remainingPending > 0) {
+                reimburseBadge = `<span class="text-[9px] bg-amber-100 text-amber-800 px-1.5 py-0.5 rounded ml-1">รอเพื่อนคืน ฿${item.remainingPending.toLocaleString()}</span>`;
+              } else {
+                reimburseBadge = `<span class="text-[9px] bg-emerald-100 text-emerald-800 px-1.5 py-0.5 rounded ml-1">เพื่อนคืนครบแล้ว ✓</span>`;
+              }
+            }
 
             const itemLi = `
               <li class="flex justify-between items-center p-2.5 bg-gray-50 border border-gray-100 rounded-lg text-xs">
                 <div class="flex flex-col">
-                  <span class="font-medium text-gray-700">${escapeHtml(item.note)}</span>
+                  <span class="font-medium text-gray-700">${escapeHtml(item.note)} ${reimburseBadge}</span>
                   <span class="text-[10px] text-gray-400">${accName} • [${catName}] • ${item.date}</span>
                 </div>
                 <div class="flex items-center space-x-2">
                   <span class="font-bold ${isInc ? 'text-emerald-600' : 'text-rose-600'}">
                     ${isInc ? '+' : '-'}${userSettings.currency}${item.amount.toLocaleString(undefined, {minimumFractionDigits: 2})}
                   </span>
-                  <button onclick="deleteTransaction('${id}', '${item.accountId}', ${item.amount}, '${item.type}')" class="text-gray-300 hover:text-rose-500 font-bold px-1 text-sm">×</button>
+                  <button onclick="deleteTransaction('${item.id}', '${item.accountId}', ${item.amount}, '${item.type}', ${item.isReimburse || false})" class="text-gray-300 hover:text-rose-500 font-bold px-1 text-sm" title="ลบรายการ">×</button>
                 </div>
               </li>`;
 
@@ -645,15 +861,20 @@
           todayListEl.innerHTML = todayHtml;
           fullListEl.innerHTML = fullHtml;
 
-          const balance = totalIncome - totalExpense;
+          // คำนวณยอดเงินคงเหลือในบัญชีสุทธิ
+          const balance = totalIncome - totalExpense - totalPending; 
+          // หรือคำนวณจากผลรวม balance จริงของทุก Account ซึ่งแม่นยำกว่าอยู่แล้ว:
+          const totalAccountBalance = accountsList.reduce((sum, a) => sum + a.balance, 0);
+
           document.getElementById('total-income').innerText = `${userSettings.currency}${totalIncome.toLocaleString(undefined, {minimumFractionDigits: 2})}`;
           document.getElementById('total-expense').innerText = `${userSettings.currency}${totalExpense.toLocaleString(undefined, {minimumFractionDigits: 2})}`;
-          document.getElementById('total-balance').innerText = `${userSettings.currency}${balance.toLocaleString(undefined, {minimumFractionDigits: 2})}`;
+          document.getElementById('total-balance').innerText = `${userSettings.currency}${totalAccountBalance.toLocaleString(undefined, {minimumFractionDigits: 2})}`;
+          document.getElementById('total-pending').innerText = `${userSettings.currency}${totalPending.toLocaleString(undefined, {minimumFractionDigits: 2})}`;
         });
     }
 
-    async function deleteTransaction(txId, accountId, amount, type) {
-      if (!currentUser || !confirm("ต้องการลบรายการนี้ใช่หรือไม่?")) return;
+    async function deleteTransaction(txId, accountId, amount, type, isReimburse) {
+      if (!currentUser || !confirm("ต้องการลบรายการนี้ใช่หรือไม่? (ยอดเงินในบัญชีจะถูกปรับคืนตามยอดจริง)")) return;
       try {
         const accRef = db.collection('users').doc(currentUser.uid).collection('accounts').doc(accountId);
         await db.runTransaction(async (transaction) => {
@@ -669,7 +890,7 @@
     }
 
     // =========================================================================
-    // 6. SETTINGS: ACCOUNTS & CATEGORIES MANAGEMENT
+    // 7. SETTINGS: ACCOUNTS & CATEGORIES MANAGEMENT
     // =========================================================================
     function renderSettingsAccounts() {
       const container = document.getElementById('accounts-settings-list');
@@ -710,11 +931,8 @@
           </div>
         `;
 
-        if (cat.type === 'expense') {
-          expContainer.appendChild(div);
-        } else {
-          incContainer.appendChild(div);
-        }
+        if (cat.type === 'expense') expContainer.appendChild(div);
+        else incContainer.appendChild(div);
       });
     }
 
@@ -771,7 +989,6 @@
     }
 
     async function deleteCategory(catId, type) {
-      // ตรวจสอบเงื่อนไข: ต้องเหลือ category ประเภทนั้นไว้อย่างน้อย 1 อัน
       const sameTypeCats = categoriesList.filter(c => c.type === type);
       if (sameTypeCats.length <= 1) {
         return alert(`ไม่สามารถลบได้! ต้องเหลือหมวดหมู่${type === 'expense' ? 'รายจ่าย' : 'รายรับ'}ไว้อย่างน้อย 1 หมวดหมู่`);
@@ -790,6 +1007,7 @@
         userSettings.currency = currency;
         updateCurrencyUI();
         renderAccountButtons();
+        renderSettleAccountButtons();
         renderCategoryButtons();
         alert("บันทึกการตั้งค่าเรียบร้อย!");
         goToDashboardView();
