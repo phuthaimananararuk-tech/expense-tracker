@@ -24,7 +24,7 @@
 </head>
 <body class="bg-gray-50 text-gray-800 min-h-screen flex flex-col items-center justify-start p-4">
 
-  <!-- Main Container (Mobile First Max Width) -->
+  <!-- Main Container -->
   <div class="w-full max-w-md bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden min-h-[600px] flex flex-col justify-between my-auto">
     
     <!-- Header -->
@@ -32,7 +32,7 @@
       <h1 class="text-xl font-bold tracking-wide">Expense Tracker</h1>
       <p class="text-xs text-emerald-100 mt-1">บันทึกรายรับ-รายจ่ายส่วนตัว</p>
       
-      <!-- Logout Button (Shows only in Dashboard) -->
+      <!-- Logout Button -->
       <button id="logout-btn" class="hidden absolute right-4 top-4 bg-emerald-700 hover:bg-emerald-800 text-xs text-white py-1 px-3 rounded-full transition">
         ออกจากระบบ
       </button>
@@ -56,13 +56,26 @@
         </div>
 
         <button id="login-btn" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-medium py-2 rounded-lg text-sm shadow transition">
-          เข้าสู่ระบบ
+          เข้าสู่ระบบด้วยอีเมล
+        </button>
+
+        <!-- Social Logins Divider -->
+        <div class="flex items-center my-3">
+          <div class="flex-grow border-t border-gray-200"></div>
+          <span class="px-3 text-xs text-gray-400 uppercase">หรือเข้าสู่ระบบด้วย</span>
+          <div class="flex-grow border-t border-gray-200"></div>
+        </div>
+
+        <!-- Google Login Button Only -->
+        <button id="google-login-btn" class="w-full flex items-center justify-center py-2 px-3 border border-gray-300 rounded-lg text-xs font-medium text-gray-700 hover:bg-gray-50 transition shadow-sm">
+          <svg class="w-4 h-4 mr-2" viewBox="0 0 24 24"><path fill="#4285F4" d="M23.745 12.27c0-.7-.06-1.4-.19-2.07H12v4.51h6.6c-.29 1.52-1.14 2.82-2.4 3.68v3.05h3.88c2.27-2.09 3.66-5.17 3.66-9.17z"/><path fill="#34A853" d="M12 24c3.24 0 5.95-1.08 7.93-2.91l-3.88-3.05c-1.08.72-2.45 1.16-4.05 1.16-3.13 0-5.78-2.11-6.73-4.96H1.18v3.14C3.15 21.32 7.22 24 12 24z"/><path fill="#FBBC05" d="M5.27 14.24c-.25-.72-.38-1.49-.38-2.24s.13-1.52.38-2.24V6.62H1.18C.43 8.14 0 9.87 0 12s.43 3.86 1.18 5.38l4.09-3.14z"/><path fill="#EA4335" d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C17.95 1.19 15.24 0 12 0 7.22 0 3.15 2.68 1.18 6.62l4.09 3.14c.95-2.85 3.6-4.96 6.73-4.96z"/></svg>
+          Google Account
         </button>
 
         <div class="text-center pt-3 border-t border-gray-100">
           <p class="text-xs text-gray-500">ยังไม่มีบัญชีใช้งาน?</p>
           <button id="go-to-register-btn" class="text-xs font-semibold text-emerald-600 hover:underline mt-1">
-            สมัครสมาชิกใหม่ที่นี่
+            สมัครสมาชิกใหม่ด้วยอีเมล
           </button>
         </div>
       </section>
@@ -148,7 +161,6 @@
         <div>
           <h3 class="text-xs font-bold text-gray-600 uppercase mb-2">ประวัติรายการ</h3>
           <ul id="tx-list" class="space-y-2 max-h-48 overflow-y-auto pr-1">
-            <!-- Transactions dynamic insertion -->
             <li class="text-center text-xs text-gray-400 py-4">กำลังโหลดข้อมูล...</li>
           </ul>
         </div>
@@ -166,9 +178,9 @@
   <!-- Application Logic -->
   <script>
     // =========================================================================
-    // 1. FIREBASE CONFIGURATION (นำค่าจริงจาก Firebase Console มาวางแทนที่ที่นี่)
+    // 1. FIREBASE CONFIGURATION
     // =========================================================================
- const firebaseConfig = {
+    const firebaseConfig = {
   apiKey: "AIzaSyCuu9m390tra3oEca4PygcD1pO6-L7u7XE",
   authDomain: "eard-604d1.firebaseapp.com",
   projectId: "eard-604d1",
@@ -178,17 +190,14 @@
   measurementId: "G-RBTCMEJRNE"
 };
 
-    // Initialize Firebase
     firebase.initializeApp(firebaseConfig);
     const auth = firebase.auth();
     const db = firebase.firestore();
 
-    // Enable Offline Persistence for Firestore (เน็ตหลุดยังบันทึกในเครื่องได้)
     db.enablePersistence().catch((err) => {
       console.warn("Firestore Persistence Warning:", err.code);
     });
 
-    // Global State Variables
     let currentUser = null;
     let unsubscribeSnapshot = null;
 
@@ -199,7 +208,6 @@
     const logoutBtn = document.getElementById('logout-btn');
     const authStatusBar = document.getElementById('auth-status-bar');
 
-    // Inputs
     const loginEmailInput = document.getElementById('login-email');
     const loginPasswordInput = document.getElementById('login-password');
     const regEmailInput = document.getElementById('reg-email');
@@ -207,7 +215,7 @@
     const regConfirmInput = document.getElementById('reg-confirm-password');
 
     // =========================================================================
-    // 2. VIEW SWITCHING LOGIC (สลับหน้าจอ Login / Register / Dashboard)
+    // 2. VIEW SWITCHING
     // =========================================================================
     function showView(viewName) {
       loginView.classList.add('hidden');
@@ -224,19 +232,18 @@
       } else if (viewName === 'dashboard') {
         dashboardView.classList.remove('hidden');
         logoutBtn.classList.remove('hidden');
-        authStatusBar.innerText = `เข้าสู่ระบบในชื่อ: ${currentUser.email}`;
+        authStatusBar.innerText = `เข้าสู่ระบบในชื่อ: ${currentUser.email || currentUser.displayName}`;
       }
     }
 
     // =========================================================================
-    // 3. AUTHENTICATION LOGIC (เข้าสู่ระบบ / สมัครสมาชิก / ยืนยันอีเมล)
+    // 3. AUTHENTICATION (Email + Google)
     // =========================================================================
 
-    // กดสลับไปหน้าสมัครสมาชิก -> Pre-fill อีเมล & รหัสผ่านให้อัตโนมัติ
     document.getElementById('go-to-register-btn').addEventListener('click', () => {
       regEmailInput.value = loginEmailInput.value;
       regPasswordInput.value = loginPasswordInput.value;
-      regConfirmInput.value = ''; // ผู้ใช้ต้องพิมพ์ confirm เอง
+      regConfirmInput.value = '';
       showView('register');
     });
 
@@ -244,7 +251,7 @@
       showView('login');
     });
 
-    // ปุ่มเข้าสู่ระบบ (LOGIN)
+    // Login with Email
     document.getElementById('login-btn').addEventListener('click', async () => {
       const email = loginEmailInput.value.trim();
       const password = loginPasswordInput.value;
@@ -258,24 +265,29 @@
         const userCredential = await auth.signInWithEmailAndPassword(email, password);
         const user = userCredential.user;
 
-        // เช็กการยืนยันอีเมล
         if (!user.emailVerified) {
-          alert("อีเมลนี้ยังไม่ได้ยืนยันตัวตน! กรุณาตรวจสอบกล่องข้อความ (หรือ Junk Mail) ในอีเมลของคุณ แล้วคลิกลิงก์ยืนยันก่อนเข้าใช้งาน");
+          alert("อีเมลนี้ยังไม่ได้ยืนยันตัวตน! กรุณาตรวจสอบลิงก์ในอีเมลก่อนเข้าใช้งาน");
           await auth.signOut();
           return;
         }
-
       } catch (error) {
         console.error("Login Error:", error);
-        if (error.code === 'auth/user-not-found' || error.code === 'auth/wrong-password' || error.code === 'auth/invalid-credential') {
-          alert("อีเมลหรือรหัสผ่านไม่ถูกต้อง หรือยังไม่ได้เป็นสมาชิก");
-        } else {
-          alert("เกิดข้อผิดพลาดในการเข้าสู่ระบบ: " + error.message);
-        }
+        alert("อีเมลหรือรหัสผ่านไม่ถูกต้อง หรือยังไม่ได้เป็นสมาชิก");
       }
     });
 
-    // ปุ่มยืนยันการสมัครสมาชิก (REGISTER)
+    // Login with Google
+    document.getElementById('google-login-btn').addEventListener('click', async () => {
+      const provider = new firebase.auth.GoogleAuthProvider();
+      try {
+        await auth.signInWithPopup(provider);
+      } catch (error) {
+        console.error("Google Login Error:", error);
+        alert("ไม่สามารถเข้าสู่ระบบด้วย Google ได้: " + error.message);
+      }
+    });
+
+    // Register with Email
     document.getElementById('register-btn').addEventListener('click', async () => {
       const email = regEmailInput.value.trim();
       const password = regPasswordInput.value;
@@ -285,55 +297,46 @@
         alert("กรุณากรอกข้อมูลให้ครบทุกช่อง");
         return;
       }
-
       if (password !== confirmPassword) {
-        alert("รหัสผ่านและยืนยันรหัสผ่านไม่ตรงกัน กรุณาตรวจสอบอีกครั้ง");
+        alert("รหัสผ่านไม่ตรงกัน");
         return;
       }
-
       if (password.length < 6) {
-        alert("รหัสผ่านต้องมีความยาวอย่างน้อย 6 ตัวอักษรขึ้นไป");
+        alert("รหัสผ่านต้องมีอย่างน้อย 6 ตัวอักษร");
         return;
       }
 
       try {
-        // 1. สร้าง User บัญชีใหม่
         const userCredential = await auth.createUserWithEmailAndPassword(email, password);
-        const user = userCredential.user;
-
-        // 2. ส่งลิงก์ยืนยันไปที่อีเมลทันที
-        await user.sendEmailVerification();
-
-        alert(`ระบบได้ส่งลิงก์ยืนยันไปที่อีเมล ${email} เรียบร้อยแล้ว!\n\nกรุณาไปที่อีเมลของคุณ แล้วคลิกลิงก์ยืนยันตัวตนก่อน จึงจะสามารถเข้าสู่ระบบเพื่อบันทึกข้อมูลได้`);
-
-        // 3. เตะออกจากระบบชั่วคราว เพื่อให้ยืนยันตัวตนก่อน
+        await userCredential.user.sendEmailVerification();
+        alert(`ส่งลิงก์ยืนยันไปที่ ${email} แล้ว กรุณาตรวจสอบอีเมลก่อนเข้าสู่ระบบ`);
         await auth.signOut();
-        
-        // ย้ายกลับไปหน้าเข้าสู่ระบบ
         showView('login');
-
       } catch (error) {
-        console.error("Register Error:", error);
         if (error.code === 'auth/email-already-in-use') {
-          alert("อีเมลนี้เคยถูกสมัครสมาชิกไปแล้ว กรุณาเข้าสู่ระบบแทน");
+          alert("อีเมลนี้ถูกใช้งานแล้ว");
         } else {
-          alert("เกิดข้อผิดพลาดในการสมัครสมาชิก: " + error.message);
+          alert("เกิดข้อผิดพลาด: " + error.message);
         }
       }
     });
 
-    // ปุ่มออกจากระบบ (LOGOUT)
     logoutBtn.addEventListener('click', async () => {
-      if (unsubscribeSnapshot) unsubscribeSnapshot(); // ยกเลิก listener เรียลไทม์
+      if (unsubscribeSnapshot) unsubscribeSnapshot();
       await auth.signOut();
     });
 
-    // ตรวจสอบ Auth State แบบเรียลไทม์
+    // Auth State Observer
     auth.onAuthStateChanged((user) => {
-      if (user && user.emailVerified) {
-        currentUser = user;
-        showView('dashboard');
-        loadTransactionsRealtime(user.uid);
+      if (user) {
+        if (user.providerData.some(p => p.providerId !== 'password') || user.emailVerified) {
+          currentUser = user;
+          showView('dashboard');
+          loadTransactionsRealtime(user.uid);
+        } else {
+          currentUser = null;
+          showView('login');
+        }
       } else {
         currentUser = null;
         showView('login');
@@ -341,10 +344,8 @@
     });
 
     // =========================================================================
-    // 4. DATABASE & REAL-TIME DASHBOARD LOGIC (Cloud Firestore)
+    // 4. DATABASE & DASHBOARD
     // =========================================================================
-
-    // ฟังก์ชันเพิ่มรายการใหม่
     document.getElementById('add-form').addEventListener('submit', async (e) => {
       e.preventDefault();
       if (!currentUser) return;
@@ -359,45 +360,36 @@
       }
 
       try {
-        // บันทึกลง Firestore: users/{userId}/transactions/{txId}
         await db.collection('users').doc(currentUser.uid).collection('transactions').add({
           type: type,
           amount: amount,
           note: note,
           createdAt: firebase.firestore.FieldValue.serverTimestamp()
         });
-
-        // ล้างฟอร์ม
         document.getElementById('tx-amount').value = '';
         document.getElementById('tx-note').value = '';
-
       } catch (error) {
-        console.error("Error adding transaction:", error);
-        alert("เกิดข้อผิดพลาดในการบันทึกข้อมูล: " + error.message);
+        alert("เกิดข้อผิดพลาดในการบันทึก: " + error.message);
       }
     });
 
-    // ฟังก์ชันลบรายการ
     async function deleteTransaction(docId) {
       if (!currentUser) return;
-      if (confirm("คุณต้องการลบรายการนี้ใช่หรือไม่?")) {
+      if (confirm("ต้องการลบรายการนี้ใช่หรือไม่?")) {
         try {
           await db.collection('users').doc(currentUser.uid).collection('transactions').doc(docId).delete();
         } catch (error) {
-          alert("เกิดข้อผิดพลาดในการลบรายการ: " + error.message);
+          alert("ลบไม่สำเร็จ: " + error.message);
         }
       }
     }
 
-    // ฟังก์ชันโหลดข้อมูลเรียลไทม์ (Real-time Stream Listener)
     function loadTransactionsRealtime(userId) {
       const listEl = document.getElementById('tx-list');
       
-      // ดึงข้อมูลรายการโดยเรียงจากเวลาล่าสุดขึ้นก่อน
       unsubscribeSnapshot = db.collection('users').doc(userId).collection('transactions')
         .orderBy('createdAt', 'desc')
         .onSnapshot((snapshot) => {
-          
           let totalIncome = 0;
           let totalExpense = 0;
           listEl.innerHTML = '';
@@ -410,13 +402,9 @@
               const id = doc.id;
               const isIncome = item.type === 'income';
               
-              if (isIncome) {
-                totalIncome += item.amount;
-              } else {
-                totalExpense += item.amount;
-              }
+              if (isIncome) totalIncome += item.amount;
+              else totalExpense += item.amount;
 
-              // สร้าง HTML element ของแต่ละรายการ
               const li = document.createElement('li');
               li.className = 'flex justify-between items-center p-2.5 bg-gray-50 border border-gray-100 rounded-lg text-xs';
               li.innerHTML = `
@@ -437,17 +425,13 @@
             });
           }
 
-          // อัปเดตยอดรวมการ์ด 3 ช่อง
           const balance = totalIncome - totalExpense;
           document.getElementById('total-income').innerText = `฿${totalIncome.toLocaleString(undefined, {minimumFractionDigits: 2})}`;
           document.getElementById('total-expense').innerText = `฿${totalExpense.toLocaleString(undefined, {minimumFractionDigits: 2})}`;
           document.getElementById('total-balance').innerText = `฿${balance.toLocaleString(undefined, {minimumFractionDigits: 2})}`;
-        }, (error) => {
-          console.error("Snapshot Error:", error);
         });
     }
 
-    // Helper ป้องกัน XSS Injection
     function escapeHtml(text) {
       return text ? text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;") : '';
     }
