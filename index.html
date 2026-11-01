@@ -1,67 +1,796 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
-<html>
+<!DOCTYPE html>
+<html lang="th" class="h-full bg-slate-50">
 <head>
-  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-  <meta http-equiv="Content-Style-Type" content="text/css">
-  <title></title>
-  <meta name="Generator" content="Cocoa HTML Writer">
-  <meta name="CocoaVersion" content="2775.2">
-  <style type="text/css">
-    p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
-    p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>บันทึกรายรับ-รายจ่าย</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            50: '#f0f9ff',
+                            100: '#e0f2fe',
+                            500: '#0284c7',
+                            600: '#0369a1',
+                            700: '#075985',
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'Sarabun', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- FontAwesome for clean minimal icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Sarabun:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Sarabun', 'Inter', sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f5f9;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 9999px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+    </style>
 </head>
-<body>
-<p class="p1">&lt;!DOCTYPE html&gt;</p>
-<p class="p1">&lt;html lang="th"&gt;</p>
-<p class="p1">&lt;head&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;meta charset="UTF-8"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;title&gt;PriceCalc&lt;/title&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;link rel="manifest" href="manifest.json"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;link rel="stylesheet" href="style.css"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;meta name="apple-mobile-web-app-capable" content="yes"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;meta name="apple-mobile-web-app-status-bar-style" content="default"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;meta name="apple-mobile-web-app-title" content="PriceCalc"&gt;</p>
-<p class="p1">&lt;/head&gt;</p>
-<p class="p1">&lt;body&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="app-container"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;h2&gt;⚖️ เทียบความคุ้มค่า&lt;/h2&gt;</p>
-<p class="p2"><span class="Apple-converted-space">        </span></p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="product-card card-a"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;h3&gt;สินค้า A&lt;/h3&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;div class="input-group"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>&lt;input type="number" id="priceA" placeholder="ราคา (บาท)" inputmode="decimal"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>&lt;input type="number" id="weightA" placeholder="ปริมาณ (กรัม/มล.)" inputmode="decimal"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;/div&gt;</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="product-card card-b"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;h3&gt;สินค้า B&lt;/h3&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;div class="input-group"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>&lt;input type="number" id="priceB" placeholder="ราคา (บาท)" inputmode="decimal"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>&lt;input type="number" id="weightB" placeholder="ปริมาณ (กรัม/มล.)" inputmode="decimal"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;/div&gt;</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="button-group"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;button onclick="comparePrice()" class="btn-calc"&gt;คำนวณเลย&lt;/button&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;button onclick="clearFields()" class="btn-clear"&gt;ล้าง&lt;/button&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;/div&gt;</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;div id="resultCard" class="result-card hidden"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;p id="resultText"&gt;&lt;/p&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;small id="resultDetail"&gt;&lt;/small&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;/div&gt;</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;script src="app.js"&gt;&lt;/script&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;script&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>if ('serviceWorker' in navigator) {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>navigator.serviceWorker.register('sw.js').catch(() =&gt; {});</p>
-<p class="p1"><span class="Apple-converted-space">        </span>}</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;/script&gt;</p>
-<p class="p1">&lt;/body&gt;</p>
-<p class="p1">&lt;/html&gt;</p>
+<body class="h-full text-slate-800 bg-slate-50 flex flex-col justify-between selection:bg-brand-100 selection:text-brand-700">
+
+    <!-- App Container -->
+    <div id="app" class="w-full max-w-md mx-auto h-full min-h-screen flex flex-col bg-white shadow-xl sm:my-0 sm:min-h-screen md:max-w-xl lg:max-w-2xl relative overflow-hidden">
+        
+        <!-- Top Navbar -->
+        <header id="navbar" class="bg-white/80 backdrop-blur-md border-b border-slate-100 sticky top-0 z-30 px-5 py-4 flex items-center justify-between transition-all duration-200">
+            <div class="flex items-center gap-2.5">
+                <div class="w-9 h-9 rounded-xl bg-brand-500 text-white flex items-center justify-center font-bold text-lg shadow-sm shadow-brand-500/30">
+                    <i class="fa-solid me-0 fa-wallet"></i>
+                </div>
+                <div>
+                    <h1 class="text-base font-bold text-slate-800 leading-tight">บันทึกรายรับ-รายจ่าย</h1>
+                    <p id="user-email-display" class="text-xs text-slate-400 font-normal truncate max-w-[180px] sm:max-w-[300px]">กำลังโหลด...</p>
+                </div>
+            </div>
+            
+            <button id="btn-logout" class="hidden text-slate-400 hover:text-slate-600 hover:bg-slate-100 p-2 rounded-xl transition-all text-sm flex items-center gap-1.5" title="ออกจากระบบ">
+                <span class="text-xs font-medium hidden sm:inline">ออกจากระบบ</span>
+                <i class="fa-solid fa-right-from-bracket"></i>
+            </button>
+        </header>
+
+        <!-- Main Content Area -->
+        <main class="flex-1 overflow-y-auto p-4 sm:p-6 pb-24 space-y-6">
+
+            <!-- Authentication Screen (Login / Register) -->
+            <section id="auth-screen" class="space-y-6 py-6 transition-all duration-300">
+                <div class="text-center space-y-2">
+                    <div class="inline-flex p-4 rounded-2xl bg-brand-50 text-brand-600 mb-2">
+                        <i class="fa-solid fa-scale-balanced text-3xl"></i>
+                    </div>
+                    <h2 class="text-2xl font-bold text-slate-800">เข้าสู่ระบบ / ลงทะเบียน</h2>
+                    <p class="text-sm text-slate-500 max-w-xs mx-auto">บันทึกและซิงก์ข้อมูลรายรับ-รายจ่ายของคุณให้ตรงกันทุกอุปกรณ์</p>
+                </div>
+
+                <div class="bg-slate-50 border border-slate-100 p-5 sm:p-6 rounded-2xl space-y-4">
+                    <form id="auth-form" class="space-y-4">
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-600 mb-1.5" for="auth-email">อีเมล (Email)</label>
+                            <div class="relative">
+                                <span class="absolute inset-y-0 left-0 flex items-center pl-3.5 text-slate-400">
+                                    <i class="fa-regular fa-envelope"></i>
+                                </span>
+                                <input type="email" id="auth-email" required placeholder="example@email.com" class="w-full pl-10 pr-4 py-2.5 bg-white border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 transition">
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-600 mb-1.5" for="auth-password">รหัสผ่าน (Password)</label>
+                            <div class="relative">
+                                <span class="absolute inset-y-0 left-0 flex items-center pl-3.5 text-slate-400">
+                                    <i class="fa-solid fa-lock"></i>
+                                </span>
+                                <input type="password" id="auth-password" required placeholder="••••••••" minlength="6" class="w-full pl-10 pr-4 py-2.5 bg-white border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 transition">
+                            </div>
+                        </div>
+
+                        <div id="auth-error-msg" class="hidden text-xs text-rose-500 bg-rose-50 border border-rose-100 p-3 rounded-xl flex items-center gap-2">
+                            <i class="fa-solid fa-circle-exclamation text-sm shrink-0"></i>
+                            <span id="auth-error-text">เกิดข้อผิดพลาดในการเข้าสู่ระบบ</span>
+                        </div>
+
+                        <div class="pt-2 space-y-2">
+                            <button type="submit" id="btn-login" class="w-full py-3 px-4 bg-brand-600 hover:bg-brand-700 active:scale-[0.99] text-white font-medium text-sm rounded-xl shadow-sm shadow-brand-600/20 transition duration-150 flex items-center justify-center gap-2">
+                                <span id="login-spinner" class="hidden"><i class="fa-solid fa-spinner animate-spin"></i></span>
+                                <span>เข้าสู่ระบบ</span>
+                            </button>
+                            <button type="button" id="btn-register" class="w-full py-2.5 px-4 bg-white hover:bg-slate-100 border border-slate-200 text-slate-700 font-medium text-sm rounded-xl transition duration-150">
+                                สมัครสมาชิกใหม่
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
+                <div class="text-center text-xs text-slate-400">
+                    <p>ระบบความปลอดภัยด้วย Firebase Authentication</p>
+                </div>
+            </section>
+
+            <!-- Dashboard Screen -->
+            <section id="dashboard-screen" class="hidden space-y-5 animate-fadeIn">
+                <!-- Summary Card -->
+                <div class="bg-gradient-to-br from-slate-900 to-slate-800 text-white p-5 rounded-3xl shadow-lg space-y-4">
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <span class="text-xs font-medium text-slate-400">ยอดเงินคงเหลือสุทธิ</span>
+                            <h2 id="total-balance" class="text-2xl sm:text-3xl font-bold tracking-tight text-white mt-0.5">฿0.00</h2>
+                        </div>
+                        <div class="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center text-xs text-slate-300">
+                            <i class="fa-solid fa-chart-pie"></i>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-3 pt-2 border-t border-white/10">
+                        <!-- Income -->
+                        <div class="flex items-center gap-3">
+                            <div class="w-8 h-8 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center shrink-0">
+                                <i class="fa-solid fa-arrow-down text-xs"></i>
+                            </div>
+                            <div class="overflow-hidden">
+                                <span class="block text-[11px] text-slate-400 font-medium">รายรับรวม</span>
+                                <span id="total-income" class="block text-sm font-semibold text-emerald-400 truncate">฿0.00</span>
+                            </div>
+                        </div>
+
+                        <!-- Expense -->
+                        <div class="flex items-center gap-3">
+                            <div class="w-8 h-8 rounded-xl bg-rose-500/20 text-rose-400 flex items-center justify-center shrink-0">
+                                <i class="fa-solid fa-arrow-up text-xs"></i>
+                            </div>
+                            <div class="overflow-hidden">
+                                <span class="block text-[11px] text-slate-400 font-medium">รายจ่ายรวม</span>
+                                <span id="total-expense" class="block text-sm font-semibold text-rose-400 truncate">฿0.00</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Transaction List Header & Filter -->
+                <div class="flex items-center justify-between pt-2">
+                    <h3 class="text-sm font-bold text-slate-800 flex items-center gap-2">
+                        <span>ประวัติรายการ</span>
+                        <span id="tx-count" class="text-xs font-medium text-slate-400 bg-slate-100 px-2 py-0.5 rounded-full">0</span>
+                    </h3>
+                    
+                    <select id="tx-filter" class="bg-white border border-slate-200 text-xs text-slate-600 rounded-xl px-2.5 py-1.5 focus:outline-none focus:ring-2 focus:ring-brand-500/20">
+                        <option value="all">ทั้งหมด</option>
+                        <option value="income">เฉพาะรายรับ</option>
+                        <option value="expense">เฉพาะรายจ่าย</option>
+                    </select>
+                </div>
+
+                <!-- Transaction List -->
+                <div id="tx-list" class="space-y-2.5 min-h-[200px]">
+                    <!-- Loading Skeleton -->
+                    <div class="animate-pulse space-y-2.5">
+                        <div class="h-16 bg-slate-100 rounded-2xl w-full"></div>
+                        <div class="h-16 bg-slate-100 rounded-2xl w-full"></div>
+                        <div class="h-16 bg-slate-100 rounded-2xl w-full"></div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Add Transaction Screen -->
+            <section id="add-screen" class="hidden space-y-5 animate-fadeIn">
+                <div class="flex items-center justify-between">
+                    <h2 class="text-lg font-bold text-slate-800">บันทึกรายการใหม่</h2>
+                    <button id="btn-cancel-add" class="text-xs font-medium text-slate-400 hover:text-slate-600">ยกเลิก</button>
+                </div>
+
+                <form id="add-tx-form" class="bg-white space-y-4">
+                    <!-- Segmented Control for Income/Expense -->
+                    <div class="grid grid-cols-2 gap-1.5 p-1.5 bg-slate-100 rounded-2xl">
+                        <button type="button" id="type-expense-btn" class="py-2.5 text-xs font-semibold rounded-xl transition duration-150 flex items-center justify-center gap-1.5 bg-white text-rose-600 shadow-sm">
+                            <i class="fa-solid fa-[#f43f5e] fa-minus-circle"></i>
+                            <span>รายจ่าย</span>
+                        </button>
+                        <button type="button" id="type-income-btn" class="py-2.5 text-xs font-semibold rounded-xl transition duration-150 flex items-center justify-center gap-1.5 text-slate-500 hover:text-slate-800">
+                            <i class="fa-solid fa-[#10b981] fa-plus-circle"></i>
+                            <span>รายรับ</span>
+                        </button>
+                    </div>
+
+                    <!-- Amount Input -->
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-600 mb-1" for="tx-amount">จำนวนเงิน (บาท)</label>
+                        <div class="relative">
+                            <span class="absolute inset-y-0 left-0 flex items-center pl-4 text-slate-400 font-medium text-base">฿</span>
+                            <input type="number" id="tx-amount" step="any" min="0.01" required placeholder="0.00" class="w-full pl-9 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-2xl text-lg font-bold text-slate-800 focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 transition">
+                        </div>
+                    </div>
+
+                    <!-- Description Input -->
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-600 mb-1" for="tx-note">รายละเอียด / คำอธิบาย</label>
+                        <input type="text" id="tx-note" required placeholder="เช่น ค่าอาหารกลางวัน, เงินเดือน" class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-2xl text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 transition">
+                    </div>
+
+                    <!-- Date Input -->
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-600 mb-1" for="tx-date">วันที่รายการ</label>
+                        <input type="datetime-local" id="tx-date" required class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-2xl text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 transition">
+                    </div>
+
+                    <div class="pt-3">
+                        <button type="submit" id="btn-save-tx" class="w-full py-3.5 px-4 bg-brand-600 hover:bg-brand-700 active:scale-[0.99] text-white font-medium text-sm rounded-2xl shadow-md shadow-brand-600/20 transition duration-150 flex items-center justify-center gap-2">
+                            <span id="save-spinner" class="hidden"><i class="fa-solid fa-spinner animate-spin"></i></span>
+                            <span>บันทึกข้อมูล</span>
+                        </button>
+                    </div>
+                </form>
+            </section>
+
+        </main>
+
+        <!-- Bottom Navigation Bar (Shown when authenticated) -->
+        <nav id="bottom-nav" class="hidden bg-white/90 backdrop-blur-md border-t border-slate-100 fixed bottom-0 left-0 right-0 z-40 max-w-md mx-auto md:max-w-xl lg:max-w-2xl px-6 py-2 flex justify-around items-center">
+            <button id="nav-dashboard" class="flex flex-col items-center gap-1 py-1 px-4 text-brand-600 font-medium text-xs transition">
+                <i class="fa-solid fa-house text-lg"></i>
+                <span>หน้าหลัก</span>
+            </button>
+            <button id="nav-add" class="flex flex-col items-center gap-1 py-1 px-4 text-slate-400 hover:text-slate-600 font-medium text-xs transition">
+                <div class="w-10 h-10 -mt-5 bg-brand-600 text-white rounded-full flex items-center justify-center shadow-lg shadow-brand-600/30">
+                    <i class="fa-solid fa-plus text-lg"></i>
+                </div>
+                <span>บันทึก</span>
+            </button>
+        </nav>
+
+        <!-- Custom Toast Notification -->
+        <div id="toast" class="fixed top-5 left-1/2 -translate-x-1/2 z-50 transition-all duration-300 opacity-0 pointer-events-none transform -translate-y-4">
+            <div id="toast-content" class="bg-slate-800 text-white px-4 py-2.5 rounded-full text-xs font-medium shadow-xl flex items-center gap-2">
+                <i id="toast-icon" class="fa-solid fa-circle-check text-emerald-400"></i>
+                <span id="toast-text">สำเร็จ</span>
+            </div>
+        </div>
+
+        <!-- Custom Confirmation Modal -->
+        <div id="confirm-modal" class="fixed inset-0 z-50 bg-slate-900/40 backdrop-blur-sm hidden items-center justify-center p-4 transition-all">
+            <div class="bg-white rounded-3xl max-w-xs w-full p-5 space-y-4 text-center shadow-2xl transform transition-all scale-95 opacity-0" id="modal-box">
+                <div class="w-12 h-12 rounded-2xl bg-rose-50 text-rose-500 mx-auto flex items-center justify-center text-xl">
+                    <i class="fa-regular fa-trash-can"></i>
+                </div>
+                <div>
+                    <h3 class="text-base font-bold text-slate-800">ยืนยันการลบรายการ</h3>
+                    <p class="text-xs text-slate-500 mt-1">คุณต้องการลบรายการนี้ใช่หรือไม่? การกระทำนี้ไม่สามารถย้อนกลับได้</p>
+                </div>
+                <div class="grid grid-cols-2 gap-2 pt-1">
+                    <button id="modal-cancel-btn" class="py-2.5 px-4 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold rounded-xl transition">ยกเลิก</button>
+                    <button id="modal-confirm-btn" class="py-2.5 px-4 bg-rose-600 hover:bg-rose-700 text-white text-xs font-semibold rounded-xl shadow-sm transition">ลบรายการ</button>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Firebase SDK Modular Scripts -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { 
+            getAuth, 
+            signInWithEmailAndPassword, 
+            createUserWithEmailAndPassword, 
+            signOut, 
+            onAuthStateChanged,
+            signInWithCustomToken,
+            signInAnonymously
+        } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { 
+            getFirestore, 
+            collection, 
+            doc, 
+            addDoc, 
+            deleteDoc, 
+            onSnapshot 
+        } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        // Global variables fallback for environment
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'expense-tracker-app';
+        
+        // Demo/Fallback configuration if __firebase_config is not available (e.g. initial static preview)
+        const fallbackConfig = {
+            apiKey: "AIzaSyDemoKeyForPreviewOnly_NotRealKey",
+            authDomain: "demo-app.firebaseapp.com",
+            projectId: "demo-app-project",
+            storageBucket: "demo-app.appspot.com",
+            messagingSenderId: "1234567890",
+            appId: "1:1234567890:web:1234567890"
+        };
+
+        let firebaseConfig;
+        try {
+            firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : fallbackConfig;
+        } catch(e) {
+            firebaseConfig = fallbackConfig;
+        }
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        // State Management
+        let currentUser = null;
+        let transactions = [];
+        let unsubscribeTx = null;
+        let selectedType = 'expense'; // 'expense' or 'income'
+        let itemToDeleteId = null;
+
+        // DOM Elements
+        const authScreen = document.getElementById('auth-screen');
+        const dashboardScreen = document.getElementById('dashboard-screen');
+        const addScreen = document.getElementById('add-screen');
+        const bottomNav = document.getElementById('bottom-nav');
+        const btnLogout = document.getElementById('btn-logout');
+        const userEmailDisplay = document.getElementById('user-email-display');
+        
+        const authForm = document.getElementById('auth-form');
+        const authEmailInput = document.getElementById('auth-email');
+        const authPasswordInput = document.getElementById('auth-password');
+        const authErrorMsg = document.getElementById('auth-error-msg');
+        const authErrorText = document.getElementById('auth-error-text');
+        const btnLogin = document.getElementById('btn-login');
+        const btnRegister = document.getElementById('btn-register');
+        const loginSpinner = document.getElementById('login-spinner');
+
+        const navDashboard = document.getElementById('nav-dashboard');
+        const navAdd = document.getElementById('nav-add');
+        const btnCancelAdd = document.getElementById('btn-cancel-add');
+
+        const addTxForm = document.getElementById('add-tx-form');
+        const typeExpenseBtn = document.getElementById('type-expense-btn');
+        const typeIncomeBtn = document.getElementById('type-income-btn');
+        const txAmountInput = document.getElementById('tx-amount');
+        const txNoteInput = document.getElementById('tx-note');
+        const txDateInput = document.getElementById('tx-date');
+        const btnSaveTx = document.getElementById('btn-save-tx');
+        const saveSpinner = document.getElementById('save-spinner');
+
+        const totalBalance = document.getElementById('total-balance');
+        const totalIncome = document.getElementById('total-income');
+        const totalExpense = document.getElementById('total-expense');
+        const txCount = document.getElementById('tx-count');
+        const txFilter = document.getElementById('tx-filter');
+        const txList = document.getElementById('tx-list');
+
+        const toast = document.getElementById('toast');
+        const toastText = document.getElementById('toast-text');
+        const toastIcon = document.getElementById('toast-icon');
+
+        const confirmModal = document.getElementById('confirm-modal');
+        const modalBox = document.getElementById('modal-box');
+        const modalCancelBtn = document.getElementById('modal-cancel-btn');
+        const modalConfirmBtn = document.getElementById('modal-confirm-btn');
+
+        // Set Default Date-Time to Now
+        function resetFormDate() {
+            const now = new Date();
+            now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
+            txDateInput.value = now.toISOString().slice(0, 16);
+        }
+        resetFormDate();
+
+        // Initialize Authentication Listener
+        async function initAuth() {
+            // Check for initial auth token if provided by environment
+            if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+                try {
+                    await signInWithCustomToken(auth, __initial_auth_token);
+                } catch(e) {
+                    console.warn("Custom token auth failed:", e);
+                }
+            }
+
+            onAuthStateChanged(auth, (user) => {
+                if (user) {
+                    currentUser = user;
+                    userEmailDisplay.textContent = user.email || 'ผู้ใช้งานชั่วคราว (Guest)';
+                    btnLogout.classList.remove('hidden');
+                    showScreen('dashboard');
+                    bottomNav.classList.remove('hidden');
+                    listenToTransactions(user.uid);
+                } else {
+                    currentUser = null;
+                    userEmailDisplay.textContent = 'กรุณาเข้าสู่ระบบ';
+                    btnLogout.classList.add('hidden');
+                    bottomNav.classList.add('hidden');
+                    showScreen('auth');
+                    if (unsubscribeTx) unsubscribeTx();
+                    transactions = [];
+                }
+            });
+        }
+
+        // Screen Navigation Function
+        function showScreen(screenName) {
+            authScreen.classList.add('hidden');
+            dashboardScreen.classList.add('hidden');
+            addScreen.classList.add('hidden');
+
+            // Reset Nav Styles
+            navDashboard.className = "flex flex-col items-center gap-1 py-1 px-4 text-slate-400 hover:text-slate-600 font-medium text-xs transition";
+            navAdd.className = "flex flex-col items-center gap-1 py-1 px-4 text-slate-400 hover:text-slate-600 font-medium text-xs transition";
+
+            if (screenName === 'auth') {
+                authScreen.classList.remove('hidden');
+            } else if (screenName === 'dashboard') {
+                dashboardScreen.classList.remove('hidden');
+                navDashboard.className = "flex flex-col items-center gap-1 py-1 px-4 text-brand-600 font-medium text-xs transition";
+            } else if (screenName === 'add') {
+                addScreen.classList.remove('hidden');
+                navAdd.className = "flex flex-col items-center gap-1 py-1 px-4 text-brand-600 font-medium text-xs transition";
+                resetFormDate();
+            }
+        }
+
+        // Real-time Listener for Transactions (Rule 1 & Rule 2 compliant)
+        function listenToTransactions(userId) {
+            // Path: artifacts/{appId}/users/{userId}/transactions
+            const userTxCollection = collection(db, 'artifacts', appId, 'users', userId, 'transactions');
+            
+            // Fetch all data cleanly without complex multi-field orderBy or filters
+            unsubscribeTx = onSnapshot(userTxCollection, (snapshot) => {
+                const list = [];
+                snapshot.forEach((doc) => {
+                    list.push({ id: doc.id, ...doc.data() });
+                });
+
+                // Sort in JS memory by date descending (Newest first)
+                list.sort((a, b) => new Date(b.date || 0) - new Date(a.date || 0));
+                transactions = list;
+                renderDashboard();
+            }, (error) => {
+                console.error("Error listening to Firestore:", error);
+                showToast("ไม่สามารถโหลดข้อมูลได้", "error");
+            });
+        }
+
+        // Render Dashboard UI
+        function renderDashboard() {
+            const filterValue = txFilter.value;
+            const filteredTx = transactions.filter(t => {
+                if (filterValue === 'all') return true;
+                return t.type === filterValue;
+            });
+
+            // Calculate Totals
+            let incomeTotal = 0;
+            let expenseTotal = 0;
+
+            transactions.forEach(t => {
+                const amt = parseFloat(t.amount) || 0;
+                if (t.type === 'income') {
+                    incomeTotal += amt;
+                } else if (t.type === 'expense') {
+                    expenseTotal += amt;
+                }
+            });
+
+            const netBalance = incomeTotal - expenseTotal;
+
+            // Update DOM Numbers
+            totalBalance.textContent = `฿${netBalance.toLocaleString('th-TH', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+            totalIncome.textContent = `+฿${incomeTotal.toLocaleString('th-TH', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+            totalExpense.textContent = `-฿${expenseTotal.toLocaleString('th-TH', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+            txCount.textContent = filteredTx.length;
+
+            // Render List Items
+            txList.innerHTML = '';
+
+            if (filteredTx.length === 0) {
+                txList.innerHTML = `
+                    <div class="text-center py-10 px-4 bg-slate-50 border border-dashed border-slate-200 rounded-2xl">
+                        <i class="fa-regular fa-folder-open text-3xl text-slate-300 mb-2"></i>
+                        <p class="text-xs font-semibold text-slate-500">ยังไม่มีรายการบันทึก</p>
+                        <p class="text-[11px] text-slate-400 mt-0.5">กดปุ่ม "บันทึก" ด้านล่างเพื่อเพิ่มรายการใหม่</p>
+                    </div>
+                `;
+                return;
+            }
+
+            filteredTx.forEach(t => {
+                const isIncome = t.type === 'income';
+                const formattedAmt = `${isIncome ? '+' : '-'}฿${parseFloat(t.amount).toLocaleString('th-TH', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+                
+                // Format Date nicely
+                let dateStr = '-';
+                if (t.date) {
+                    const d = new Date(t.date);
+                    dateStr = d.toLocaleDateString('th-TH', { day: 'numeric', month: 'short', year: '2-digit', hour: '2-digit', minute: '2-digit' });
+                }
+
+                const card = document.createElement('div');
+                card.className = "bg-white border border-slate-100 p-3.5 rounded-2xl shadow-sm flex items-center justify-between hover:border-slate-200 transition group";
+                card.innerHTML = `
+                    <div class="flex items-center gap-3 overflow-hidden">
+                        <div class="w-10 h-10 rounded-xl ${isIncome ? 'bg-emerald-50 text-emerald-600' : 'bg-rose-50 text-rose-500'} flex items-center justify-center shrink-0">
+                            <i class="fa-solid ${isIncome ? 'fa-arrow-down' : 'fa-arrow-up'} text-sm"></i>
+                        </div>
+                        <div class="overflow-hidden">
+                            <p class="text-xs font-bold text-slate-800 truncate">${escapeHtml(t.note || 'ไม่มีคำอธิบาย')}</p>
+                            <p class="text-[11px] text-slate-400 mt-0.5">${dateStr}</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-3 shrink-0 ml-2">
+                        <span class="text-xs font-bold ${isIncome ? 'text-emerald-600' : 'text-slate-800'}">${formattedAmt}</span>
+                        <button data-id="${t.id}" class="delete-btn text-slate-300 hover:text-rose-500 p-1.5 rounded-lg transition duration-150">
+                            <i class="fa-regular fa-trash-can text-sm"></i>
+                        </button>
+                    </div>
+                `;
+                txList.appendChild(card);
+            });
+
+            // Attach Delete Event Listeners
+            document.querySelectorAll('.delete-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    const id = btn.getAttribute('data-id');
+                    openConfirmModal(id);
+                });
+            });
+        }
+
+        // Authentication Event Handlers
+        authForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const email = authEmailInput.value.trim();
+            const password = authPasswordInput.value;
+
+            hideAuthError();
+            setAuthLoading(true);
+
+            try {
+                await signInWithEmailAndPassword(auth, email, password);
+                showToast("เข้าสู่ระบบเรียบร้อยแล้ว");
+                authForm.reset();
+            } catch (error) {
+                console.error("Login Error:", error);
+                showAuthError(getErrorMessage(error.code));
+            } finally {
+                setAuthLoading(false);
+            }
+        });
+
+        btnRegister.addEventListener('click', async () => {
+            const email = authEmailInput.value.trim();
+            const password = authPasswordInput.value;
+
+            if (!email || !password) {
+                showAuthError("กรุณากรอกอีเมลและรหัสผ่านเพื่อสมัครสมาชิก");
+                return;
+            }
+
+            if (password.length < 6) {
+                showAuthError("รหัสผ่านต้องมีความยาวอย่างน้อย 6 ตัวอักษร");
+                return;
+            }
+
+            hideAuthError();
+            setAuthLoading(true);
+
+            try {
+                await createUserWithEmailAndPassword(auth, email, password);
+                showToast("สมัครสมาชิกสำเร็จและเข้าสู่ระบบแล้ว");
+                authForm.reset();
+            } catch (error) {
+                console.error("Register Error:", error);
+                showAuthError(getErrorMessage(error.code));
+            } finally {
+                setAuthLoading(false);
+            }
+        });
+
+        btnLogout.addEventListener('click', async () => {
+            try {
+                await signOut(auth);
+                showToast("ออกจากระบบแล้ว");
+            } catch (error) {
+                showToast("ไม่สามารถออกจากระบบได้", "error");
+            }
+        });
+
+        // Add Transaction Handlers
+        typeExpenseBtn.addEventListener('click', () => {
+            selectedType = 'expense';
+            typeExpenseBtn.className = "py-2.5 text-xs font-semibold rounded-xl transition duration-150 flex items-center justify-center gap-1.5 bg-white text-rose-600 shadow-sm";
+            typeIncomeBtn.className = "py-2.5 text-xs font-semibold rounded-xl transition duration-150 flex items-center justify-center gap-1.5 text-slate-500 hover:text-slate-800";
+        });
+
+        typeIncomeBtn.addEventListener('click', () => {
+            selectedType = 'income';
+            typeIncomeBtn.className = "py-2.5 text-xs font-semibold rounded-xl transition duration-150 flex items-center justify-center gap-1.5 bg-white text-emerald-600 shadow-sm";
+            typeExpenseBtn.className = "py-2.5 text-xs font-semibold rounded-xl transition duration-150 flex items-center justify-center gap-1.5 text-slate-500 hover:text-slate-800";
+        });
+
+        addTxForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            if (!currentUser) return;
+
+            const amount = parseFloat(txAmountInput.value);
+            const note = txNoteInput.value.trim();
+            const date = txDateInput.value;
+
+            if (isNaN(amount) || amount <= 0) {
+                showToast("กรุณาระบุจำนวนเงินให้ถูกต้อง", "error");
+                return;
+            }
+
+            setSaveLoading(true);
+
+            try {
+                const userTxCollection = collection(db, 'artifacts', appId, 'users', currentUser.uid, 'transactions');
+                await addDoc(userTxCollection, {
+                    type: selectedType,
+                    amount: amount,
+                    note: note,
+                    date: date,
+                    createdAt: new Date().toISOString()
+                });
+
+                showToast("บันทึกรายการเรียบร้อยแล้ว");
+                addTxForm.reset();
+                resetFormDate();
+                showScreen('dashboard');
+            } catch (error) {
+                console.error("Save Error:", error);
+                showToast("เกิดข้อผิดพลาดในการบันทึกข้อมูล", "error");
+            } finally {
+                setSaveLoading(false);
+            }
+        });
+
+        // Delete Handler
+        async function deleteTransaction(id) {
+            if (!currentUser || !id) return;
+            try {
+                const txDocRef = doc(db, 'artifacts', appId, 'users', currentUser.uid, 'transactions', id);
+                await deleteDoc(txDocRef);
+                showToast("ลบรายการแล้ว");
+            } catch (error) {
+                console.error("Delete Error:", error);
+                showToast("ไม่สามารถลบรายการได้", "error");
+            }
+        }
+
+        // Filter Listener
+        txFilter.addEventListener('change', renderDashboard);
+
+        // Navigation Buttons Listener
+        navDashboard.addEventListener('click', () => showScreen('dashboard'));
+        navAdd.addEventListener('click', () => showScreen('add'));
+        btnCancelAdd.addEventListener('click', () => showScreen('dashboard'));
+
+        // Confirmation Modal Logic
+        function openConfirmModal(id) {
+            itemToDeleteId = id;
+            confirmModal.classList.remove('hidden');
+            confirmModal.classList.add('flex');
+            setTimeout(() => {
+                modalBox.classList.remove('scale-95', 'opacity-0');
+                modalBox.classList.add('scale-100', 'opacity-100');
+            }, 10);
+        }
+
+        function closeConfirmModal() {
+            modalBox.classList.remove('scale-100', 'opacity-100');
+            modalBox.classList.add('scale-95', 'opacity-0');
+            setTimeout(() => {
+                confirmModal.classList.add('hidden');
+                confirmModal.classList.remove('flex');
+                itemToDeleteId = null;
+            }, 150);
+        }
+
+        modalCancelBtn.addEventListener('click', closeConfirmModal);
+        modalConfirmBtn.addEventListener('click', async () => {
+            if (itemToDeleteId) {
+                await deleteTransaction(itemToDeleteId);
+            }
+            closeConfirmModal();
+        });
+
+        // Toast Helper
+        let toastTimeout;
+        function showToast(message, type = 'success') {
+            toastText.textContent = message;
+            if (type === 'error') {
+                toastIcon.className = "fa-solid fa-circle-xmark text-rose-400";
+            } else {
+                toastIcon.className = "fa-solid fa-circle-check text-emerald-400";
+            }
+
+            toast.classList.remove('opacity-0', 'pointer-events-none', '-translate-y-4');
+            toast.classList.add('opacity-100', 'translate-y-0');
+
+            clearTimeout(toastTimeout);
+            toastTimeout = setTimeout(() => {
+                toast.classList.remove('opacity-100', 'translate-y-0');
+                toast.classList.add('opacity-0', 'pointer-events-none', '-translate-y-4');
+            }, 2500);
+        }
+
+        // Loading Helpers
+        function setAuthLoading(isLoading) {
+            btnLogin.disabled = isLoading;
+            btnRegister.disabled = isLoading;
+            if (isLoading) {
+                loginSpinner.classList.remove('hidden');
+            } else {
+                loginSpinner.classList.add('hidden');
+            }
+        }
+
+        function setSaveLoading(isLoading) {
+            btnSaveTx.disabled = isLoading;
+            if (isLoading) {
+                saveSpinner.classList.remove('hidden');
+            } else {
+                saveSpinner.classList.add('hidden');
+            }
+        }
+
+        function showAuthError(msg) {
+            authErrorText.textContent = msg;
+            authErrorMsg.classList.remove('hidden');
+        }
+
+        function hideAuthError() {
+            authErrorMsg.classList.add('hidden');
+        }
+
+        function getErrorMessage(code) {
+            switch (code) {
+                case 'auth/invalid-email':
+                    return 'รูปแบบอีเมลไม่ถูกต้อง';
+                case 'auth/user-not-found':
+                case 'auth/wrong-password':
+                case 'auth/invalid-credential':
+                    return 'อีเมลหรือรหัสผ่านไม่ถูกต้อง';
+                case 'auth/email-already-in-use':
+                    return 'อีเมลนี้ถูกใช้งานไปแล้วในระบบ';
+                case 'auth/weak-password':
+                    return 'รหัสผ่านค่อนข้างคาดเดาง่ายเกินไป (อย่างน้อย 6 ตัว)';
+                default:
+                    return 'เกิดข้อผิดพลาดในการตรวจสอบสิทธิ์ กรุณาลองใหม่อีกครั้ง';
+            }
+        }
+
+        function escapeHtml(str) {
+            return str.replace(/[&<>'"]/g, 
+                tag => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[tag] || tag)
+            );
+        }
+
+        // Start Application
+        initAuth();
+    </script>
 </body>
 </html>
