@@ -17,7 +17,7 @@
     body { font-family: 'Kanit', sans-serif; }
   </style>
 
-  <!-- Firebase Compatibility SDKs (v9 syntax via compat) -->
+  <!-- Firebase Compatibility SDKs -->
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
@@ -25,17 +25,25 @@
 <body class="bg-gray-50 text-gray-800 min-h-screen flex flex-col items-center justify-start p-4">
 
   <!-- Main Container -->
-  <div class="w-full max-w-md bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden min-h-[600px] flex flex-col justify-between my-auto">
+  <div class="w-full max-w-md bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden min-h-[650px] flex flex-col justify-between my-auto relative">
     
     <!-- Header -->
-    <header class="bg-emerald-600 text-white p-4 text-center shadow-sm relative">
-      <h1 class="text-xl font-bold tracking-wide">Expense Tracker</h1>
-      <p class="text-xs text-emerald-100 mt-1">บันทึกรายรับ-รายจ่ายส่วนตัว</p>
-      
-      <!-- Logout Button -->
-      <button id="logout-btn" class="hidden absolute right-4 top-4 bg-emerald-700 hover:bg-emerald-800 text-xs text-white py-1 px-3 rounded-full transition">
-        ออกจากระบบ
-      </button>
+    <header class="bg-emerald-600 text-white p-4 text-center shadow-sm relative flex items-center justify-between">
+      <div></div>
+      <div>
+        <h1 id="app-title" class="text-xl font-bold tracking-wide">Expense Tracker</h1>
+        <p class="text-xs text-emerald-100 mt-0.5">บันทึกรายรับ-รายจ่ายส่วนตัว</p>
+      </div>
+      <div class="flex items-center space-x-2">
+        <!-- Settings Button (Gear Icon) -->
+        <button id="open-settings-btn" class="text-white hover:bg-emerald-700 p-1.5 rounded-lg transition hidden">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+        </button>
+        <!-- Logout Button -->
+        <button id="logout-btn" class="hidden bg-emerald-700 hover:bg-emerald-800 text-xs text-white py-1.5 px-2.5 rounded-lg transition">
+          ออก
+        </button>
+      </div>
     </header>
 
     <!-- Main Content Body -->
@@ -44,127 +52,175 @@
       <!-- ==================== VIEW 1: LOGIN ==================== -->
       <section id="login-view" class="space-y-4">
         <h2 class="text-lg font-bold text-gray-700 text-center mb-2">เข้าสู่ระบบ</h2>
-        
         <div>
           <label class="block text-xs font-semibold text-gray-600 mb-1">อีเมล</label>
           <input type="email" id="login-email" placeholder="example@email.com" class="w-full px-3 py-2 text-sm border rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500">
         </div>
-
         <div>
           <label class="block text-xs font-semibold text-gray-600 mb-1">รหัสผ่าน</label>
           <input type="password" id="login-password" placeholder="••••••••" class="w-full px-3 py-2 text-sm border rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500">
         </div>
-
         <button id="login-btn" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-medium py-2 rounded-lg text-sm shadow transition">
           เข้าสู่ระบบด้วยอีเมล
         </button>
-
-        <!-- Social Logins Divider -->
         <div class="flex items-center my-3">
           <div class="flex-grow border-t border-gray-200"></div>
-          <span class="px-3 text-xs text-gray-400 uppercase">หรือเข้าสู่ระบบด้วย</span>
+          <span class="px-3 text-xs text-gray-400 uppercase">หรือ</span>
           <div class="flex-grow border-t border-gray-200"></div>
         </div>
-
-        <!-- Google Login Button Only -->
         <button id="google-login-btn" class="w-full flex items-center justify-center py-2 px-3 border border-gray-300 rounded-lg text-xs font-medium text-gray-700 hover:bg-gray-50 transition shadow-sm">
           <svg class="w-4 h-4 mr-2" viewBox="0 0 24 24"><path fill="#4285F4" d="M23.745 12.27c0-.7-.06-1.4-.19-2.07H12v4.51h6.6c-.29 1.52-1.14 2.82-2.4 3.68v3.05h3.88c2.27-2.09 3.66-5.17 3.66-9.17z"/><path fill="#34A853" d="M12 24c3.24 0 5.95-1.08 7.93-2.91l-3.88-3.05c-1.08.72-2.45 1.16-4.05 1.16-3.13 0-5.78-2.11-6.73-4.96H1.18v3.14C3.15 21.32 7.22 24 12 24z"/><path fill="#FBBC05" d="M5.27 14.24c-.25-.72-.38-1.49-.38-2.24s.13-1.52.38-2.24V6.62H1.18C.43 8.14 0 9.87 0 12s.43 3.86 1.18 5.38l4.09-3.14z"/><path fill="#EA4335" d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C17.95 1.19 15.24 0 12 0 7.22 0 3.15 2.68 1.18 6.62l4.09 3.14c.95-2.85 3.6-4.96 6.73-4.96z"/></svg>
           Google Account
         </button>
-
         <div class="text-center pt-3 border-t border-gray-100">
           <p class="text-xs text-gray-500">ยังไม่มีบัญชีใช้งาน?</p>
-          <button id="go-to-register-btn" class="text-xs font-semibold text-emerald-600 hover:underline mt-1">
-            สมัครสมาชิกใหม่ด้วยอีเมล
-          </button>
+          <button id="go-to-register-btn" class="text-xs font-semibold text-emerald-600 hover:underline mt-1">สมัครสมาชิกใหม่ด้วยอีเมล</button>
         </div>
       </section>
 
       <!-- ==================== VIEW 2: REGISTER ==================== -->
       <section id="register-view" class="hidden space-y-4">
         <h2 class="text-lg font-bold text-gray-700 text-center mb-2">สมัครสมาชิก</h2>
-        
         <div>
           <label class="block text-xs font-semibold text-gray-600 mb-1">อีเมล</label>
           <input type="email" id="reg-email" placeholder="example@email.com" class="w-full px-3 py-2 text-sm border rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500">
         </div>
-
         <div>
-          <label class="block text-xs font-semibold text-gray-600 mb-1">รหัสผ่าน (อย่างน้อย 6 ตัวอักษร)</label>
+          <label class="block text-xs font-semibold text-gray-600 mb-1">รหัสผ่าน (อย่างน้อย 6 ตัว)</label>
           <input type="password" id="reg-password" placeholder="••••••••" class="w-full px-3 py-2 text-sm border rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500">
         </div>
-
         <div>
-          <label class="block text-xs font-semibold text-gray-600 mb-1">ยืนยันรหัสผ่าน (Confirm Password)</label>
+          <label class="block text-xs font-semibold text-gray-600 mb-1">ยืนยันรหัสผ่าน</label>
           <input type="password" id="reg-confirm-password" placeholder="••••••••" class="w-full px-3 py-2 text-sm border rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500">
         </div>
-
-        <button id="register-btn" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 rounded-lg text-sm shadow transition">
-          ยืนยันการสมัครสมาชิก
-        </button>
-
+        <button id="register-btn" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 rounded-lg text-sm shadow transition">ยืนยันการสมัครสมาชิก</button>
         <div class="text-center pt-3 border-t border-gray-100">
-          <button id="back-to-login-btn" class="text-xs font-semibold text-gray-500 hover:underline">
-            ← ย้อนกลับไปหน้าเข้าสู่ระบบ
-          </button>
+          <button id="back-to-login-btn" class="text-xs font-semibold text-gray-500 hover:underline">← ย้อนกลับไปหน้าเข้าสู่ระบบ</button>
         </div>
       </section>
 
       <!-- ==================== VIEW 3: DASHBOARD ==================== -->
-      <section id="dashboard-view" class="hidden space-y-5">
+      <section id="dashboard-view" class="hidden space-y-4">
         
         <!-- Summary Cards -->
         <div class="grid grid-cols-3 gap-2 text-center">
-          <div class="bg-emerald-50 p-3 rounded-xl border border-emerald-100">
-            <p class="text-[10px] font-semibold text-emerald-600 uppercase tracking-wider">รายรับรวม</p>
-            <p id="total-income" class="text-sm font-bold text-emerald-700 mt-1">฿0.00</p>
+          <div class="bg-emerald-50 p-2.5 rounded-xl border border-emerald-100">
+            <p class="text-[10px] font-semibold text-emerald-600 uppercase">รายรับ</p>
+            <p id="total-income" class="text-xs font-bold text-emerald-700 mt-1">฿0.00</p>
           </div>
-          <div class="bg-rose-50 p-3 rounded-xl border border-rose-100">
-            <p class="text-[10px] font-semibold text-rose-600 uppercase tracking-wider">รายจ่ายรวม</p>
-            <p id="total-expense" class="text-sm font-bold text-rose-700 mt-1">฿0.00</p>
+          <div class="bg-rose-50 p-2.5 rounded-xl border border-rose-100">
+            <p class="text-[10px] font-semibold text-rose-600 uppercase">รายจ่าย</p>
+            <p id="total-expense" class="text-xs font-bold text-rose-700 mt-1">฿0.00</p>
           </div>
-          <div class="bg-blue-50 p-3 rounded-xl border border-blue-100">
-            <p class="text-[10px] font-semibold text-blue-600 uppercase tracking-wider">คงเหลือ</p>
-            <p id="total-balance" class="text-sm font-bold text-blue-700 mt-1">฿0.00</p>
+          <div class="bg-blue-50 p-2.5 rounded-xl border border-blue-100">
+            <p class="text-[10px] font-semibold text-blue-600 uppercase">คงเหลือ</p>
+            <p id="total-balance" class="text-xs font-bold text-blue-700 mt-1">฿0.00</p>
           </div>
         </div>
 
         <!-- Add Transaction Form -->
-        <form id="add-form" class="bg-gray-50 p-3 rounded-xl border border-gray-200 space-y-3">
+        <form id="add-form" class="bg-gray-50 p-3 rounded-xl border border-gray-200 space-y-2.5">
           <h3 class="text-xs font-bold text-gray-600 uppercase">บันทึกรายการใหม่</h3>
           
+          <!-- Switch Button: รายจ่าย / รายรับ -->
+          <div class="grid grid-cols-2 bg-gray-200 p-1 rounded-lg">
+            <button type="button" id="type-expense-btn" onclick="setTxType('expense')" class="py-1.5 text-xs font-medium rounded-md transition bg-rose-600 text-white shadow-sm">รายจ่าย (-)</button>
+            <button type="button" id="type-income-btn" onclick="setTxType('income')" class="py-1.5 text-xs font-medium rounded-md transition text-gray-600">รายรับ (+)</button>
+          </div>
+
+          <!-- Account Selection Buttons -->
+          <div>
+            <label class="block text-[11px] text-gray-500 mb-1">เลือกบัญชี</label>
+            <div id="account-buttons-container" class="flex flex-wrap gap-1.5">
+              <!-- Rendered via JS -->
+            </div>
+          </div>
+
           <div class="grid grid-cols-2 gap-2">
             <div>
-              <label class="block text-[11px] text-gray-500 mb-1">ประเภท</label>
-              <select id="tx-type" class="w-full px-2 py-1.5 text-xs border rounded-lg focus:outline-none focus:ring-1 focus:ring-emerald-500 bg-white">
-                <option value="expense">รายจ่าย (-)</option>
-                <option value="income">รายรับ (+)</option>
-              </select>
+              <label class="block text-[11px] text-gray-500 mb-1">จำนวนเงิน (<span class="currency-symbol">฿</span>)</label>
+              <input type="number" id="tx-amount" step="any" min="0" placeholder="0.00" required class="w-full px-2 py-1.5 text-xs border rounded-lg bg-white focus:ring-1 focus:ring-emerald-500">
             </div>
             <div>
-              <label class="block text-[11px] text-gray-500 mb-1">จำนวนเงิน (บาท)</label>
-              <input type="number" id="tx-amount" step="any" min="0" placeholder="0.00" required class="w-full px-2 py-1.5 text-xs border rounded-lg focus:outline-none focus:ring-1 focus:ring-emerald-500 bg-white">
+              <label class="block text-[11px] text-gray-500 mb-1">วันที่</label>
+              <input type="date" id="tx-date" required class="w-full px-2 py-1.5 text-xs border rounded-lg bg-white focus:ring-1 focus:ring-emerald-500">
             </div>
           </div>
 
           <div>
             <label class="block text-[11px] text-gray-500 mb-1">คำอธิบาย / โน้ต</label>
-            <input type="text" id="tx-note" placeholder="เช่น ค่าอาหารกลางวัน" required class="w-full px-2 py-1.5 text-xs border rounded-lg focus:outline-none focus:ring-1 focus:ring-emerald-500 bg-white">
+            <input type="text" id="tx-note" placeholder="เช่น ค่าอาหารกลางวัน" required class="w-full px-2 py-1.5 text-xs border rounded-lg bg-white focus:ring-1 focus:ring-emerald-500">
           </div>
 
-          <button type="submit" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-medium py-1.5 rounded-lg text-xs shadow transition">
+          <button type="submit" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-medium py-2 rounded-lg text-xs shadow transition">
             + บันทึกรายการ
           </button>
         </form>
 
-        <!-- Transaction History List -->
+        <!-- Today's Transactions History -->
         <div>
-          <h3 class="text-xs font-bold text-gray-600 uppercase mb-2">ประวัติรายการ</h3>
-          <ul id="tx-list" class="space-y-2 max-h-48 overflow-y-auto pr-1">
-            <li class="text-center text-xs text-gray-400 py-4">กำลังโหลดข้อมูล...</li>
+          <div class="flex justify-between items-center mb-1.5">
+            <h3 class="text-xs font-bold text-gray-600 uppercase">รายการวันนี้ (<span id="today-date-label"></span>)</h3>
+            <button onclick="goToHistoryView()" class="text-xs text-emerald-600 font-semibold hover:underline">ดูประวัติทั้งหมด →</button>
+          </div>
+          <ul id="today-tx-list" class="space-y-1.5 max-h-36 overflow-y-auto pr-1">
+            <li class="text-center text-xs text-gray-400 py-3">กำลังโหลดข้อมูล...</li>
           </ul>
         </div>
 
+      </section>
+
+      <!-- ==================== VIEW 4: FULL HISTORY ==================== -->
+      <section id="history-view" class="hidden space-y-4">
+        <div class="flex items-center justify-between border-b pb-2">
+          <h2 class="text-sm font-bold text-gray-700 uppercase">ประวัติรายการทั้งหมด</h2>
+          <button onclick="goToDashboardView()" class="text-xs font-semibold text-emerald-600 hover:underline">← กลับหน้าหลัก</button>
+        </div>
+        <ul id="full-tx-list" class="space-y-2 max-h-96 overflow-y-auto pr-1">
+          <li class="text-center text-xs text-gray-400 py-6">กำลังโหลดข้อมูล...</li>
+        </ul>
+      </section>
+
+      <!-- ==================== VIEW 5: SETTINGS ==================== -->
+      <section id="settings-view" class="hidden space-y-5">
+        <div class="flex items-center justify-between border-b pb-2">
+          <h2 class="text-sm font-bold text-gray-700 uppercase">ตั้งค่าระบบ</h2>
+          <button onclick="goToDashboardView()" class="text-xs font-semibold text-emerald-600 hover:underline">← กลับหน้าหลัก</button>
+        </div>
+
+        <!-- Setting 1: Currency -->
+        <div class="space-y-1.5">
+          <label class="block text-xs font-bold text-gray-700">สกุลเงินทั่วแอป</label>
+          <select id="setting-currency" class="w-full px-3 py-2 text-xs border rounded-lg bg-white">
+            <option value="฿">บาท (฿)</option>
+            <option value="$">ดอลลาร์ ($)</option>
+            <option value="€">ยูโร (€)</option>
+            <option value="¥">เยน (¥)</option>
+          </select>
+        </div>
+
+        <!-- Setting 2: Accounts Management -->
+        <div class="space-y-2 border-t pt-3">
+          <h3 class="text-xs font-bold text-gray-700 uppercase">จัดการบัญชีเงิน</h3>
+          
+          <div id="accounts-settings-list" class="space-y-2 max-h-36 overflow-y-auto pr-1">
+            <!-- Account items populated via JS -->
+          </div>
+
+          <!-- Add New Account Form -->
+          <div class="bg-gray-50 p-2.5 rounded-xl border border-gray-200 space-y-2 mt-2">
+            <p class="text-[11px] font-semibold text-gray-600">เพิ่มบัญชีใหม่</p>
+            <div class="grid grid-cols-2 gap-2">
+              <input type="text" id="new-acc-name" placeholder="ชื่อบัญชี (เช่น บัตรเครดิต)" class="px-2 py-1.5 text-xs border rounded-lg bg-white">
+              <input type="number" id="new-acc-balance" placeholder="ยอดเงินเริ่มต้น" step="any" class="px-2 py-1.5 text-xs border rounded-lg bg-white">
+            </div>
+            <button type="button" onclick="addNewAccount()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-1.5 rounded-lg text-xs transition">+ เพิ่มบัญชี</button>
+          </div>
+        </div>
+
+        <button type="button" onclick="saveSettings()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-medium py-2 rounded-lg text-xs shadow transition">
+          บันทึกการตั้งค่า
+        </button>
       </section>
 
     </main>
@@ -178,50 +234,54 @@
   <!-- Application Logic -->
   <script>
     // =========================================================================
-    // 1. FIREBASE CONFIGURATION
+    // 1. FIREBASE CONFIGURATION (ใส่ Config ของคุณที่นี่)
     // =========================================================================
     const firebaseConfig = {
-  apiKey: "AIzaSyCuu9m390tra3oEca4PygcD1pO6-L7u7XE",
-  authDomain: "eard-604d1.firebaseapp.com",
-  projectId: "eard-604d1",
-  storageBucket: "eard-604d1.firebasestorage.app",
-  messagingSenderId: "114087782046",
-  appId: "1:114087782046:web:3c7c8dce10134cefba3d8f",
-  measurementId: "G-RBTCMEJRNE"
-};
+      apiKey: "YOUR_API_KEY",
+      authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
+      projectId: "YOUR_PROJECT_ID",
+      storageBucket: "YOUR_PROJECT_ID.appspot.com",
+      messagingSenderId: "YOUR_SENDER_ID",
+      appId: "YOUR_APP_ID"
+    };
 
     firebase.initializeApp(firebaseConfig);
     const auth = firebase.auth();
     const db = firebase.firestore();
 
-    db.enablePersistence().catch((err) => {
-      console.warn("Firestore Persistence Warning:", err.code);
-    });
+    db.enablePersistence().catch((err) => console.warn("Persistence Warning:", err.code));
 
     let currentUser = null;
-    let unsubscribeSnapshot = null;
+    let unsubscribeTx = null;
+    let unsubscribeAcc = null;
+
+    let userSettings = { currency: '฿' };
+    let accountsList = [];
+    let selectedAccountId = null;
+    let currentTxType = 'expense'; // 'expense' or 'income'
 
     // DOM Elements
     const loginView = document.getElementById('login-view');
     const registerView = document.getElementById('register-view');
     const dashboardView = document.getElementById('dashboard-view');
+    const historyView = document.getElementById('history-view');
+    const settingsView = document.getElementById('settings-view');
+
     const logoutBtn = document.getElementById('logout-btn');
+    const openSettingsBtn = document.getElementById('open-settings-btn');
     const authStatusBar = document.getElementById('auth-status-bar');
 
-    const loginEmailInput = document.getElementById('login-email');
-    const loginPasswordInput = document.getElementById('login-password');
-    const regEmailInput = document.getElementById('reg-email');
-    const regPasswordInput = document.getElementById('reg-password');
-    const regConfirmInput = document.getElementById('reg-confirm-password');
-
     // =========================================================================
-    // 2. VIEW SWITCHING
+    // 2. VIEW SWITCHING MANAGEMENT
     // =========================================================================
     function showView(viewName) {
       loginView.classList.add('hidden');
       registerView.classList.add('hidden');
       dashboardView.classList.add('hidden');
+      historyView.classList.add('hidden');
+      settingsView.classList.add('hidden');
       logoutBtn.classList.add('hidden');
+      openSettingsBtn.classList.add('hidden');
 
       if (viewName === 'login') {
         loginView.classList.remove('hidden');
@@ -232,111 +292,90 @@
       } else if (viewName === 'dashboard') {
         dashboardView.classList.remove('hidden');
         logoutBtn.classList.remove('hidden');
-        authStatusBar.innerText = `เข้าสู่ระบบในชื่อ: ${currentUser.email || currentUser.displayName}`;
+        openSettingsBtn.classList.remove('hidden');
+        authStatusBar.innerText = `เข้าสู่ระบบ: ${currentUser.email || currentUser.displayName}`;
+      } else if (viewName === 'history') {
+        historyView.classList.remove('hidden');
+        logoutBtn.classList.remove('hidden');
+        openSettingsBtn.classList.remove('hidden');
+      } else if (viewName === 'settings') {
+        settingsView.classList.remove('hidden');
+        logoutBtn.classList.remove('hidden');
+        openSettingsBtn.classList.remove('hidden');
       }
     }
 
-    // =========================================================================
-    // 3. AUTHENTICATION (Email + Google)
-    // =========================================================================
+    function goToDashboardView() { showView('dashboard'); }
+    function goToHistoryView() { showView('history'); }
+    function goToSettingsView() { showView('settings'); }
 
+    // =========================================================================
+    // 3. AUTHENTICATION
+    // =========================================================================
     document.getElementById('go-to-register-btn').addEventListener('click', () => {
-      regEmailInput.value = loginEmailInput.value;
-      regPasswordInput.value = loginPasswordInput.value;
-      regConfirmInput.value = '';
+      document.getElementById('reg-email').value = document.getElementById('login-email').value;
+      document.getElementById('reg-password').value = document.getElementById('login-password').value;
+      document.getElementById('reg-confirm-password').value = '';
       showView('register');
     });
 
-    document.getElementById('back-to-login-btn').addEventListener('click', () => {
-      showView('login');
-    });
+    document.getElementById('back-to-login-btn').addEventListener('click', () => showView('login'));
 
-    // Login with Email
     document.getElementById('login-btn').addEventListener('click', async () => {
-      const email = loginEmailInput.value.trim();
-      const password = loginPasswordInput.value;
-
-      if (!email || !password) {
-        alert("กรุณากรอกอีเมลและรหัสผ่านให้ครบถ้วน");
-        return;
-      }
-
+      const email = document.getElementById('login-email').value.trim();
+      const password = document.getElementById('login-password').value;
+      if (!email || !password) return alert("กรุณากรอกอีเมลและรหัสผ่าน");
       try {
-        const userCredential = await auth.signInWithEmailAndPassword(email, password);
-        const user = userCredential.user;
-
-        if (!user.emailVerified) {
-          alert("อีเมลนี้ยังไม่ได้ยืนยันตัวตน! กรุณาตรวจสอบลิงก์ในอีเมลก่อนเข้าใช้งาน");
+        const res = await auth.signInWithEmailAndPassword(email, password);
+        if (!res.user.emailVerified) {
+          alert("กรุณายืนยันอีเมลก่อนเข้าใช้งาน");
           await auth.signOut();
-          return;
         }
-      } catch (error) {
-        console.error("Login Error:", error);
-        alert("อีเมลหรือรหัสผ่านไม่ถูกต้อง หรือยังไม่ได้เป็นสมาชิก");
-      }
+      } catch (err) { alert("เข้าสู่ระบบไม่สำเร็จ: " + err.message); }
     });
 
-    // Login with Google
     document.getElementById('google-login-btn').addEventListener('click', async () => {
-      const provider = new firebase.auth.GoogleAuthProvider();
-      try {
-        await auth.signInWithPopup(provider);
-      } catch (error) {
-        console.error("Google Login Error:", error);
-        alert("ไม่สามารถเข้าสู่ระบบด้วย Google ได้: " + error.message);
-      }
+      try { await auth.signInWithPopup(new firebase.auth.GoogleAuthProvider()); }
+      catch (err) { alert("Google Login ผิดพลาด: " + err.message); }
     });
 
-    // Register with Email
     document.getElementById('register-btn').addEventListener('click', async () => {
-      const email = regEmailInput.value.trim();
-      const password = regPasswordInput.value;
-      const confirmPassword = regConfirmInput.value;
-
-      if (!email || !password || !confirmPassword) {
-        alert("กรุณากรอกข้อมูลให้ครบทุกช่อง");
-        return;
-      }
-      if (password !== confirmPassword) {
-        alert("รหัสผ่านไม่ตรงกัน");
-        return;
-      }
-      if (password.length < 6) {
-        alert("รหัสผ่านต้องมีอย่างน้อย 6 ตัวอักษร");
-        return;
-      }
-
+      const email = document.getElementById('reg-email').value.trim();
+      const pwd = document.getElementById('reg-password').value;
+      const cpwd = document.getElementById('reg-confirm-password').value;
+      if (!email || !pwd || !cpwd) return alert("กรุณากรอกข้อมูลให้ครบ");
+      if (pwd !== cpwd) return alert("รหัสผ่านไม่ตรงกัน");
+      if (pwd.length < 6) return alert("รหัสผ่านต้องมีอย่างน้อย 6 ตัวอักษร");
       try {
-        const userCredential = await auth.createUserWithEmailAndPassword(email, password);
-        await userCredential.user.sendEmailVerification();
-        alert(`ส่งลิงก์ยืนยันไปที่ ${email} แล้ว กรุณาตรวจสอบอีเมลก่อนเข้าสู่ระบบ`);
+        const res = await auth.createUserWithEmailAndPassword(email, pwd);
+        await res.user.sendEmailVerification();
+        
+        // สร้างบัญชีเริ่มต้น "เงินสด" ให้ผู้ใช้ใหม่ทันที
+        await db.collection('users').doc(res.user.uid).collection('accounts').add({
+          name: 'เงินสด',
+          balance: 0,
+          isDefault: true,
+          createdAt: firebase.firestore.FieldValue.serverTimestamp()
+        });
+
+        alert(`ส่งลิงก์ยืนยันไปที่ ${email} แล้ว`);
         await auth.signOut();
         showView('login');
-      } catch (error) {
-        if (error.code === 'auth/email-already-in-use') {
-          alert("อีเมลนี้ถูกใช้งานแล้ว");
-        } else {
-          alert("เกิดข้อผิดพลาด: " + error.message);
-        }
-      }
+      } catch (err) { alert("สมัครไม่สำเร็จ: " + err.message); }
     });
 
     logoutBtn.addEventListener('click', async () => {
-      if (unsubscribeSnapshot) unsubscribeSnapshot();
+      if (unsubscribeTx) unsubscribeTx();
+      if (unsubscribeAcc) unsubscribeAcc();
       await auth.signOut();
     });
 
-    // Auth State Observer
+    openSettingsBtn.addEventListener('click', goToSettingsView);
+
     auth.onAuthStateChanged((user) => {
-      if (user) {
-        if (user.providerData.some(p => p.providerId !== 'password') || user.emailVerified) {
-          currentUser = user;
-          showView('dashboard');
-          loadTransactionsRealtime(user.uid);
-        } else {
-          currentUser = null;
-          showView('login');
-        }
+      if (user && (user.providerData.some(p => p.providerId !== 'password') || user.emailVerified)) {
+        currentUser = user;
+        initUserData(user.uid);
       } else {
         currentUser = null;
         showView('login');
@@ -344,92 +383,273 @@
     });
 
     // =========================================================================
-    // 4. DATABASE & DASHBOARD
+    // 4. APP INITIALIZATION & DATA SYNC
     // =========================================================================
-    document.getElementById('add-form').addEventListener('submit', async (e) => {
-      e.preventDefault();
-      if (!currentUser) return;
+    async function initUserData(userId) {
+      // Set Default Date to Today
+      const todayStr = new Date().toISOString().split('T')[0];
+      document.getElementById('tx-date').value = todayStr;
+      document.getElementById('today-date-label').innerText = todayStr;
 
-      const type = document.getElementById('tx-type').value;
-      const amount = parseFloat(document.getElementById('tx-amount').value);
-      const note = document.getElementById('tx-note').value.trim();
-
-      if (isNaN(amount) || amount <= 0) {
-        alert("กรุณากรอกจำนวนเงินให้ถูกต้อง");
-        return;
+      // Load Settings
+      const settingsDoc = await db.collection('users').doc(userId).collection('settings').doc('config').get();
+      if (settingsDoc.exists) {
+        userSettings = settingsDoc.data();
+        document.getElementById('setting-currency').value = userSettings.currency || '฿';
+      } else {
+        await db.collection('users').doc(userId).collection('settings').doc('config').set({ currency: '฿' });
       }
+      updateCurrencyUI();
 
-      try {
-        await db.collection('users').doc(currentUser.uid).collection('transactions').add({
-          type: type,
-          amount: amount,
-          note: note,
-          createdAt: firebase.firestore.FieldValue.serverTimestamp()
+      // Load Accounts Realtime
+      unsubscribeAcc = db.collection('users').doc(userId).collection('accounts').orderBy('createdAt', 'asc')
+        .onSnapshot((snapshot) => {
+          accountsList = [];
+          snapshot.forEach(doc => accountsList.push({ id: doc.id, ...doc.data() }));
+
+          // ถ้ายังไม่มีบัญชีเงินสด ให้สร้างอัตโนมัติ
+          if (accountsList.length === 0) {
+            db.collection('users').doc(userId).collection('accounts').add({
+              name: 'เงินสด', balance: 0, isDefault: true, createdAt: firebase.firestore.FieldValue.serverTimestamp()
+            });
+            return;
+          }
+
+          if (!selectedAccountId || !accountsList.some(a => a.id === selectedAccountId)) {
+            selectedAccountId = accountsList[0].id;
+          }
+
+          renderAccountButtons();
+          renderSettingsAccounts();
         });
-        document.getElementById('tx-amount').value = '';
-        document.getElementById('tx-note').value = '';
-      } catch (error) {
-        alert("เกิดข้อผิดพลาดในการบันทึก: " + error.message);
-      }
-    });
 
-    async function deleteTransaction(docId) {
-      if (!currentUser) return;
-      if (confirm("ต้องการลบรายการนี้ใช่หรือไม่?")) {
-        try {
-          await db.collection('users').doc(currentUser.uid).collection('transactions').doc(docId).delete();
-        } catch (error) {
-          alert("ลบไม่สำเร็จ: " + error.message);
-        }
+      // Load Transactions Realtime
+      loadTransactionsRealtime(userId);
+      showView('dashboard');
+    }
+
+    function updateCurrencyUI() {
+      const symbols = document.querySelectorAll('.currency-symbol');
+      symbols.forEach(el => el.innerText = userSettings.currency);
+    }
+
+    // =========================================================================
+    // 5. TRANSACTION & ACCOUNT LOGIC
+    // =========================================================================
+    function setTxType(type) {
+      currentTxType = type;
+      const expBtn = document.getElementById('type-expense-btn');
+      const incBtn = document.getElementById('type-income-btn');
+      if (type === 'expense') {
+        expBtn.className = "py-1.5 text-xs font-medium rounded-md transition bg-rose-600 text-white shadow-sm";
+        incBtn.className = "py-1.5 text-xs font-medium rounded-md transition text-gray-600";
+      } else {
+        expBtn.className = "py-1.5 text-xs font-medium rounded-md transition text-gray-600";
+        incBtn.className = "py-1.5 text-xs font-medium rounded-md transition bg-emerald-600 text-white shadow-sm";
       }
     }
 
+    function renderAccountButtons() {
+      const container = document.getElementById('account-buttons-container');
+      container.innerHTML = '';
+      accountsList.forEach(acc => {
+        const isSelected = acc.id === selectedAccountId;
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.onclick = () => { selectedAccountId = acc.id; renderAccountButtons(); };
+        btn.className = `px-3 py-1.5 rounded-lg text-xs font-medium transition border ${isSelected ? 'bg-emerald-600 text-white border-emerald-600 shadow-sm' : 'bg-white text-gray-700 border-gray-200 hover:bg-gray-50'}`;
+        btn.innerText = `${acc.name} (฿${acc.balance.toLocaleString()})`;
+        container.appendChild(btn);
+      });
+    }
+
+    // Submit Transaction
+    document.getElementById('add-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      if (!currentUser || !selectedAccountId) return alert("กรุณาเลือกบัญชี");
+
+      const amount = parseFloat(document.getElementById('tx-amount').value);
+      const note = document.getElementById('tx-note').value.trim();
+      const date = document.getElementById('tx-date').value;
+
+      if (isNaN(amount) || amount <= 0) return alert("กรุณากรอกจำนวนเงินให้ถูกต้อง");
+
+      try {
+        // Add transaction
+        await db.collection('users').doc(currentUser.uid).collection('transactions').add({
+          type: currentTxType,
+          amount: amount,
+          note: note,
+          date: date,
+          accountId: selectedAccountId,
+          createdAt: firebase.firestore.FieldValue.serverTimestamp()
+        });
+
+        // Update account balance
+        const accRef = db.collection('users').doc(currentUser.uid).collection('accounts').doc(selectedAccountId);
+        await db.runTransaction(async (transaction) => {
+          const accDoc = await transaction.get(accRef);
+          if (!accDoc.exists) throw "Account does not exist!";
+          const newBalance = currentTxType === 'income' ? accDoc.data().balance + amount : accDoc.data().balance - amount;
+          transaction.update(accRef, { balance: newBalance });
+        });
+
+        document.getElementById('tx-amount').value = '';
+        document.getElementById('tx-note').value = '';
+      } catch (err) { alert("บันทึกไม่สำเร็จ: " + err.message); }
+    });
+
+    // Load Transactions & Calculate
     function loadTransactionsRealtime(userId) {
-      const listEl = document.getElementById('tx-list');
-      
-      unsubscribeSnapshot = db.collection('users').doc(userId).collection('transactions')
-        .orderBy('createdAt', 'desc')
+      const todayStr = new Date().toISOString().split('T')[0];
+      const todayListEl = document.getElementById('today-tx-list');
+      const fullListEl = document.getElementById('full-tx-list');
+
+      if (unsubscribeTx) unsubscribeTx();
+
+      unsubscribeTx = db.collection('users').doc(userId).collection('transactions')
+        .orderBy('date', 'desc').orderBy('createdAt', 'desc')
         .onSnapshot((snapshot) => {
           let totalIncome = 0;
           let totalExpense = 0;
-          listEl.innerHTML = '';
+          let todayHtml = '';
+          let fullHtml = '';
+          let todayCount = 0;
+          let fullCount = 0;
 
-          if (snapshot.empty) {
-            listEl.innerHTML = '<li class="text-center text-xs text-gray-400 py-4">ยังไม่มีรายการบันทึก</li>';
-          } else {
-            snapshot.forEach((doc) => {
-              const item = doc.data();
-              const id = doc.id;
-              const isIncome = item.type === 'income';
-              
-              if (isIncome) totalIncome += item.amount;
-              else totalExpense += item.amount;
+          snapshot.forEach((doc) => {
+            const item = doc.data();
+            const id = doc.id;
+            const isInc = item.type === 'income';
+            const acc = accountsList.find(a => a.id === item.accountId);
+            const accName = acc ? acc.name : 'บัญชีทั่วไป';
 
-              const li = document.createElement('li');
-              li.className = 'flex justify-between items-center p-2.5 bg-gray-50 border border-gray-100 rounded-lg text-xs';
-              li.innerHTML = `
+            if (isInc) totalIncome += item.amount;
+            else totalExpense += item.amount;
+
+            const itemLi = `
+              <li class="flex justify-between items-center p-2.5 bg-gray-50 border border-gray-100 rounded-lg text-xs">
                 <div class="flex flex-col">
                   <span class="font-medium text-gray-700">${escapeHtml(item.note)}</span>
-                  <span class="text-[10px] text-gray-400">${isIncome ? 'รายรับ' : 'รายจ่าย'}</span>
+                  <span class="text-[10px] text-gray-400">${accName} • ${item.date}</span>
                 </div>
                 <div class="flex items-center space-x-2">
-                  <span class="font-bold ${isIncome ? 'text-emerald-600' : 'text-rose-600'}">
-                    ${isIncome ? '+' : '-'}฿${item.amount.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}
+                  <span class="font-bold ${isInc ? 'text-emerald-600' : 'text-rose-600'}">
+                    ${isInc ? '+' : '-'}${userSettings.currency}${item.amount.toLocaleString(undefined, {minimumFractionDigits: 2})}
                   </span>
-                  <button onclick="deleteTransaction('${id}')" class="text-gray-300 hover:text-rose-500 font-bold px-1 text-sm">
-                    ×
-                  </button>
+                  <button onclick="deleteTransaction('${id}', '${item.accountId}', ${item.amount}, '${item.type}')" class="text-gray-300 hover:text-rose-500 font-bold px-1 text-sm">×</button>
                 </div>
-              `;
-              listEl.appendChild(li);
-            });
-          }
+              </li>`;
+
+            // Full History
+            fullHtml += itemLi;
+            fullCount++;
+
+            // Today Only
+            if (item.date === todayStr) {
+              todayHtml += itemLi;
+              todayCount++;
+            }
+          });
+
+          if (todayCount === 0) todayHtml = '<li class="text-center text-xs text-gray-400 py-3">ยังไม่มีรายการวันนี้</li>';
+          if (fullCount === 0) fullHtml = '<li class="text-center text-xs text-gray-400 py-6">ยังไม่มีประวัติรายการ</li>';
+
+          todayListEl.innerHTML = todayHtml;
+          fullListEl.innerHTML = fullHtml;
 
           const balance = totalIncome - totalExpense;
-          document.getElementById('total-income').innerText = `฿${totalIncome.toLocaleString(undefined, {minimumFractionDigits: 2})}`;
-          document.getElementById('total-expense').innerText = `฿${totalExpense.toLocaleString(undefined, {minimumFractionDigits: 2})}`;
-          document.getElementById('total-balance').innerText = `฿${balance.toLocaleString(undefined, {minimumFractionDigits: 2})}`;
+          document.getElementById('total-income').innerText = `${userSettings.currency}${totalIncome.toLocaleString(undefined, {minimumFractionDigits: 2})}`;
+          document.getElementById('total-expense').innerText = `${userSettings.currency}${totalExpense.toLocaleString(undefined, {minimumFractionDigits: 2})}`;
+          document.getElementById('total-balance').innerText = `${userSettings.currency}${balance.toLocaleString(undefined, {minimumFractionDigits: 2})}`;
         });
+    }
+
+    async function deleteTransaction(txId, accountId, amount, type) {
+      if (!currentUser || !confirm("ต้องการลบรายการนี้ใช่หรือไม่?")) return;
+      try {
+        // Reverse account balance
+        const accRef = db.collection('users').doc(currentUser.uid).collection('accounts').doc(accountId);
+        await db.runTransaction(async (transaction) => {
+          const accDoc = await transaction.get(accRef);
+          if (accDoc.exists) {
+            const currentBal = accDoc.data().balance;
+            const newBal = type === 'income' ? currentBal - amount : currentBal + amount;
+            transaction.update(accRef, { balance: newBal });
+          }
+        });
+        await db.collection('users').doc(currentUser.uid).collection('transactions').doc(txId).delete();
+      } catch (err) { alert("ลบไม่สำเร็จ: " + err.message); }
+    }
+
+    // =========================================================================
+    // 6. SETTINGS & ACCOUNTS MANAGEMENT
+    // =========================================================================
+    function renderSettingsAccounts() {
+      const container = document.getElementById('accounts-settings-list');
+      container.innerHTML = '';
+      accountsList.forEach(acc => {
+        const div = document.createElement('div');
+        div.className = "flex items-center justify-between p-2 bg-gray-50 border rounded-lg text-xs";
+        div.innerHTML = `
+          <div class="flex items-center space-x-2">
+            <span class="font-semibold text-gray-700">${escapeHtml(acc.name)}</span>
+            <span class="text-gray-500">(${userSettings.currency}${acc.balance.toLocaleString()})</span>
+            ${acc.isDefault ? '<span class="text-[10px] bg-emerald-100 text-emerald-700 px-1.5 py-0.5 rounded">หลัก</span>' : ''}
+          </div>
+          <div class="flex items-center space-x-1">
+            <input type="number" id="edit-acc-${acc.id}" value="${acc.balance}" step="any" class="w-20 px-1.5 py-1 text-xs border rounded bg-white">
+            <button type="button" onclick="updateAccountBalance('${acc.id}')" class="bg-blue-50 text-blue-600 px-2 py-1 rounded hover:bg-blue-100">แก้</button>
+            ${!acc.isDefault ? `<button type="button" onclick="deleteAccount('${acc.id}')" class="text-gray-300 hover:text-rose-500 font-bold px-1.5">×</button>` : ''}
+          </div>
+        `;
+        container.appendChild(div);
+      });
+    }
+
+    async function addNewAccount() {
+      const name = document.getElementById('new-acc-name').value.trim();
+      const balance = parseFloat(document.getElementById('new-acc-balance').value) || 0;
+      if (!name) return alert("กรุณากรอกชื่อบัญชี");
+
+      try {
+        await db.collection('users').doc(currentUser.uid).collection('accounts').add({
+          name: name,
+          balance: balance,
+          isDefault: false,
+          createdAt: firebase.firestore.FieldValue.serverTimestamp()
+        });
+        document.getElementById('new-acc-name').value = '';
+        document.getElementById('new-acc-balance').value = '';
+      } catch (err) { alert("เพิ่มบัญชีไม่สำเร็จ: " + err.message); }
+    }
+
+    async function updateAccountBalance(accId) {
+      const newBal = parseFloat(document.getElementById(`edit-acc-${accId}`).value);
+      if (isNaN(newBal)) return alert("จำนวนเงินไม่ถูกต้อง");
+      try {
+        await db.collection('users').doc(currentUser.uid).collection('accounts').doc(accId).update({ balance: newBal });
+        alert("อัปเดตยอดเงินเรียบร้อย");
+      } catch (err) { alert("อัปเดตไม่สำเร็จ: " + err.message); }
+    }
+
+    async function deleteAccount(accId) {
+      if (!currentUser || !confirm("ต้องการลบบัญชีนี้ใช่หรือไม่?")) return;
+      try {
+        await db.collection('users').doc(currentUser.uid).collection('accounts').doc(accId).delete();
+      } catch (err) { alert("ลบบัญชีไม่สำเร็จ: " + err.message); }
+    }
+
+    async function saveSettings() {
+      const currency = document.getElementById('setting-currency').value;
+      try {
+        await db.collection('users').doc(currentUser.uid).collection('settings').doc('config').set({ currency: currency });
+        userSettings.currency = currency;
+        updateCurrencyUI();
+        renderAccountButtons();
+        alert("บันทึกการตั้งค่าเรียบร้อย!");
+        goToDashboardView();
+      } catch (err) { alert("บันทึกตั้งค่าไม่สำเร็จ: " + err.message); }
     }
 
     function escapeHtml(text) {
