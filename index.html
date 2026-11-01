@@ -35,7 +35,7 @@
         <p class="text-xs text-emerald-100 mt-0.5">บันทึกรายรับ-รายจ่ายส่วนตัว</p>
       </div>
       <div class="flex items-center space-x-2">
-        <!-- Settings Button (Gear Icon) -->
+        <!-- Settings Button -->
         <button id="open-settings-btn" class="text-white hover:bg-emerald-700 p-1.5 rounded-lg transition hidden">
           <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
         </button>
@@ -131,9 +131,13 @@
           <!-- Account Selection Buttons -->
           <div>
             <label class="block text-[11px] text-gray-500 mb-1">เลือกบัญชี</label>
-            <div id="account-buttons-container" class="flex flex-wrap gap-1.5">
-              <!-- Rendered via JS -->
-            </div>
+            <div id="account-buttons-container" class="flex flex-wrap gap-1.5"></div>
+          </div>
+
+          <!-- Category Selection Buttons -->
+          <div>
+            <label class="block text-[11px] text-gray-500 mb-1">เลือกหมวดหมู่</label>
+            <div id="category-buttons-container" class="flex flex-wrap gap-1.5"></div>
           </div>
 
           <div class="grid grid-cols-2 gap-2">
@@ -182,14 +186,14 @@
       </section>
 
       <!-- ==================== VIEW 5: SETTINGS ==================== -->
-      <section id="settings-view" class="hidden space-y-5">
+      <section id="settings-view" class="hidden space-y-4">
         <div class="flex items-center justify-between border-b pb-2">
           <h2 class="text-sm font-bold text-gray-700 uppercase">ตั้งค่าระบบ</h2>
           <button onclick="goToDashboardView()" class="text-xs font-semibold text-emerald-600 hover:underline">← กลับหน้าหลัก</button>
         </div>
 
         <!-- Setting 1: Currency -->
-        <div class="space-y-1.5">
+        <div class="space-y-1">
           <label class="block text-xs font-bold text-gray-700">สกุลเงินทั่วแอป</label>
           <select id="setting-currency" class="w-full px-3 py-2 text-xs border rounded-lg bg-white">
             <option value="฿">บาท (฿)</option>
@@ -202,19 +206,41 @@
         <!-- Setting 2: Accounts Management -->
         <div class="space-y-2 border-t pt-3">
           <h3 class="text-xs font-bold text-gray-700 uppercase">จัดการบัญชีเงิน</h3>
-          
-          <div id="accounts-settings-list" class="space-y-2 max-h-36 overflow-y-auto pr-1">
-            <!-- Account items populated via JS -->
-          </div>
-
-          <!-- Add New Account Form -->
-          <div class="bg-gray-50 p-2.5 rounded-xl border border-gray-200 space-y-2 mt-2">
+          <div id="accounts-settings-list" class="space-y-1.5 max-h-28 overflow-y-auto pr-1"></div>
+          <div class="bg-gray-50 p-2 rounded-xl border border-gray-200 space-y-1.5">
             <p class="text-[11px] font-semibold text-gray-600">เพิ่มบัญชีใหม่</p>
             <div class="grid grid-cols-2 gap-2">
-              <input type="text" id="new-acc-name" placeholder="ชื่อบัญชี (เช่น บัตรเครดิต)" class="px-2 py-1.5 text-xs border rounded-lg bg-white">
-              <input type="number" id="new-acc-balance" placeholder="ยอดเงินเริ่มต้น" step="any" class="px-2 py-1.5 text-xs border rounded-lg bg-white">
+              <input type="text" id="new-acc-name" placeholder="ชื่อบัญชี" class="px-2 py-1 text-xs border rounded-lg bg-white">
+              <input type="number" id="new-acc-balance" placeholder="ยอดเงินเริ่มต้น" step="any" class="px-2 py-1 text-xs border rounded-lg bg-white">
             </div>
-            <button type="button" onclick="addNewAccount()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-1.5 rounded-lg text-xs transition">+ เพิ่มบัญชี</button>
+            <button type="button" onclick="addNewAccount()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-1 rounded-lg text-xs transition">+ เพิ่มบัญชี</button>
+          </div>
+        </div>
+
+        <!-- Setting 3: Categories Management -->
+        <div class="space-y-2 border-t pt-3">
+          <h3 class="text-xs font-bold text-gray-700 uppercase">จัดการหมวดหมู่ (Categories)</h3>
+          
+          <div class="grid grid-cols-2 gap-3">
+            <!-- Expense Categories -->
+            <div class="space-y-1.5">
+              <p class="text-[11px] font-semibold text-rose-600">หมวดหมู่รายจ่าย</p>
+              <div id="expense-cats-list" class="space-y-1 max-h-24 overflow-y-auto pr-1"></div>
+              <div class="flex space-x-1">
+                <input type="text" id="new-exp-cat-name" placeholder="ชื่อหมวดหมู่" class="w-full px-1.5 py-1 text-xs border rounded bg-white">
+                <button type="button" onclick="addNewCategory('expense')" class="bg-rose-600 text-white px-2 py-1 rounded text-xs">+</button>
+              </div>
+            </div>
+
+            <!-- Income Categories -->
+            <div class="space-y-1.5">
+              <p class="text-[11px] font-semibold text-emerald-600">หมวดหมู่รายรับ</p>
+              <div id="income-cats-list" class="space-y-1 max-h-24 overflow-y-auto pr-1"></div>
+              <div class="flex space-x-1">
+                <input type="text" id="new-inc-cat-name" placeholder="ชื่อหมวดหมู่" class="w-full px-1.5 py-1 text-xs border rounded bg-white">
+                <button type="button" onclick="addNewCategory('income')" class="bg-emerald-600 text-white px-2 py-1 rounded text-xs">+</button>
+              </div>
+            </div>
           </div>
         </div>
 
@@ -234,7 +260,7 @@
   <!-- Application Logic -->
   <script>
     // =========================================================================
-    // 1. FIREBASE CONFIGURATION (ใส่ Config ของคุณที่นี่)
+    // 1. FIREBASE CONFIGURATION
     // =========================================================================
     const firebaseConfig = {
   apiKey: "AIzaSyCuu9m390tra3oEca4PygcD1pO6-L7u7XE",
@@ -255,10 +281,14 @@
     let currentUser = null;
     let unsubscribeTx = null;
     let unsubscribeAcc = null;
+    let unsubscribeCat = null;
 
     let userSettings = { currency: '฿' };
     let accountsList = [];
+    let categoriesList = [];
+    
     let selectedAccountId = null;
+    let selectedCategoryId = null;
     let currentTxType = 'expense'; // 'expense' or 'income'
 
     // DOM Elements
@@ -351,13 +381,19 @@
         const res = await auth.createUserWithEmailAndPassword(email, pwd);
         await res.user.sendEmailVerification();
         
-        // สร้างบัญชีเริ่มต้น "เงินสด" ให้ผู้ใช้ใหม่ทันที
-        await db.collection('users').doc(res.user.uid).collection('accounts').add({
-          name: 'เงินสด',
-          balance: 0,
-          isDefault: true,
-          createdAt: firebase.firestore.FieldValue.serverTimestamp()
-        });
+        const batch = db.batch();
+        // สร้างบัญชีเริ่มต้น "เงินสด"
+        const accRef = db.collection('users').doc(res.user.uid).collection('accounts').doc();
+        batch.set(accRef, { name: 'เงินสด', balance: 0, isDefault: true, createdAt: firebase.firestore.FieldValue.serverTimestamp() });
+
+        // สร้างหมวดหมู่เริ่มต้น
+        const expCatRef = db.collection('users').doc(res.user.uid).collection('categories').doc();
+        batch.set(expCatRef, { name: 'รายจ่ายทั่วไป', type: 'expense', createdAt: firebase.firestore.FieldValue.serverTimestamp() });
+
+        const incCatRef = db.collection('users').doc(res.user.uid).collection('categories').doc();
+        batch.set(incCatRef, { name: 'รายรับทั่วไป', type: 'income', createdAt: firebase.firestore.FieldValue.serverTimestamp() });
+
+        await batch.commit();
 
         alert(`ส่งลิงก์ยืนยันไปที่ ${email} แล้ว`);
         await auth.signOut();
@@ -368,6 +404,7 @@
     logoutBtn.addEventListener('click', async () => {
       if (unsubscribeTx) unsubscribeTx();
       if (unsubscribeAcc) unsubscribeAcc();
+      if (unsubscribeCat) unsubscribeCat();
       await auth.signOut();
     });
 
@@ -387,7 +424,6 @@
     // 4. APP INITIALIZATION & DATA SYNC
     // =========================================================================
     async function initUserData(userId) {
-      // Set Default Date to Today
       const todayStr = new Date().toISOString().split('T')[0];
       document.getElementById('tx-date').value = todayStr;
       document.getElementById('today-date-label').innerText = todayStr;
@@ -407,21 +443,48 @@
         .onSnapshot((snapshot) => {
           accountsList = [];
           snapshot.forEach(doc => accountsList.push({ id: doc.id, ...doc.data() }));
-
-          // ถ้ายังไม่มีบัญชีเงินสด ให้สร้างอัตโนมัติ
           if (accountsList.length === 0) {
             db.collection('users').doc(userId).collection('accounts').add({
               name: 'เงินสด', balance: 0, isDefault: true, createdAt: firebase.firestore.FieldValue.serverTimestamp()
             });
             return;
           }
-
           if (!selectedAccountId || !accountsList.some(a => a.id === selectedAccountId)) {
             selectedAccountId = accountsList[0].id;
           }
-
           renderAccountButtons();
           renderSettingsAccounts();
+        });
+
+      // Load Categories Realtime
+      unsubscribeCat = db.collection('users').doc(userId).collection('categories').orderBy('createdAt', 'asc')
+        .onSnapshot((snapshot) => {
+          categoriesList = [];
+          snapshot.forEach(doc => categoriesList.push({ id: doc.id, ...doc.data() }));
+
+          // ตรวจสอบกรณีไม่มีหมวดหมู่เหลือเลย
+          const hasExp = categoriesList.some(c => c.type === 'expense');
+          const hasInc = categoriesList.some(c => c.type === 'income');
+          const batch = db.batch();
+          let needCommit = false;
+
+          if (!hasExp) {
+            const ref = db.collection('users').doc(userId).collection('categories').doc();
+            batch.set(ref, { name: 'รายจ่ายทั่วไป', type: 'expense', createdAt: firebase.firestore.FieldValue.serverTimestamp() });
+            needCommit = true;
+          }
+          if (!hasInc) {
+            const ref = db.collection('users').doc(userId).collection('categories').doc();
+            batch.set(ref, { name: 'รายรับทั่วไป', type: 'income', createdAt: firebase.firestore.FieldValue.serverTimestamp() });
+            needCommit = true;
+          }
+          if (needCommit) {
+            batch.commit();
+            return;
+          }
+
+          renderCategoryButtons();
+          renderSettingsCategories();
         });
 
       // Load Transactions Realtime
@@ -435,7 +498,7 @@
     }
 
     // =========================================================================
-    // 5. TRANSACTION & ACCOUNT LOGIC
+    // 5. TRANSACTION & ACCOUNT & CATEGORY LOGIC
     // =========================================================================
     function setTxType(type) {
       currentTxType = type;
@@ -448,6 +511,7 @@
         expBtn.className = "py-1.5 text-xs font-medium rounded-md transition text-gray-600";
         incBtn.className = "py-1.5 text-xs font-medium rounded-md transition bg-emerald-600 text-white shadow-sm";
       }
+      renderCategoryButtons();
     }
 
     function renderAccountButtons() {
@@ -458,31 +522,53 @@
         const btn = document.createElement('button');
         btn.type = 'button';
         btn.onclick = () => { selectedAccountId = acc.id; renderAccountButtons(); };
-        btn.className = `px-3 py-1.5 rounded-lg text-xs font-medium transition border ${isSelected ? 'bg-emerald-600 text-white border-emerald-600 shadow-sm' : 'bg-white text-gray-700 border-gray-200 hover:bg-gray-50'}`;
-        btn.innerText = `${acc.name} (฿${acc.balance.toLocaleString()})`;
+        btn.className = `px-2.5 py-1 rounded-lg text-xs font-medium transition border ${isSelected ? 'bg-emerald-600 text-white border-emerald-600 shadow-sm' : 'bg-white text-gray-700 border-gray-200 hover:bg-gray-50'}`;
+        btn.innerText = `${acc.name} (${userSettings.currency}${acc.balance.toLocaleString()})`;
         container.appendChild(btn);
       });
     }
 
-    // Submit Transaction
+    function renderCategoryButtons() {
+      const container = document.getElementById('category-buttons-container');
+      container.innerHTML = '';
+      const filteredCats = categoriesList.filter(c => c.type === currentTxType);
+
+      if (!selectedCategoryId || !filteredCats.some(c => c.id === selectedCategoryId)) {
+        if (filteredCats.length > 0) selectedCategoryId = filteredCats[0].id;
+      }
+
+      filteredCats.forEach(cat => {
+        const isSelected = cat.id === selectedCategoryId;
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.onclick = () => { selectedCategoryId = cat.id; renderCategoryButtons(); };
+        btn.className = `px-2.5 py-1 rounded-lg text-xs font-medium transition border ${isSelected ? (currentTxType === 'expense' ? 'bg-rose-600 text-white border-rose-600 shadow-sm' : 'bg-emerald-600 text-white border-emerald-600 shadow-sm') : 'bg-white text-gray-700 border-gray-200 hover:bg-gray-50'}`;
+        btn.innerText = cat.name;
+        container.appendChild(btn);
+      });
+    }
+
+    // Submit Transaction (Prepared with fields for future sorting: type, categoryId, categoryName, date)
     document.getElementById('add-form').addEventListener('submit', async (e) => {
       e.preventDefault();
-      if (!currentUser || !selectedAccountId) return alert("กรุณาเลือกบัญชี");
+      if (!currentUser || !selectedAccountId || !selectedCategoryId) return alert("กรุณาเลือกบัญชีและหมวดหมู่");
 
       const amount = parseFloat(document.getElementById('tx-amount').value);
       const note = document.getElementById('tx-note').value.trim();
       const date = document.getElementById('tx-date').value;
+      const selectedCat = categoriesList.find(c => c.id === selectedCategoryId);
 
       if (isNaN(amount) || amount <= 0) return alert("กรุณากรอกจำนวนเงินให้ถูกต้อง");
 
       try {
-        // Add transaction
         await db.collection('users').doc(currentUser.uid).collection('transactions').add({
-          type: currentTxType,
+          type: currentTxType,               // รองรับการ Sort ตาม type (expense/income)
           amount: amount,
           note: note,
-          date: date,
+          date: date,                        // รองรับการ Sort ตาม date
           accountId: selectedAccountId,
+          categoryId: selectedCategoryId,    // รองรับการ Sort ตาม categoryId
+          categoryName: selectedCat ? selectedCat.name : '', // สะดวกต่อการแสดงผลและ Sort
           createdAt: firebase.firestore.FieldValue.serverTimestamp()
         });
 
@@ -500,7 +586,7 @@
       } catch (err) { alert("บันทึกไม่สำเร็จ: " + err.message); }
     });
 
-    // Load Transactions & Calculate
+    // Load Transactions
     function loadTransactionsRealtime(userId) {
       const todayStr = new Date().toISOString().split('T')[0];
       const todayListEl = document.getElementById('today-tx-list');
@@ -508,6 +594,7 @@
 
       if (unsubscribeTx) unsubscribeTx();
 
+      // โครงสร้าง Query รองรับการ Sort ตาม date และ createdAt ไว้เรียบร้อย
       unsubscribeTx = db.collection('users').doc(userId).collection('transactions')
         .orderBy('date', 'desc').orderBy('createdAt', 'desc')
         .onSnapshot((snapshot) => {
@@ -524,6 +611,7 @@
             const isInc = item.type === 'income';
             const acc = accountsList.find(a => a.id === item.accountId);
             const accName = acc ? acc.name : 'บัญชีทั่วไป';
+            const catName = item.categoryName || 'ทั่วไป';
 
             if (isInc) totalIncome += item.amount;
             else totalExpense += item.amount;
@@ -532,7 +620,7 @@
               <li class="flex justify-between items-center p-2.5 bg-gray-50 border border-gray-100 rounded-lg text-xs">
                 <div class="flex flex-col">
                   <span class="font-medium text-gray-700">${escapeHtml(item.note)}</span>
-                  <span class="text-[10px] text-gray-400">${accName} • ${item.date}</span>
+                  <span class="text-[10px] text-gray-400">${accName} • [${catName}] • ${item.date}</span>
                 </div>
                 <div class="flex items-center space-x-2">
                   <span class="font-bold ${isInc ? 'text-emerald-600' : 'text-rose-600'}">
@@ -542,11 +630,9 @@
                 </div>
               </li>`;
 
-            // Full History
             fullHtml += itemLi;
             fullCount++;
 
-            // Today Only
             if (item.date === todayStr) {
               todayHtml += itemLi;
               todayCount++;
@@ -569,7 +655,6 @@
     async function deleteTransaction(txId, accountId, amount, type) {
       if (!currentUser || !confirm("ต้องการลบรายการนี้ใช่หรือไม่?")) return;
       try {
-        // Reverse account balance
         const accRef = db.collection('users').doc(currentUser.uid).collection('accounts').doc(accountId);
         await db.runTransaction(async (transaction) => {
           const accDoc = await transaction.get(accRef);
@@ -584,7 +669,7 @@
     }
 
     // =========================================================================
-    // 6. SETTINGS & ACCOUNTS MANAGEMENT
+    // 6. SETTINGS: ACCOUNTS & CATEGORIES MANAGEMENT
     // =========================================================================
     function renderSettingsAccounts() {
       const container = document.getElementById('accounts-settings-list');
@@ -593,18 +678,43 @@
         const div = document.createElement('div');
         div.className = "flex items-center justify-between p-2 bg-gray-50 border rounded-lg text-xs";
         div.innerHTML = `
-          <div class="flex items-center space-x-2">
+          <div class="flex items-center space-x-1.5">
             <span class="font-semibold text-gray-700">${escapeHtml(acc.name)}</span>
             <span class="text-gray-500">(${userSettings.currency}${acc.balance.toLocaleString()})</span>
-            ${acc.isDefault ? '<span class="text-[10px] bg-emerald-100 text-emerald-700 px-1.5 py-0.5 rounded">หลัก</span>' : ''}
+            ${acc.isDefault ? '<span class="text-[9px] bg-emerald-100 text-emerald-700 px-1 py-0.5 rounded">หลัก</span>' : ''}
           </div>
           <div class="flex items-center space-x-1">
-            <input type="number" id="edit-acc-${acc.id}" value="${acc.balance}" step="any" class="w-20 px-1.5 py-1 text-xs border rounded bg-white">
-            <button type="button" onclick="updateAccountBalance('${acc.id}')" class="bg-blue-50 text-blue-600 px-2 py-1 rounded hover:bg-blue-100">แก้</button>
-            ${!acc.isDefault ? `<button type="button" onclick="deleteAccount('${acc.id}')" class="text-gray-300 hover:text-rose-500 font-bold px-1.5">×</button>` : ''}
+            <input type="number" id="edit-acc-${acc.id}" value="${acc.balance}" step="any" class="w-16 px-1 py-1 text-xs border rounded bg-white">
+            <button type="button" onclick="updateAccountBalance('${acc.id}')" class="bg-blue-50 text-blue-600 px-1.5 py-1 rounded">แก้</button>
+            ${!acc.isDefault ? `<button type="button" onclick="deleteAccount('${acc.id}')" class="text-gray-300 hover:text-rose-500 font-bold px-1">×</button>` : ''}
           </div>
         `;
         container.appendChild(div);
+      });
+    }
+
+    function renderSettingsCategories() {
+      const expContainer = document.getElementById('expense-cats-list');
+      const incContainer = document.getElementById('income-cats-list');
+      expContainer.innerHTML = '';
+      incContainer.innerHTML = '';
+
+      categoriesList.forEach(cat => {
+        const div = document.createElement('div');
+        div.className = "flex items-center justify-between p-1.5 bg-gray-50 border rounded text-xs";
+        div.innerHTML = `
+          <input type="text" id="edit-cat-${cat.id}" value="${escapeHtml(cat.name)}" class="w-24 px-1 py-0.5 text-xs border rounded bg-white">
+          <div class="flex items-center space-x-1">
+            <button type="button" onclick="updateCategoryName('${cat.id}')" class="bg-blue-50 text-blue-600 px-1.5 py-0.5 rounded text-[10px]">บันทึก</button>
+            <button type="button" onclick="deleteCategory('${cat.id}', '${cat.type}')" class="text-gray-300 hover:text-rose-500 font-bold px-1">×</button>
+          </div>
+        `;
+
+        if (cat.type === 'expense') {
+          expContainer.appendChild(div);
+        } else {
+          incContainer.appendChild(div);
+        }
       });
     }
 
@@ -615,10 +725,7 @@
 
       try {
         await db.collection('users').doc(currentUser.uid).collection('accounts').add({
-          name: name,
-          balance: balance,
-          isDefault: false,
-          createdAt: firebase.firestore.FieldValue.serverTimestamp()
+          name: name, balance: balance, isDefault: false, createdAt: firebase.firestore.FieldValue.serverTimestamp()
         });
         document.getElementById('new-acc-name').value = '';
         document.getElementById('new-acc-balance').value = '';
@@ -641,6 +748,41 @@
       } catch (err) { alert("ลบบัญชีไม่สำเร็จ: " + err.message); }
     }
 
+    async function addNewCategory(type) {
+      const inputId = type === 'expense' ? 'new-exp-cat-name' : 'new-inc-cat-name';
+      const name = document.getElementById(inputId).value.trim();
+      if (!name) return alert("กรุณากรอกชื่อหมวดหมู่");
+
+      try {
+        await db.collection('users').doc(currentUser.uid).collection('categories').add({
+          name: name, type: type, createdAt: firebase.firestore.FieldValue.serverTimestamp()
+        });
+        document.getElementById(inputId).value = '';
+      } catch (err) { alert("เพิ่มหมวดหมู่ไม่สำเร็จ: " + err.message); }
+    }
+
+    async function updateCategoryName(catId) {
+      const name = document.getElementById(`edit-cat-${catId}`).value.trim();
+      if (!name) return alert("ชื่อหมวดหมู่ห้ามว่าง");
+      try {
+        await db.collection('users').doc(currentUser.uid).collection('categories').doc(catId).update({ name: name });
+        alert("เปลี่ยนชื่อหมวดหมู่เรียบร้อย");
+      } catch (err) { alert("แก้ไขไม่สำเร็จ: " + err.message); }
+    }
+
+    async function deleteCategory(catId, type) {
+      // ตรวจสอบเงื่อนไข: ต้องเหลือ category ประเภทนั้นไว้อย่างน้อย 1 อัน
+      const sameTypeCats = categoriesList.filter(c => c.type === type);
+      if (sameTypeCats.length <= 1) {
+        return alert(`ไม่สามารถลบได้! ต้องเหลือหมวดหมู่${type === 'expense' ? 'รายจ่าย' : 'รายรับ'}ไว้อย่างน้อย 1 หมวดหมู่`);
+      }
+
+      if (!currentUser || !confirm("ต้องการลบหมวดหมู่นี้ใช่หรือไม่?")) return;
+      try {
+        await db.collection('users').doc(currentUser.uid).collection('categories').doc(catId).delete();
+      } catch (err) { alert("ลบหมวดหมู่ไม่สำเร็จ: " + err.message); }
+    }
+
     async function saveSettings() {
       const currency = document.getElementById('setting-currency').value;
       try {
@@ -648,6 +790,7 @@
         userSettings.currency = currency;
         updateCurrencyUI();
         renderAccountButtons();
+        renderCategoryButtons();
         alert("บันทึกการตั้งค่าเรียบร้อย!");
         goToDashboardView();
       } catch (err) { alert("บันทึกตั้งค่าไม่สำเร็จ: " + err.message); }
