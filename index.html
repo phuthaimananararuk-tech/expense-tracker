@@ -435,21 +435,21 @@
     </footer>
   </div>
 
-  <!-- POP-UP MODAL: CASH FLOW MONTH INSPECTOR -->
+  <!-- POP-UP MODAL: CASH FLOW INSPECTOR -->
   <div id="cashflow-modal" class="hidden fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
     <div class="bg-white rounded-3xl w-full max-w-xs p-4 space-y-4 shadow-2xl relative">
       <!-- Close X Button -->
       <button onclick="closeCashflowPopUpModal()" class="absolute top-3 right-4 text-gray-400 hover:text-gray-600 font-bold text-base">✕</button>
 
       <div class="border-b pb-2 pr-6">
-        <h3 class="text-xs font-bold text-gray-700 uppercase">📊 Cash Flow Inspector</h3>
+        <h3 class="text-xs font-bold text-gray-700 uppercase">📊 Cash Flow</h3>
       </div>
 
       <!-- Month Selector Controls -->
       <div class="flex items-center justify-between bg-gray-50 p-2 rounded-2xl border border-gray-200">
-        <button onclick="changePopupCashflowMonth(-1)" class="p-1.5 hover:bg-gray-200 rounded-xl text-gray-700 font-bold transition">←</button>
+        <button id="popup-prev-month-btn" onclick="changePopupCashflowMonth(-1)" class="p-1.5 hover:bg-gray-200 rounded-xl text-gray-700 font-bold transition">←</button>
         <span id="popup-cashflow-month-label" class="text-xs font-bold text-gray-800"></span>
-        <button onclick="changePopupCashflowMonth(1)" class="p-1.5 hover:bg-gray-200 rounded-xl text-gray-700 font-bold transition">→</button>
+        <button id="popup-next-month-btn" onclick="changePopupCashflowMonth(1)" class="p-1.5 hover:bg-gray-200 rounded-xl text-gray-700 font-bold transition">→</button>
       </div>
 
       <!-- Cash Flow Bar Inside Pop-up -->
@@ -1183,10 +1183,23 @@
       } catch (err) { alert("บันทึกไม่สำเร็จ: " + err.message); }
     });
 
-    // CASHFLOW LOGIC
+    // CASHFLOW LOGIC & BOUNDARY CONTROLS
+    function getMinAccountCreationDate() {
+      if (accountsList.length === 0) return new Date();
+      let minDate = new Date();
+      accountsList.forEach(acc => {
+        if (acc.createdAt && acc.createdAt.toDate) {
+          const d = acc.createdAt.toDate();
+          if (d < minDate) minDate = d;
+        }
+      });
+      return minDate;
+    }
+
     function openCashflowPopUpModal() {
-      popupYear = new Date().getFullYear();
-      popupMonth = new Date().getMonth() + 1;
+      const now = new Date();
+      popupYear = now.getFullYear();
+      popupMonth = now.getMonth() + 1;
       updatePopupCashflowUI();
       document.getElementById('cashflow-modal').classList.remove('hidden');
     }
@@ -1196,9 +1209,31 @@
     }
 
     function changePopupCashflowMonth(offset) {
+      const minDate = getMinAccountCreationDate();
+      const minYear = minDate.getFullYear();
+      const minMonth = minDate.getMonth() + 1;
+
+      const now = new Date();
+      const maxYear = now.getFullYear();
+      const maxMonth = now.getMonth() + 1;
+
       popupMonth += offset;
       if (popupMonth > 12) { popupMonth = 1; popupYear++; }
       else if (popupMonth < 1) { popupMonth = 12; popupYear--; }
+
+      // Clamp boundaries between minAccountDate and current month
+      const currentNumericVal = popupYear * 12 + popupMonth;
+      const minNumericVal = minYear * 12 + minMonth;
+      const maxNumericVal = maxYear * 12 + maxMonth;
+
+      if (currentNumericVal < minNumericVal) {
+        popupYear = minYear;
+        popupMonth = minMonth;
+      } else if (currentNumericVal > maxNumericVal) {
+        popupYear = maxYear;
+        popupMonth = maxMonth;
+      }
+
       updatePopupCashflowUI();
     }
 
@@ -1252,6 +1287,30 @@
     function updatePopupCashflowUI() {
       const monthNames = ["มกราคม", "กุมภาพันธ์", "มีนาคม", "เมษายน", "พฤษภาคม", "มิถุนายน", "กรกฎาคม", "สิงหาคม", "กันยายน", "ตุลาคม", "พฤศจิกายน", "ธันวาคม"];
       document.getElementById('popup-cashflow-month-label').innerText = `${monthNames[popupMonth - 1]} ${popupYear}`;
+
+      // Check button disabled states based on boundaries
+      const minDate = getMinAccountCreationDate();
+      const minYear = minDate.getFullYear();
+      const minMonth = minDate.getMonth() + 1;
+      const now = new Date();
+      const maxYear = now.getFullYear();
+      const maxMonth = now.getMonth() + 1;
+
+      const currVal = popupYear * 12 + popupMonth;
+      const prevBtn = document.getElementById('popup-prev-month-btn');
+      const nextBtn = document.getElementById('popup-next-month-btn');
+
+      if (currVal <= (minYear * 12 + minMonth)) {
+        prevBtn.classList.add('opacity-30', 'cursor-not-allowed');
+      } else {
+        prevBtn.classList.remove('opacity-30', 'cursor-not-allowed');
+      }
+
+      if (currVal >= (maxYear * 12 + maxMonth)) {
+        nextBtn.classList.add('opacity-30', 'cursor-not-allowed');
+      } else {
+        nextBtn.classList.remove('opacity-30', 'cursor-not-allowed');
+      }
 
       const { netFlow, incSum, expSum } = calculateCashflowForMonth(popupYear, popupMonth);
       const maxVal = Math.max(incSum, expSum, 1);
