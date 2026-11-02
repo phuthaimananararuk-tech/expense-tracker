@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>YUET (v1.8) - Advanced Visual Summary & Analytics</title>
+  <title>YUET (v1.9) - State Persistence & Clean Pie Charts</title>
   
   <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
@@ -41,7 +41,7 @@
       <div class="flex flex-col items-center">
         <div class="flex items-baseline space-x-1">
           <h1 class="text-xl font-black tracking-wider uppercase drop-shadow-sm">YUET</h1>
-          <span class="text-[9px] font-medium text-emerald-200 tracking-tight">(v1.8)</span>
+          <span class="text-[9px] font-medium text-emerald-200 tracking-tight">(v1.9)</span>
         </div>
         <p class="text-[8px] text-emerald-100/80 tracking-tight font-light">by Phuthai Mananararuk & Gemini</p>
       </div>
@@ -247,14 +247,14 @@
         </div>
       </section>
 
-      <!-- ==================== 2. SUMMARY VIEW (REDESIGNED v1.8) ==================== -->
+      <!-- ==================== 2. SUMMARY VIEW ==================== -->
       <section id="summary-view" class="hidden space-y-3.5 max-h-[620px] overflow-y-auto pr-1">
         <div class="flex justify-between items-center border-b pb-1.5">
           <h2 class="text-xs font-bold text-gray-700 uppercase">Summary - สรุปยอด & การวิเคราะห์</h2>
           <span id="summary-current-balance" class="text-xs font-black text-blue-700 bg-blue-50 px-2.5 py-0.5 rounded-full border border-blue-200">฿0.00</span>
         </div>
 
-        <!-- 1. Income vs Expense Ratio Bar (แดงซ้าย / เขียวขวา) -->
+        <!-- 1. Income vs Expense Ratio Bar -->
         <div class="bg-gray-50 p-3 rounded-2xl border border-gray-200 space-y-1.5 shadow-xs">
           <div class="flex justify-between items-center text-[11px] font-bold">
             <span class="text-rose-600">รายจ่าย: <b id="lbl-ratio-exp">฿0.00</b></span>
@@ -278,19 +278,19 @@
           </div>
         </div>
 
-        <!-- 3. Dual Pie Charts (Side-by-Side: Income Left, Expense Right) -->
+        <!-- 3. Dual Pie Charts (Larger & No Legend v1.9) -->
         <div class="grid grid-cols-2 gap-2">
           <!-- Income Pie Chart -->
-          <div class="bg-gray-50 p-2.5 rounded-2xl border border-gray-200 shadow-xs space-y-1 flex flex-col items-center">
+          <div class="bg-gray-50 p-3 rounded-2xl border border-gray-200 shadow-xs space-y-1 flex flex-col items-center">
             <h4 class="text-[10px] font-bold text-emerald-700 text-center">หมวดหมู่รายรับ</h4>
-            <div class="h-28 w-28 relative">
+            <div class="h-36 w-36 relative flex items-center justify-center">
               <canvas id="incomePieChart"></canvas>
             </div>
           </div>
           <!-- Expense Pie Chart -->
-          <div class="bg-gray-50 p-2.5 rounded-2xl border border-gray-200 shadow-xs space-y-1 flex flex-col items-center">
+          <div class="bg-gray-50 p-3 rounded-2xl border border-gray-200 shadow-xs space-y-1 flex flex-col items-center">
             <h4 class="text-[10px] font-bold text-rose-700 text-center">หมวดหมู่รายจ่าย</h4>
-            <div class="h-28 w-28 relative">
+            <div class="h-36 w-36 relative flex items-center justify-center">
               <canvas id="expensePieChart"></canvas>
             </div>
           </div>
@@ -329,7 +329,7 @@
     <footer id="auth-status-bar" class="bg-gray-100 p-2 text-center text-[10px] text-gray-400 border-t border-gray-100">สถานะ: ยังไม่ได้เข้าสู่ระบบ</footer>
   </div>
 
-  <!-- ==================== RE-TAP SPECIAL MODAL ==================== -->
+  <!-- RE-TAP SPECIAL MODAL -->
   <div id="special-modal" class="hidden fixed inset-0 bg-black/60 flex items-center justify-center p-4 z-40 transition-opacity">
     <div class="bg-white rounded-3xl w-full max-w-sm p-5 space-y-4 shadow-2xl relative animate-slide-up">
       <button type="button" onclick="closeSpecialModal()" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600 font-bold text-lg">✕</button>
@@ -444,7 +444,7 @@
     let userSettings = { currency: '฿', enableAdvanced: false };
     let accountsList = [], categoriesList = [], allTransactions = [], activeInstallmentPlans = [];
     
-    // Dedicated Account & Category Selected IDs
+    // Dedicated Account & Category Selected IDs (State Persistence)
     let selectedAccountId = null;
     let selectedCategoryIds = []; 
     let selectedCategoryId = null;  
@@ -755,6 +755,11 @@
         closeMultiCatModal();
         document.getElementById('tx-amount').value = '';
         document.getElementById('tx-note').value = '';
+        
+        // Reset multi-category selection back to default (first category only)
+        const expCats = categoriesList.filter(c => c.type === 'expense');
+        if (expCats.length) selectedCategoryIds = [expCats[0].id];
+        renderCategoryButtons();
       } catch (err) {
         alert(err.message);
       }
@@ -936,7 +941,7 @@
       });
     }
 
-    // ==================== SUMMARY ANALYTICS RENDERER (v1.8) ====================
+    // SUMMARY ANALYTICS RENDERER (v1.9 LARGER PIE & NO LEGEND)
     function renderSummaryAnalyticsUI() {
       const totBal = accountsList.reduce((s, a) => s + a.balance, 0);
       document.getElementById('summary-current-balance').innerText = `คงเหลือรวม: ${userSettings.currency}${totBal.toLocaleString()}`;
@@ -991,13 +996,12 @@
       // 2. Render Daily Balance Line Chart
       renderDailyBalanceLineChart(totBal);
 
-      // 3. Render Dual Pie Charts
+      // 3. Render Dual Pie Charts (No Legend & Full Size v1.9)
       renderCategoryPieChart('incomePieChart', catIncMap, 'รายรับ', incomePieInstance, inst => incomePieInstance = inst);
       renderCategoryPieChart('expensePieChart', catExpMap, 'รายจ่าย', expensePieInstance, inst => expensePieInstance = inst);
     }
 
     function renderDailyBalanceLineChart(currentTotalBalance) {
-      // Group cash net flow by Date ascending
       let dateNetMap = {};
       const sortedTx = [...allTransactions].sort((a, b) => (a.date || '').localeCompare(b.date || ''));
 
@@ -1024,13 +1028,12 @@
         labels = ['วันนี้'];
         dataPoints = [currentTotalBalance];
       } else {
-        // Back-calculate historical balances from current balance
         let totalNetAll = dates.reduce((s, d) => s + dateNetMap[d], 0);
         let runningBalance = currentTotalBalance - totalNetAll;
 
         dates.forEach(d => {
           runningBalance += dateNetMap[d];
-          labels.push(d.slice(5)); // Show MM-DD
+          labels.push(d.slice(5));
           dataPoints.push(runningBalance);
         });
       }
@@ -1094,9 +1097,16 @@
           maintainAspectRatio: false,
           plugins: {
             legend: {
-              display: true,
-              position: 'bottom',
-              labels: { boxWidth: 8, font: { size: 8 } }
+              display: false // Hide legend completely in v1.9
+            },
+            tooltip: {
+              enabled: true,
+              callbacks: {
+                label: function(context) {
+                  const val = context.raw || 0;
+                  return ` ${context.label}: ${userSettings.currency}${val.toLocaleString()}`;
+                }
+              }
             }
           }
         }
