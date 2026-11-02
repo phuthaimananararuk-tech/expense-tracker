@@ -3,11 +3,14 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>YUET (v1.7) - Multi-Category Allocation System</title>
+  <title>YUET (v1.8) - Advanced Visual Summary & Analytics</title>
   
   <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
   
+  <!-- Chart.js CDN for Analytics -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
   <!-- Google Font (Kanit) -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -31,14 +34,14 @@
     <header class="bg-emerald-600 text-white px-5 py-3 shadow-sm relative flex items-center justify-between">
       <div class="flex items-center space-x-2">
         <button id="open-settings-btn" class="text-white hover:bg-emerald-700 p-1.5 rounded-xl transition hidden" title="Setting">
-          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-2.924-1.756 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
         </button>
       </div>
 
       <div class="flex flex-col items-center">
         <div class="flex items-baseline space-x-1">
           <h1 class="text-xl font-black tracking-wider uppercase drop-shadow-sm">YUET</h1>
-          <span class="text-[9px] font-medium text-emerald-200 tracking-tight">(v1.7)</span>
+          <span class="text-[9px] font-medium text-emerald-200 tracking-tight">(v1.8)</span>
         </div>
         <p class="text-[8px] text-emerald-100/80 tracking-tight font-light">by Phuthai Mananararuk & Gemini</p>
       </div>
@@ -244,19 +247,65 @@
         </div>
       </section>
 
-      <!-- ==================== 2. SUMMARY VIEW ==================== -->
-      <section id="summary-view" class="hidden space-y-4">
-        <div class="flex justify-between border-b pb-2"><h2 class="text-xs font-bold text-gray-700 uppercase">Summary - สรุปยอด</h2></div>
-        <div id="summary-cards-container" class="grid grid-cols-2 gap-2.5 text-center">
-          <div class="bg-emerald-50 p-3 rounded-2xl border border-emerald-100 shadow-xs"><p class="text-[10px] font-bold text-emerald-600">รายรับ</p><p id="total-income" class="text-sm font-bold text-emerald-700">฿0.00</p></div>
-          <div class="bg-rose-50 p-3 rounded-2xl border border-rose-100 shadow-xs"><p class="text-[10px] font-bold text-rose-600">รายจ่าย</p><p id="total-expense" class="text-sm font-bold text-rose-700">฿0.00</p></div>
-          <div class="bg-blue-50 p-3 rounded-2xl border border-blue-100 shadow-xs col-span-2"><p class="text-[10px] font-bold text-blue-600">คงเหลือรวมทุกบัญชี</p><p id="total-balance" class="text-base font-extrabold text-blue-800">฿0.00</p></div>
-          <div id="card-pending-friend" class="bg-amber-50 p-3 rounded-2xl border border-amber-100 shadow-xs hidden col-span-2 sm:col-span-1"><p class="text-[10px] font-bold text-amber-600">เงินรอคืน (เพื่อน)</p><p id="total-pending-friend" class="text-sm font-bold text-amber-700">฿0.00</p></div>
-          <div id="card-pending-team" class="bg-purple-50 p-3 rounded-2xl border border-purple-100 shadow-xs hidden col-span-2 sm:col-span-1"><p class="text-[10px] font-bold text-purple-600">เงินรอจ่าย (ทีมงาน)</p><p id="total-pending-team" class="text-sm font-bold text-purple-700">฿0.00</p></div>
+      <!-- ==================== 2. SUMMARY VIEW (REDESIGNED v1.8) ==================== -->
+      <section id="summary-view" class="hidden space-y-3.5 max-h-[620px] overflow-y-auto pr-1">
+        <div class="flex justify-between items-center border-b pb-1.5">
+          <h2 class="text-xs font-bold text-gray-700 uppercase">Summary - สรุปยอด & การวิเคราะห์</h2>
+          <span id="summary-current-balance" class="text-xs font-black text-blue-700 bg-blue-50 px-2.5 py-0.5 rounded-full border border-blue-200">฿0.00</span>
         </div>
-        <div class="space-y-2 border-t pt-3">
+
+        <!-- 1. Income vs Expense Ratio Bar (แดงซ้าย / เขียวขวา) -->
+        <div class="bg-gray-50 p-3 rounded-2xl border border-gray-200 space-y-1.5 shadow-xs">
+          <div class="flex justify-between items-center text-[11px] font-bold">
+            <span class="text-rose-600">รายจ่าย: <b id="lbl-ratio-exp">฿0.00</b></span>
+            <span class="text-emerald-600">รายรับ: <b id="lbl-ratio-inc">฿0.00</b></span>
+          </div>
+          <div class="w-full h-4 bg-gray-200 rounded-full overflow-hidden flex border border-gray-300">
+            <div id="ratio-bar-exp" class="h-full bg-rose-500 transition-all duration-500" style="width: 50%;"></div>
+            <div id="ratio-bar-inc" class="h-full bg-emerald-500 transition-all duration-500" style="width: 50%;"></div>
+          </div>
+          <div class="flex justify-between text-[9px] text-gray-400 font-medium">
+            <span id="pct-ratio-exp">50.0%</span>
+            <span id="pct-ratio-inc">50.0%</span>
+          </div>
+        </div>
+
+        <!-- 2. Total Balance Daily Line Chart -->
+        <div class="bg-gray-50 p-3 rounded-2xl border border-gray-200 shadow-xs space-y-1">
+          <h3 class="text-[11px] font-bold text-gray-700">แนวโน้มยอดเงินคงเหลือรวม (ตามวัน)</h3>
+          <div class="h-44 w-full">
+            <canvas id="balanceLineChart"></canvas>
+          </div>
+        </div>
+
+        <!-- 3. Dual Pie Charts (Side-by-Side: Income Left, Expense Right) -->
+        <div class="grid grid-cols-2 gap-2">
+          <!-- Income Pie Chart -->
+          <div class="bg-gray-50 p-2.5 rounded-2xl border border-gray-200 shadow-xs space-y-1 flex flex-col items-center">
+            <h4 class="text-[10px] font-bold text-emerald-700 text-center">หมวดหมู่รายรับ</h4>
+            <div class="h-28 w-28 relative">
+              <canvas id="incomePieChart"></canvas>
+            </div>
+          </div>
+          <!-- Expense Pie Chart -->
+          <div class="bg-gray-50 p-2.5 rounded-2xl border border-gray-200 shadow-xs space-y-1 flex flex-col items-center">
+            <h4 class="text-[10px] font-bold text-rose-700 text-center">หมวดหมู่รายจ่าย</h4>
+            <div class="h-28 w-28 relative">
+              <canvas id="expensePieChart"></canvas>
+            </div>
+          </div>
+        </div>
+
+        <!-- Extra Pending Cards (If Enabled) -->
+        <div class="grid grid-cols-2 gap-2">
+          <div id="card-pending-friend" class="bg-amber-50 p-2.5 rounded-2xl border border-amber-100 shadow-xs hidden text-center"><p class="text-[9px] font-bold text-amber-600">เงินรอคืน (เพื่อน)</p><p id="total-pending-friend" class="text-xs font-bold text-amber-700">฿0.00</p></div>
+          <div id="card-pending-team" class="bg-purple-50 p-2.5 rounded-2xl border border-purple-100 shadow-xs hidden text-center"><p class="text-[9px] font-bold text-purple-600">เงินรอจ่าย (ทีมงาน)</p><p id="total-pending-team" class="text-xs font-bold text-purple-700">฿0.00</p></div>
+        </div>
+
+        <!-- Installment Tracker -->
+        <div class="space-y-2 border-t pt-2.5">
           <div class="flex justify-between items-center"><h3 class="text-xs font-bold text-indigo-900 uppercase flex items-center gap-1"><span>สัญญาผ่อนชำระ</span></h3><span id="lbl-total-active-inst" class="text-[10px] font-semibold text-indigo-600 bg-indigo-50 px-2 py-0.5 rounded-full border">0 รายการ</span></div>
-          <div id="installment-tracker-container" class="space-y-2.5 max-h-72 overflow-y-auto pr-1"></div>
+          <div id="installment-tracker-container" class="space-y-2 max-h-40 overflow-y-auto pr-1"></div>
         </div>
       </section>
 
@@ -318,7 +367,7 @@
     </div>
   </div>
 
-  <!-- ==================== POP-UP MULTI-CATEGORY ALLOCATION MODAL (NEW v1.7) ==================== -->
+  <!-- POP-UP MULTI-CATEGORY ALLOCATION MODAL -->
   <div id="multi-cat-modal" class="hidden fixed inset-0 bg-black/60 flex items-center justify-center p-4 z-40 transition-opacity">
     <div class="bg-white rounded-3xl w-full max-w-sm p-5 space-y-4 shadow-2xl relative animate-slide-up">
       <button type="button" onclick="closeMultiCatModal()" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600 font-bold text-lg">✕</button>
@@ -397,8 +446,8 @@
     
     // Dedicated Account & Category Selected IDs
     let selectedAccountId = null;
-    let selectedCategoryIds = []; // Multi-select array for Expense mode
-    let selectedCategoryId = null;  // Single-select for Income mode
+    let selectedCategoryIds = []; 
+    let selectedCategoryId = null;  
     let selectedSettleAccountId = null, selectedSplitAccountId = null, selectedSplitCategoryId = null;
     let selectedInstAccountId = null, selectedInstCategoryId = null;
     let selectedReimbAccountId = null, selectedReimbCategoryId = null;
@@ -408,7 +457,12 @@
     let currentTxType = 'expense', currentEntryMode = 'expense';
     let popupYear = new Date().getFullYear(), popupMonth = new Date().getMonth() + 1;
     let activeKeypadFieldId = null;
-    let pendingMultiCatTxPayload = null; // Holding area during multi-cat modal flow
+    let pendingMultiCatTxPayload = null;
+
+    // Chart.js Instances
+    let balanceChartInstance = null;
+    let incomePieInstance = null;
+    let expensePieInstance = null;
 
     const [loginView, registerView, entryView, summaryView, historyView, settingView] = ['login-view','register-view','entry-view','summary-view','history-view','setting-view'].map(id => document.getElementById(id));
     const topNavTabs = document.getElementById('top-nav-tabs'), logoutBtn = document.getElementById('logout-btn'), openSettingsBtn = document.getElementById('open-settings-btn'), authStatusBar = document.getElementById('auth-status-bar');
@@ -434,7 +488,7 @@
         authStatusBar.innerText = `ผู้ใช้งาน: ${currentUser ? (currentUser.email || currentUser.displayName) : ''}`;
         ['nav-tab-entry','nav-tab-summary','nav-tab-history'].forEach(id => document.getElementById(id).className = "py-2 text-xs font-bold rounded-xl transition text-center text-gray-500 hover:text-gray-800");
         if (view === 'entry') { entryView.classList.remove('hidden'); document.getElementById('nav-tab-entry').className = "py-2 text-xs font-bold rounded-xl transition text-center shadow-xs bg-white text-emerald-700"; } 
-        else if (view === 'summary') { summaryView.classList.remove('hidden'); document.getElementById('nav-tab-summary').className = "py-2 text-xs font-bold rounded-xl transition text-center shadow-xs bg-white text-blue-700"; } 
+        else if (view === 'summary') { summaryView.classList.remove('hidden'); document.getElementById('nav-tab-summary').className = "py-2 text-xs font-bold rounded-xl transition text-center shadow-xs bg-white text-blue-700"; renderSummaryAnalyticsUI(); } 
         else if (view === 'history') { historyView.classList.remove('hidden'); document.getElementById('nav-tab-history').className = "py-2 text-xs font-bold rounded-xl transition text-center shadow-xs bg-white text-emerald-700"; } 
         else if (view === 'setting') settingView.classList.remove('hidden');
       }
@@ -476,11 +530,13 @@
 
           renderAccountButtons(); renderTransferButtons(); renderSettleAccountButtons(); renderSplitAccountButtons();
           renderInstAccountButtons(); renderReimbAccountButtons(); renderTeamPayAccountButtons(); renderSettingsAccounts();
+          if (!summaryView.classList.contains('hidden')) renderSummaryAnalyticsUI();
         });
 
       unsubscribeCat = db.collection('users').doc(uid).collection('categories').orderBy('createdAt','asc').onSnapshot(snap => { 
         categoriesList = []; snap.forEach(d => categoriesList.push({ id: d.id, ...d.data() })); 
         renderCategoryButtons(); renderSplitCategoryButtons(); renderInstCategoryButtons(); renderReimbCategoryButtons(); renderSettingsCategories(); 
+        if (!summaryView.classList.contains('hidden')) renderSummaryAnalyticsUI();
       });
       loadTransactionsRealtime(uid); loadInstallmentPlansRealtime(uid); showView('entry');
     }
@@ -637,7 +693,7 @@
     function renderInstCategoryButtons() { const c=categoriesList.filter(x=>x.type==='expense'); if(!selectedInstCategoryId||!c.some(x=>x.id===selectedInstCategoryId))if(c.length)selectedInstCategoryId=c[0].id; document.getElementById('inst-category-buttons').innerHTML=genBtns(c,selectedInstCategoryId,'selectedInstCategoryId','bg-indigo-600 text-white border-indigo-600 shadow-xs','bg-white text-gray-700 border-gray-200'); }
     function renderReimbCategoryButtons() { const c=categoriesList.filter(x=>x.type==='expense'); if(!selectedReimbCategoryId||!c.some(x=>x.id===selectedReimbCategoryId))if(c.length)selectedReimbCategoryId=c[0].id; document.getElementById('reimb-category-buttons').innerHTML=genBtns(c,selectedReimbCategoryId,'selectedReimbCategoryId','bg-amber-600 text-white border-amber-600 shadow-xs','bg-white text-gray-700 border-gray-200'); }
 
-    // MULTI-CATEGORY ALLOCATION MODAL LOGIC (NEW v1.7)
+    // MULTI-CATEGORY ALLOCATION MODAL LOGIC
     function openMultiCatModal(payload) {
       pendingMultiCatTxPayload = payload;
       document.getElementById('lbl-multi-modal-total').innerText = `${userSettings.currency}${payload.amount.toLocaleString()}`;
@@ -730,7 +786,6 @@
         const selectedCats = categoriesList.filter(c => selectedCategoryIds.includes(c.id));
         
         if (selectedCats.length > 1) {
-          // Trigger Multi-Category Allocation Pop-up
           const payload = {
             kind: 'transaction',
             type: 'expense',
@@ -750,7 +805,6 @@
           };
           openMultiCatModal(payload);
         } else {
-          // Single Category Expense (Save directly)
           const cat = selectedCats[0];
           try {
             await saveTransactionToDB({
@@ -763,7 +817,6 @@
           } catch(err){ alert(err.message); }
         }
       } else {
-        // Income Mode (Single Category)
         if (!selectedCategoryId) return alert("เลือกหมวดหมู่");
         const cat = categoriesList.find(c => c.id === selectedCategoryId);
         try {
@@ -778,7 +831,7 @@
       }
     });
 
-    // SUBMIT DEDICATED FORM: Installment (ผ่อนชำระ)
+    // SUBMIT DEDICATED FORM: Installment
     document.getElementById('installment-form').addEventListener('submit', async (e) => {
       e.preventDefault(); if(!currentUser||!selectedInstAccountId||!selectedInstCategoryId)return alert("เลือกบัญชีและหมวดหมู่");
       const amt=parseFloat(document.getElementById('inst-total-amount').value), c=parseInt(document.getElementById('inst-count').value)||2, p=parseInt(document.getElementById('inst-day').value)||1;
@@ -796,7 +849,7 @@
       } catch(err){alert(err.message);}
     });
 
-    // SUBMIT DEDICATED FORM: Reimburse (หารค่าใช้จ่าย)
+    // SUBMIT DEDICATED FORM: Reimburse
     document.getElementById('reimburse-form').addEventListener('submit', async (e) => {
       e.preventDefault(); if(!currentUser||!selectedReimbAccountId||!selectedReimbCategoryId)return alert("เลือกบัญชีและหมวดหมู่");
       const tot=parseFloat(document.getElementById('reimb-total-amount').value), myVal=document.getElementById('reimb-my-share').value;
@@ -855,7 +908,7 @@
       }catch(err){alert(err.message);}
     });
 
-    // SUBMIT DEDICATED FORM: Team Pay (โอนให้ทีม)
+    // SUBMIT DEDICATED FORM: Team Pay
     document.getElementById('team-pay-form').addEventListener('submit', async (e) => {
       e.preventDefault(); const amt=parseFloat(document.getElementById('team-pay-amount').value), cbs=document.querySelectorAll('input[name="team-pay-item"]:checked');
       if(isNaN(amt)||amt<=0)return alert("กรอกจำนวนเงินให้ถูกต้อง"); if(!cbs.length)return alert("เลือกรายการค้างจ่ายทีมงานอย่างน้อย 1 รายการ"); 
@@ -883,32 +936,173 @@
       });
     }
 
-    function calculateCategoryTotals(txList) {
+    // ==================== SUMMARY ANALYTICS RENDERER (v1.8) ====================
+    function renderSummaryAnalyticsUI() {
+      const totBal = accountsList.reduce((s, a) => s + a.balance, 0);
+      document.getElementById('summary-current-balance').innerText = `คงเหลือรวม: ${userSettings.currency}${totBal.toLocaleString()}`;
+
+      let totInc = 0, totExp = 0;
       let catIncMap = {}, catExpMap = {};
-      
-      txList.forEach(t => {
+
+      allTransactions.forEach(t => {
         if (t.kind === 'transaction') {
           if (t.type === 'income') {
-            const cid = t.categoryId || 'other';
-            catIncMap[cid] = (catIncMap[cid] || 0) + t.amount;
+            totInc += t.amount;
+            const cname = t.categoryName || 'ทั่วไป';
+            catIncMap[cname] = (catIncMap[cname] || 0) + t.amount;
           } else {
-            // Check breakdown for multi-category expenses
+            const expAmt = t.isReimburse ? t.myShare : t.amount;
+            totExp += expAmt;
+
             if (t.categoriesBreakdown && t.categoriesBreakdown.length > 0) {
               t.categoriesBreakdown.forEach(sub => {
-                catExpMap[sub.categoryId] = (catExpMap[sub.categoryId] || 0) + sub.amount;
+                catExpMap[sub.categoryName] = (catExpMap[sub.categoryName] || 0) + sub.amount;
               });
             } else {
-              const cid = t.categoryId || 'other';
-              const amt = t.isReimburse ? t.myShare : t.amount;
-              catExpMap[cid] = (catExpMap[cid] || 0) + amt;
+              const cname = t.categoryName || 'ทั่วไป';
+              catExpMap[cname] = (catExpMap[cname] || 0) + expAmt;
             }
           }
         } else if (t.kind === 'split') {
-          const cid = t.categoryId || 'other';
-          catIncMap[cid] = (catIncMap[cid] || 0) + t.myShare;
+          totInc += t.myShare;
+          const cname = t.categoryName || 'ทั่วไป';
+          catIncMap[cname] = (catIncMap[cname] || 0) + t.myShare;
+        } else if (t.kind === 'settlement') {
+          totInc += t.amount;
+          catIncMap['รับคืนเงิน'] = (catIncMap['รับคืนเงิน'] || 0) + t.amount;
         }
       });
-      return { catIncMap, catExpMap };
+
+      // 1. Render Ratio Bar (แดงซ้าย / เขียวขวา)
+      document.getElementById('lbl-ratio-exp').innerText = `${userSettings.currency}${totExp.toLocaleString()}`;
+      document.getElementById('lbl-ratio-inc').innerText = `${userSettings.currency}${totInc.toLocaleString()}`;
+
+      const totalFlow = totInc + totExp;
+      let expPct = 50, incPct = 50;
+      if (totalFlow > 0) {
+        expPct = Math.round((totExp / totalFlow) * 1000) / 10;
+        incPct = Math.round((totInc / totalFlow) * 1000) / 10;
+      }
+      document.getElementById('ratio-bar-exp').style.width = `${expPct}%`;
+      document.getElementById('ratio-bar-inc').style.width = `${incPct}%`;
+      document.getElementById('pct-ratio-exp').innerText = `${expPct}%`;
+      document.getElementById('pct-ratio-inc').innerText = `${incPct}%`;
+
+      // 2. Render Daily Balance Line Chart
+      renderDailyBalanceLineChart(totBal);
+
+      // 3. Render Dual Pie Charts
+      renderCategoryPieChart('incomePieChart', catIncMap, 'รายรับ', incomePieInstance, inst => incomePieInstance = inst);
+      renderCategoryPieChart('expensePieChart', catExpMap, 'รายจ่าย', expensePieInstance, inst => expensePieInstance = inst);
+    }
+
+    function renderDailyBalanceLineChart(currentTotalBalance) {
+      // Group cash net flow by Date ascending
+      let dateNetMap = {};
+      const sortedTx = [...allTransactions].sort((a, b) => (a.date || '').localeCompare(b.date || ''));
+
+      sortedTx.forEach(t => {
+        if (!t.date) return;
+        let net = 0;
+        if (t.kind === 'transaction') {
+          net = t.type === 'income' ? t.amount : -(t.isReimburse ? t.myShare : t.amount);
+        } else if (t.kind === 'split') {
+          net = t.myShare;
+        } else if (t.kind === 'settlement') {
+          net = t.amount;
+        } else if (t.kind === 'team-pay') {
+          net = -t.amount;
+        }
+        dateNetMap[t.date] = (dateNetMap[t.date] || 0) + net;
+      });
+
+      const dates = Object.keys(dateNetMap).sort();
+      let labels = [];
+      let dataPoints = [];
+
+      if (!dates.length) {
+        labels = ['วันนี้'];
+        dataPoints = [currentTotalBalance];
+      } else {
+        // Back-calculate historical balances from current balance
+        let totalNetAll = dates.reduce((s, d) => s + dateNetMap[d], 0);
+        let runningBalance = currentTotalBalance - totalNetAll;
+
+        dates.forEach(d => {
+          runningBalance += dateNetMap[d];
+          labels.push(d.slice(5)); // Show MM-DD
+          dataPoints.push(runningBalance);
+        });
+      }
+
+      const ctx = document.getElementById('balanceLineChart').getContext('2d');
+      if (balanceChartInstance) balanceChartInstance.destroy();
+
+      balanceChartInstance = new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels: labels,
+          datasets: [{
+            label: 'ยอดเงินคงเหลือ',
+            data: dataPoints,
+            borderColor: '#2563eb',
+            backgroundColor: 'rgba(37, 99, 235, 0.1)',
+            fill: true,
+            tension: 0.3,
+            borderWidth: 2.5,
+            pointRadius: 3.5,
+            pointBackgroundColor: '#1d4ed8'
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: { legend: { display: false } },
+          scales: {
+            x: { grid: { display: false }, ticks: { font: { size: 9 } } },
+            y: { ticks: { font: { size: 9 } } }
+          }
+        }
+      });
+    }
+
+    function renderCategoryPieChart(canvasId, catMap, labelTitle, existingInstance, setInstanceCb) {
+      const labels = Object.keys(catMap);
+      const data = Object.values(catMap);
+      const ctx = document.getElementById(canvasId).getContext('2d');
+
+      if (existingInstance) existingInstance.destroy();
+
+      const colorPalette = [
+        '#f43f5e', '#10b981', '#6366f1', '#f59e0b', '#8b5cf6',
+        '#06b6d4', '#ec4899', '#84cc16', '#3b82f6', '#14b8a6'
+      ];
+
+      const newInst = new Chart(ctx, {
+        type: 'pie',
+        data: {
+          labels: labels.length ? labels : ['ไม่มีข้อมูล'],
+          datasets: [{
+            data: data.length ? data : [1],
+            backgroundColor: data.length ? colorPalette.slice(0, labels.length) : ['#e5e7eb'],
+            borderWidth: 1.5,
+            borderColor: '#ffffff'
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: {
+              display: true,
+              position: 'bottom',
+              labels: { boxWidth: 8, font: { size: 8 } }
+            }
+          }
+        }
+      });
+
+      setInstanceCb(newInst);
     }
 
     function calculateCashflowForMonth(y, m) {
@@ -940,7 +1134,8 @@
           else if(t.kind==='settlement') tInc+=t.amount; else if(t.kind==='split') { tInc+=t.myShare; if(t.remainingTeamPending>0)pTm+=t.remainingTeamPending; }
         });
         updateEntryCurrentMonthCashFlowUI(); if(!document.getElementById('cashflow-modal').classList.contains('hidden')) updatePopupCashflowUI();
-        
+        if (!summaryView.classList.contains('hidden')) renderSummaryAnalyticsUI();
+
         let grp={}; allTransactions.forEach(t => { if(!grp[t.date])grp[t.date]=[]; grp[t.date].push(t); });
         document.getElementById('full-tx-list').innerHTML = Object.keys(grp).sort((a,b)=>b.localeCompare(a)).map(d => `<div class="sticky top-0 bg-gray-100/95 px-3 py-1 text-[11px] font-bold text-gray-600 rounded-lg my-1.5 shadow-2xs">${d}</div>` + grp[d].map(t => {
           if(t.kind==='transaction'){
@@ -958,7 +1153,6 @@
           return `<div class="flex justify-between items-center p-2.5 border rounded-xl text-xs mb-1 ${t.kind==='transfer'?'bg-blue-50/50 border-blue-100':t.kind==='split'?'bg-purple-50/50 border-purple-100':t.kind==='team-pay'?'bg-teal-50/50 border-teal-100':'bg-amber-50/50 border-amber-100'}"><div class="flex flex-col"><span class="font-medium">${t.kind==='transfer'?`โอน: ${t.fromAccountName} ➔ ${t.toAccountName}`:t.kind==='split'?`รับแทนทีม (${accountsList.find(a=>a.id===t.accountId)?.name})`:t.kind==='team-pay'?`โอนให้ทีม (${accountsList.find(a=>a.id===t.accountId)?.name})`:'รับเงินคืน'}</span><span class="text-[10px] text-gray-400">${escapeHtml(t.note||'-')}</span></div><div class="flex items-center space-x-2"><span class="font-bold">${t.kind==='split'?'+'+t.totalAmount.toLocaleString():t.kind==='transfer'||t.kind==='team-pay'?'-'+t.amount.toLocaleString():'+'+t.amount.toLocaleString()}</span><button onclick="deleteTx('${t.id}')" class="text-gray-300 hover:text-rose-500 font-bold px-1">×</button></div></div>`;
         }).join('')).join('') || '<p class="text-center text-xs py-6">ไม่มีประวัติ</p>';
 
-        document.getElementById('total-income').innerText=`${userSettings.currency}${tInc.toLocaleString()}`; document.getElementById('total-expense').innerText=`${userSettings.currency}${tExp.toLocaleString()}`; document.getElementById('total-balance').innerText=`${userSettings.currency}${accountsList.reduce((s,a)=>s+a.balance,0).toLocaleString()}`;
         document.getElementById('total-pending-friend').innerText=`${userSettings.currency}${pFr.toLocaleString()}`; document.getElementById('total-pending-team').innerText=`${userSettings.currency}${pTm.toLocaleString()}`;
       });
     }
