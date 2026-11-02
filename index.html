@@ -121,13 +121,13 @@
       <section id="entry-view" class="hidden space-y-3 flex-1 flex flex-col justify-between">
         
         <div class="space-y-3">
-          <!-- 5 Mode Selectors (Dynamically managed by CSS grid and hidden classes) -->
-          <div id="mode-buttons-container" class="grid grid-cols-5 gap-1 bg-gray-200 p-1 rounded-xl text-center">
+          <!-- 5 Mode Selectors -->
+          <div id="mode-buttons-container" class="grid grid-cols-3 gap-1 bg-gray-200 p-1 rounded-xl text-center">
             <button type="button" id="btn-mode-expense" onclick="switchEntryMode('expense')" class="py-1.5 text-[10px] sm:text-[11px] font-semibold rounded-lg transition bg-rose-600 text-white shadow-xs">Expense</button>
             <button type="button" id="btn-mode-income" onclick="switchEntryMode('income')" class="py-1.5 text-[10px] sm:text-[11px] font-semibold rounded-lg transition text-gray-700">Income</button>
             <button type="button" id="btn-mode-transfer" onclick="switchEntryMode('transfer')" class="py-1.5 text-[10px] sm:text-[11px] font-semibold rounded-lg transition text-gray-700">Transfer</button>
-            <button type="button" id="btn-mode-settle" onclick="switchEntryMode('settle')" class="py-1.5 text-[10px] sm:text-[11px] font-semibold rounded-lg transition text-gray-700">Settle</button>
-            <button type="button" id="btn-mode-split" onclick="switchEntryMode('split')" class="py-1.5 text-[10px] sm:text-[11px] font-semibold rounded-lg transition text-gray-700">Split</button>
+            <button type="button" id="btn-mode-settle" onclick="switchEntryMode('settle')" class="py-1.5 text-[10px] sm:text-[11px] font-semibold rounded-lg transition text-gray-700 hidden">Settle</button>
+            <button type="button" id="btn-mode-split" onclick="switchEntryMode('split')" class="py-1.5 text-[10px] sm:text-[11px] font-semibold rounded-lg transition text-gray-700 hidden">Split</button>
           </div>
 
           <!-- FORM 1: Expense & Income Form -->
@@ -336,11 +336,11 @@
             <p id="total-balance" class="text-base font-extrabold text-blue-800 mt-0.5">฿0.00</p>
           </div>
           <!-- Optional Cards for Settle and Split -->
-          <div id="card-pending-friend" class="bg-amber-50 p-3 rounded-2xl border border-amber-100 shadow-xs">
+          <div id="card-pending-friend" class="bg-amber-50 p-3 rounded-2xl border border-amber-100 shadow-xs hidden">
             <p class="text-[10px] font-bold text-amber-600 uppercase">เงินรอคืน (เพื่อน)</p>
             <p id="total-pending-friend" class="text-sm font-bold text-amber-700 mt-0.5">฿0.00</p>
           </div>
-          <div id="card-pending-team" class="bg-purple-50 p-3 rounded-2xl border border-purple-100 shadow-xs">
+          <div id="card-pending-team" class="bg-purple-50 p-3 rounded-2xl border border-purple-100 shadow-xs hidden">
             <p class="text-[10px] font-bold text-purple-600 uppercase">เงินรอจ่าย (ทีมงาน)</p>
             <p id="total-pending-team" class="text-sm font-bold text-purple-700 mt-0.5">฿0.00</p>
           </div>
@@ -517,7 +517,7 @@
     let unsubscribeAcc = null;
     let unsubscribeCat = null;
 
-    let userSettings = { currency: '฿', enableAdvanced: true };
+    let userSettings = { currency: '฿', enableAdvanced: false }; // Default to false initially to prevent pop-in
     let accountsList = [];
     let categoriesList = [];
     let allTransactions = [];
@@ -678,13 +678,14 @@
 
       const settingsDoc = await db.collection('users').doc(userId).collection('settings').doc('config').get();
       if (settingsDoc.exists) {
-        userSettings = { currency: '฿', enableAdvanced: true, ...settingsDoc.data() };
+        userSettings = { currency: '฿', enableAdvanced: false, ...settingsDoc.data() };
       } else {
-        await db.collection('users').doc(userId).collection('settings').doc('config').set({ currency: '฿', enableAdvanced: true });
+        await db.collection('users').doc(userId).collection('settings').doc('config').set({ currency: '฿', enableAdvanced: false });
+        userSettings = { currency: '฿', enableAdvanced: false };
       }
       
       document.getElementById('setting-currency').value = userSettings.currency || '฿';
-      document.getElementById('setting-enable-advanced').checked = userSettings.enableAdvanced !== false;
+      document.getElementById('setting-enable-advanced').checked = userSettings.enableAdvanced === true;
       updateCurrencyUI();
       applyAdvancedFeaturesVisibility();
 
@@ -727,7 +728,7 @@
 
     // TOGGLE SETTLE & SPLIT VISIBILITY (STRICT HIDE)
     function applyAdvancedFeaturesVisibility() {
-      const enable = userSettings.enableAdvanced !== false;
+      const enable = userSettings.enableAdvanced === true;
       const bSt = document.getElementById('btn-mode-settle');
       const bSp = document.getElementById('btn-mode-split');
       const cFr = document.getElementById('card-pending-friend');
@@ -755,7 +756,7 @@
 
     // ENTRY MODES SWITCHING
     function switchEntryMode(mode) {
-      const enable = userSettings.enableAdvanced !== false;
+      const enable = userSettings.enableAdvanced === true;
       if (!enable && (mode === 'settle' || mode === 'split')) return;
 
       currentEntryMode = mode;
