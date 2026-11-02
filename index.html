@@ -121,7 +121,7 @@
       <section id="entry-view" class="hidden space-y-3 flex-1 flex flex-col justify-between">
         
         <div class="space-y-3">
-          <!-- 5 Mode Selectors (Grid classes dynamically updated via applyAdvancedFeaturesVisibility) -->
+          <!-- Mode Selectors -->
           <div id="mode-buttons-container" class="grid grid-cols-3 gap-1 bg-gray-200 p-1 rounded-xl text-center">
             <button type="button" id="btn-mode-expense" onclick="switchEntryMode('expense')" class="py-1.5 text-[10px] sm:text-[11px] font-semibold rounded-lg transition bg-rose-600 text-white shadow-xs">Expense</button>
             <button type="button" id="btn-mode-income" onclick="switchEntryMode('income')" class="py-1.5 text-[10px] sm:text-[11px] font-semibold rounded-lg transition text-gray-700">Income</button>
@@ -144,8 +144,8 @@
 
             <div class="grid grid-cols-2 gap-2">
               <div>
-                <label class="block text-[11px] text-gray-500 mb-1">จำนวนเงิน (<span class="currency-symbol">฿</span>)</label>
-                <input type="number" id="tx-amount" step="any" min="0" placeholder="0.00" required class="w-full px-2 py-1.5 text-xs border rounded-xl bg-white focus:ring-1 focus:ring-emerald-500">
+                <label id="lbl-tx-amount" class="block text-[11px] text-gray-500 mb-1">จำนวนเงิน (<span class="currency-symbol">฿</span>)</label>
+                <input type="number" id="tx-amount" step="any" min="0" placeholder="0.00" required oninput="updateInstallmentMath()" class="w-full px-2 py-1.5 text-xs border rounded-xl bg-white focus:ring-1 focus:ring-emerald-500">
               </div>
               <div>
                 <label class="block text-[11px] text-gray-500 mb-1">วันที่</label>
@@ -155,7 +155,38 @@
 
             <div>
               <label class="block text-[11px] text-gray-500 mb-1">บันทึกช่วยจำ (ไม่บังคับ)</label>
-              <input type="text" id="tx-note" placeholder="เช่น ค่าอาหารกลางวัน" class="w-full px-2 py-1.5 text-xs border rounded-xl bg-white focus:ring-1 focus:ring-emerald-500">
+              <input type="text" id="tx-note" placeholder="เช่น ค่าอาหารกลางวัน, ผ่อนโทรศัพท์" class="w-full px-2 py-1.5 text-xs border rounded-xl bg-white focus:ring-1 focus:ring-emerald-500">
+            </div>
+
+            <!-- Installment Sub-section (Expense Only) -->
+            <div id="installment-section" class="border-t pt-2 space-y-1">
+              <label class="flex items-center space-x-2 cursor-pointer">
+                <input type="checkbox" id="is-installment" onchange="toggleInstallmentFields()" class="rounded text-indigo-600 focus:ring-indigo-500 w-4 h-4">
+                <span class="text-xs font-medium text-indigo-700">🔄 ผ่อนชำระสินค้า / รายจ่ายประจำ (Installment)</span>
+              </label>
+              <div id="installment-fields" class="hidden bg-indigo-50 p-2.5 rounded-xl border border-indigo-100 space-y-2">
+                <div class="grid grid-cols-2 gap-2">
+                  <div>
+                    <label class="block text-[10px] text-indigo-900 font-semibold">จำนวนงวดทั้งหมด</label>
+                    <input type="number" id="inst-total-count" min="2" max="120" value="3" oninput="updateInstallmentMath()" class="w-full px-2 py-1 text-xs border rounded-lg bg-white">
+                  </div>
+                  <div>
+                    <label class="block text-[10px] text-indigo-900 font-semibold">ตัดเงินทุกวันที่</label>
+                    <input type="number" id="inst-pay-day" min="1" max="31" value="1" class="w-full px-2 py-1 text-xs border rounded-lg bg-white">
+                  </div>
+                </div>
+                <!-- Calculation Preview Box -->
+                <div id="inst-preview-box" class="bg-white p-2 rounded-lg border border-indigo-200 text-[10px] space-y-0.5 text-indigo-800">
+                  <div class="flex justify-between font-medium">
+                    <span>งวดทั่วไป (1 - <span id="lbl-preview-normal-cnt">2</span>):</span>
+                    <b id="lbl-preview-normal-amt">฿0.00</b>
+                  </div>
+                  <div class="flex justify-between font-medium text-indigo-950">
+                    <span>งวดสุดท้าย (ปัดเศษส่วนต่าง):</span>
+                    <b id="lbl-preview-final-amt">฿0.00</b>
+                  </div>
+                </div>
+              </div>
             </div>
 
             <!-- Reimbursement Sub-section (Expense Only) -->
@@ -293,19 +324,16 @@
             <div class="flex items-center space-x-1">
               <span>📊 Cash Flow (เดือนปัจจุบัน)</span>
             </div>
-            <!-- 3-Dots Button -->
             <button type="button" onclick="openCashflowPopUpModal()" class="text-gray-400 hover:text-gray-600 p-1 rounded-lg transition" title="ดูเดือนอื่น">
               <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"/></svg>
             </button>
           </div>
 
-          <!-- Balance Bar Visual -->
           <div class="relative w-full h-3.5 bg-gray-200 rounded-full overflow-hidden flex items-center border border-gray-300">
             <div class="absolute left-1/2 top-0 bottom-0 w-0.5 bg-gray-500 z-10"></div>
             <div id="entry-cashflow-bar-fill" class="h-full transition-all duration-500 ease-out"></div>
           </div>
 
-          <!-- Net Flow Text -->
           <div class="flex justify-between items-center text-[10px]">
             <span class="text-rose-500 font-medium">จ่าย</span>
             <span id="entry-cashflow-net-text" class="font-bold text-gray-700">฿0.00</span>
@@ -321,7 +349,7 @@
           <h2 class="text-xs font-bold text-gray-700 uppercase tracking-wider">Summary - สรุปยอดการเงิน</h2>
         </div>
         
-        <!-- Summary Cards Dynamic Grid -->
+        <!-- Summary Cards Grid -->
         <div id="summary-cards-container" class="grid grid-cols-2 gap-2.5 text-center">
           <div class="bg-emerald-50 p-3 rounded-2xl border border-emerald-100 shadow-xs">
             <p class="text-[10px] font-bold text-emerald-600 uppercase">รายรับ</p>
@@ -335,7 +363,6 @@
             <p class="text-[10px] font-bold text-blue-600 uppercase">คงเหลือรวมทุกบัญชี</p>
             <p id="total-balance" class="text-base font-extrabold text-blue-800 mt-0.5">฿0.00</p>
           </div>
-          <!-- Optional Cards for Settle and Split -->
           <div id="card-pending-friend" class="bg-amber-50 p-3 rounded-2xl border border-amber-100 shadow-xs hidden">
             <p class="text-[10px] font-bold text-amber-600 uppercase">เงินรอคืน (เพื่อน)</p>
             <p id="total-pending-friend" class="text-sm font-bold text-amber-700 mt-0.5">฿0.00</p>
@@ -346,8 +373,18 @@
           </div>
         </div>
 
-        <div class="bg-gray-50 border border-dashed border-gray-300 p-6 rounded-2xl text-center text-gray-400 text-xs">
-          พื้นที่รองรับกราฟวิเคราะห์ยอดในอนาคต 🚀
+        <!-- INSTALLMENT TRACKER SECTION -->
+        <div class="space-y-2 border-t pt-3">
+          <div class="flex justify-between items-center">
+            <h3 class="text-xs font-bold text-indigo-900 uppercase flex items-center gap-1">
+              <span>🔄 สัญญาผ่อนชำระ (Installment Tracker)</span>
+            </h3>
+            <span id="lbl-total-active-inst" class="text-[10px] font-semibold text-indigo-600 bg-indigo-50 px-2 py-0.5 rounded-full border border-indigo-100">0 รายการ</span>
+          </div>
+
+          <div id="installment-tracker-container" class="space-y-2.5 max-h-72 overflow-y-auto pr-1">
+            <p class="text-center text-xs text-gray-400 py-4 border border-dashed rounded-2xl">ไม่มีรายการผ่อนชำระในระบบ</p>
+          </div>
         </div>
       </section>
 
@@ -356,8 +393,6 @@
         <div class="flex items-center justify-between border-b pb-2 flex-shrink-0">
           <h2 class="text-xs font-bold text-gray-700 uppercase tracking-wider">History - ประวัติรายการ</h2>
         </div>
-        
-        <!-- Scrollable History Container -->
         <div id="full-tx-list" class="space-y-2 overflow-y-auto pr-1 flex-1">
           <p class="text-center text-xs text-gray-400 py-6">กำลังโหลดประวัติรายการ...</p>
         </div>
@@ -369,7 +404,6 @@
           <h2 class="text-xs font-bold text-gray-700 uppercase tracking-wider">Setting - ตั้งค่าระบบ</h2>
         </div>
 
-        <!-- Currency Setting -->
         <div class="space-y-1">
           <label class="block text-xs font-bold text-gray-700">สกุลเงินทั่วแอป</label>
           <select id="setting-currency" onchange="autoSaveSettings()" class="w-full px-3 py-2 text-xs border rounded-xl bg-white">
@@ -380,7 +414,6 @@
           </select>
         </div>
 
-        <!-- Toggle Settle & Split Features -->
         <div class="bg-gray-50 p-3 rounded-2xl border border-gray-200 space-y-1.5">
           <label class="flex items-center space-x-2 cursor-pointer">
             <input type="checkbox" id="setting-enable-advanced" onchange="toggleAdvancedFeaturesSetting()" class="rounded text-emerald-600 focus:ring-emerald-500 w-4 h-4">
@@ -389,7 +422,6 @@
           <p class="text-[10px] text-gray-400">เมื่อเปิด จะแสดงปุ่มรับเงินคืน (Settle) และรับเงินแทนทีมงาน (Split) พร้อมการ์ดสรุปยอด</p>
         </div>
 
-        <!-- Accounts Management -->
         <div class="space-y-2 border-t pt-3">
           <h3 class="text-xs font-bold text-gray-700 uppercase">จัดการบัญชีเงิน</h3>
           <div id="accounts-settings-list" class="space-y-1 max-h-24 overflow-y-auto pr-1"></div>
@@ -403,7 +435,6 @@
           </div>
         </div>
 
-        <!-- Categories Management -->
         <div class="space-y-2 border-t pt-3">
           <h3 class="text-xs font-bold text-gray-700 uppercase">จัดการหมวดหมู่</h3>
           <div class="grid grid-cols-2 gap-2">
@@ -429,7 +460,6 @@
 
     </main>
 
-    <!-- Footer Status Bar -->
     <footer id="auth-status-bar" class="bg-gray-100 p-2 text-center text-[10px] text-gray-400 border-t border-gray-100">
       สถานะ: ยังไม่ได้เข้าสู่ระบบ
     </footer>
@@ -438,21 +468,15 @@
   <!-- POP-UP MODAL: CASH FLOW -->
   <div id="cashflow-modal" class="hidden fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
     <div class="bg-white rounded-3xl w-full max-w-xs p-4 space-y-4 shadow-2xl relative">
-      <!-- Close X Button -->
       <button onclick="closeCashflowPopUpModal()" class="absolute top-3 right-4 text-gray-400 hover:text-gray-600 font-bold text-base">✕</button>
-
       <div class="border-b pb-2 pr-6">
         <h3 class="text-xs font-bold text-gray-700 uppercase">📊 Cash Flow</h3>
       </div>
-
-      <!-- Month Selector Controls -->
       <div class="flex items-center justify-between bg-gray-50 p-2 rounded-2xl border border-gray-200">
         <button id="popup-prev-month-btn" onclick="changePopupCashflowMonth(-1)" class="p-1.5 hover:bg-gray-200 rounded-xl text-gray-700 font-bold transition">←</button>
         <span id="popup-cashflow-month-label" class="text-xs font-bold text-gray-800"></span>
         <button id="popup-next-month-btn" onclick="changePopupCashflowMonth(1)" class="p-1.5 hover:bg-gray-200 rounded-xl text-gray-700 font-bold transition">→</button>
       </div>
-
-      <!-- Cash Flow Bar Inside Pop-up -->
       <div class="space-y-1.5 bg-gray-50 p-3 rounded-2xl border border-gray-100">
         <div class="relative w-full h-4 bg-gray-200 rounded-full overflow-hidden flex items-center border border-gray-300">
           <div class="absolute left-1/2 top-0 bottom-0 w-0.5 bg-gray-500 z-10"></div>
@@ -472,7 +496,6 @@
     <div class="bg-white rounded-3xl w-full max-w-sm p-4 space-y-3 shadow-2xl">
       <h3 class="text-xs font-bold text-gray-700 uppercase border-b pb-2">แก้ไขรายการ</h3>
       <input type="hidden" id="edit-tx-id">
-      
       <div>
         <label class="block text-[11px] text-gray-500 mb-1">จำนวนเงิน</label>
         <input type="number" id="edit-amount" step="any" class="w-full px-2 py-1.5 text-xs border rounded-xl bg-white">
@@ -485,7 +508,6 @@
         <label class="block text-[11px] text-gray-500 mb-1">บันทึกช่วยจำ</label>
         <input type="text" id="edit-note" class="w-full px-2 py-1.5 text-xs border rounded-xl bg-white">
       </div>
-
       <div class="flex space-x-2 pt-2">
         <button type="button" onclick="closeEditModal()" class="w-1/2 bg-gray-200 hover:bg-gray-300 text-gray-700 py-2 rounded-xl text-xs font-medium">ยกเลิก</button>
         <button type="button" onclick="saveEditedTransaction()" class="w-1/2 bg-emerald-600 hover:bg-emerald-700 text-white py-2 rounded-xl text-xs font-medium">บันทึก</button>
@@ -516,11 +538,13 @@
     let unsubscribeTx = null;
     let unsubscribeAcc = null;
     let unsubscribeCat = null;
+    let unsubscribeInst = null;
 
     let userSettings = { currency: '฿', enableAdvanced: false };
     let accountsList = [];
     let categoriesList = [];
     let allTransactions = [];
+    let activeInstallmentPlans = [];
 
     let selectedAccountId = null;
     let selectedCategoryId = null;
@@ -532,9 +556,8 @@
     let currentTxType = 'expense';
     let currentEntryMode = 'expense';
 
-    // Pop-up Cashflow Month Selector State
     let popupYear = new Date().getFullYear();
-    let popupMonth = new Date().getMonth() + 1; // 1-12
+    let popupMonth = new Date().getMonth() + 1;
 
     // DOM References
     const loginView = document.getElementById('login-view');
@@ -549,7 +572,6 @@
     const openSettingsBtn = document.getElementById('open-settings-btn');
     const authStatusBar = document.getElementById('auth-status-bar');
 
-    // Page Switching
     function showView(viewName) {
       [loginView, registerView, entryView, summaryView, historyView, settingView].forEach(v => v.classList.add('hidden'));
       logoutBtn.classList.add('hidden');
@@ -653,6 +675,7 @@
       if (unsubscribeTx) unsubscribeTx();
       if (unsubscribeAcc) unsubscribeAcc();
       if (unsubscribeCat) unsubscribeCat();
+      if (unsubscribeInst) unsubscribeInst();
       await auth.signOut();
     });
 
@@ -670,11 +693,13 @@
 
     // INIT USER DATA
     async function initUserData(userId) {
-      const todayStr = new Date().toISOString().split('T')[0];
+      const todayDate = new Date();
+      const todayStr = todayDate.toISOString().split('T')[0];
       document.getElementById('tx-date').value = todayStr;
       document.getElementById('tr-date').value = todayStr;
       document.getElementById('settle-date').value = todayStr;
       document.getElementById('split-date').value = todayStr;
+      document.getElementById('inst-pay-day').value = todayDate.getDate();
 
       const settingsDoc = await db.collection('users').doc(userId).collection('settings').doc('config').get();
       if (settingsDoc.exists) {
@@ -719,6 +744,7 @@
         });
 
       loadTransactionsRealtime(userId);
+      loadInstallmentPlansRealtime(userId);
       showView('entry');
     }
 
@@ -754,7 +780,7 @@
       }
     }
 
-    // ENTRY MODES SWITCHING (GUARDED AGAINST UNAUTHORIZED SHOWING)
+    // ENTRY MODES SWITCHING
     function switchEntryMode(mode) {
       const enable = userSettings.enableAdvanced === true;
       if (!enable && (mode === 'settle' || mode === 'split')) return;
@@ -771,6 +797,8 @@
       const stForm = document.getElementById('settle-form');
       const spForm = document.getElementById('split-form');
       const reimburseSec = document.getElementById('reimburse-section');
+      const instSec = document.getElementById('installment-section');
+      const lblAmount = document.getElementById('lbl-tx-amount');
 
       [bExp, bInc, bTr, bSt, bSp].forEach(b => b.className = "py-1.5 text-[10px] sm:text-[11px] font-semibold rounded-lg transition text-gray-700");
       [txForm, trForm, stForm, spForm].forEach(f => f.classList.add('hidden'));
@@ -779,14 +807,20 @@
         bExp.className = "py-1.5 text-[10px] sm:text-[11px] font-semibold rounded-lg transition bg-rose-600 text-white shadow-xs";
         txForm.classList.remove('hidden');
         reimburseSec.classList.remove('hidden');
+        instSec.classList.remove('hidden');
+        lblAmount.innerHTML = `จำนวนเงิน (<span class="currency-symbol">${userSettings.currency}</span>)`;
         currentTxType = 'expense';
         renderCategoryButtons();
       } else if (mode === 'income') {
         bInc.className = "py-1.5 text-[10px] sm:text-[11px] font-semibold rounded-lg transition bg-emerald-600 text-white shadow-xs";
         txForm.classList.remove('hidden');
         reimburseSec.classList.add('hidden');
+        instSec.classList.add('hidden');
+        lblAmount.innerHTML = `จำนวนเงิน (<span class="currency-symbol">${userSettings.currency}</span>)`;
         document.getElementById('is-reimburse').checked = false;
+        document.getElementById('is-installment').checked = false;
         toggleReimburseFields();
+        toggleInstallmentFields();
         currentTxType = 'income';
         renderCategoryButtons();
       } else if (mode === 'transfer') {
@@ -805,8 +839,52 @@
         renderSplitCategoryButtons();
       }
 
-      // CRITICAL FIX: Ensure hidden state is forcefully reapplied after any mode switch
       applyAdvancedFeaturesVisibility();
+    }
+
+    // INSTALLMENT CALCULATION (METHOD 1: ADJUST AT LAST INSTALLMENT)
+    function calculateInstallmentBreakdown(totalAmount, totalCount) {
+      if (!totalAmount || !totalCount || totalCount <= 1) return { normalAmt: 0, finalAmt: 0 };
+      
+      const normalAmt = Math.floor((totalAmount / totalCount) * 100) / 100;
+      const paidNormalTotal = normalAmt * (totalCount - 1);
+      const finalAmt = Math.round((totalAmount - paidNormalTotal) * 100) / 100;
+      
+      return { normalAmt, finalAmt };
+    }
+
+    function updateInstallmentMath() {
+      const isInst = document.getElementById('is-installment').checked;
+      if (!isInst) return;
+
+      const totalAmt = parseFloat(document.getElementById('tx-amount').value) || 0;
+      const totalCnt = parseInt(document.getElementById('inst-total-count').value) || 1;
+
+      const { normalAmt, finalAmt } = calculateInstallmentBreakdown(totalAmt, totalCnt);
+
+      document.getElementById('lbl-preview-normal-cnt').innerText = totalCnt > 1 ? (totalCnt - 1) : 1;
+      document.getElementById('lbl-preview-normal-amt').innerText = `${userSettings.currency}${normalAmt.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
+      document.getElementById('lbl-preview-final-amt').innerText = `${userSettings.currency}${finalAmt.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
+    }
+
+    function toggleInstallmentFields() {
+      const isChecked = document.getElementById('is-installment').checked;
+      const fields = document.getElementById('installment-fields');
+      const reimburseSec = document.getElementById('reimburse-section');
+      const lblAmount = document.getElementById('lbl-tx-amount');
+
+      if (isChecked) {
+        fields.classList.remove('hidden');
+        reimburseSec.classList.add('hidden');
+        document.getElementById('is-reimburse').checked = false;
+        toggleReimburseFields();
+        lblAmount.innerHTML = `ยอดรวมเต็มที่ต้องผ่อน (<span class="currency-symbol">${userSettings.currency}</span>)`;
+        updateInstallmentMath();
+      } else {
+        fields.classList.add('hidden');
+        reimburseSec.classList.remove('hidden');
+        lblAmount.innerHTML = `จำนวนเงิน (<span class="currency-symbol">${userSettings.currency}</span>)`;
+      }
     }
 
     function toggleReimburseFields() {
@@ -951,27 +1029,122 @@
       });
     }
 
-    // SUBMIT 1: EXPENSE & INCOME
+    // HELPER: CALCULATE NEXT DUE DATE FOR INSTALLMENT
+    function getNextDueDateString(currentDateStr, payDay) {
+      const curDate = new Date(currentDateStr);
+      let targetYear = curDate.getFullYear();
+      let targetMonth = curDate.getMonth() + 1;
+
+      if (targetMonth > 11) {
+        targetMonth = 0;
+        targetYear++;
+      }
+
+      const daysInTargetMonth = new Date(targetYear, targetMonth + 1, 0).getDate();
+      const actualDay = Math.min(payDay, daysInTargetMonth);
+
+      const nextDate = new Date(targetYear, targetMonth, actualDay);
+      return nextDate.toISOString().split('T')[0];
+    }
+
+    // SUBMIT 1: EXPENSE & INCOME (WITH INSTALLMENT PLAN CREATION)
     document.getElementById('tx-form').addEventListener('submit', async (e) => {
       e.preventDefault();
       if (!currentUser || !selectedAccountId || !selectedCategoryId) return alert("กรุณาเลือกบัญชีและหมวดหมู่");
 
-      const totalAmount = parseFloat(document.getElementById('tx-amount').value);
+      const rawAmount = parseFloat(document.getElementById('tx-amount').value);
       const note = document.getElementById('tx-note').value.trim();
       const date = document.getElementById('tx-date').value;
       const selectedCat = categoriesList.find(c => c.id === selectedCategoryId);
 
-      if (isNaN(totalAmount) || totalAmount <= 0) return alert("กรุณากรอกจำนวนเงินให้ถูกต้อง");
+      if (isNaN(rawAmount) || rawAmount <= 0) return alert("กรุณากรอกจำนวนเงินให้ถูกต้อง");
 
+      const isInstallment = currentTxType === 'expense' && document.getElementById('is-installment').checked;
+
+      if (isInstallment) {
+        const totalCount = parseInt(document.getElementById('inst-total-count').value) || 2;
+        const payDay = parseInt(document.getElementById('inst-pay-day').value) || 1;
+
+        if (totalCount < 2) return alert("การผ่อนชำระต้องมีอย่างน้อย 2 งวดขึ้นไป");
+
+        const { normalAmt, finalAmt } = calculateInstallmentBreakdown(rawAmount, totalCount);
+        const firstInstallmentAmt = (totalCount === 1) ? rawAmount : normalAmt;
+
+        try {
+          const batch = db.batch();
+
+          // 1. Add Installment Plan Header
+          const planRef = db.collection('users').doc(currentUser.uid).collection('installment_plans').doc();
+          const nextDueDateStr = getNextDueDateString(date, payDay);
+
+          batch.set(planRef, {
+            title: note || (selectedCat ? selectedCat.name : 'รายการผ่อนชำระ'),
+            totalAmount: rawAmount,
+            totalCount: totalCount,
+            currentCount: 1,
+            normalAmount: normalAmt,
+            finalAmount: finalAmt,
+            payDay: payDay,
+            status: 'active',
+            accountId: selectedAccountId,
+            categoryId: selectedCategoryId,
+            categoryName: selectedCat ? selectedCat.name : '',
+            startDate: date,
+            nextDueDate: nextDueDateStr,
+            createdAt: firebase.firestore.FieldValue.serverTimestamp()
+          });
+
+          // 2. Add Transaction for 1st Installment
+          const txRef = db.collection('users').doc(currentUser.uid).collection('transactions').doc();
+          batch.set(txRef, {
+            kind: 'transaction',
+            type: 'expense',
+            amount: firstInstallmentAmt,
+            myShare: firstInstallmentAmt,
+            friendShare: 0,
+            remainingPending: 0,
+            isReimburse: false,
+            isInstallment: true,
+            installmentPlanId: planRef.id,
+            installmentCurrentCount: 1,
+            installmentTotalCount: totalCount,
+            note: `${note ? note + ' ' : ''}(ผ่อนชำระ 1/${totalCount})`,
+            date: date,
+            accountId: selectedAccountId,
+            categoryId: selectedCategoryId,
+            categoryName: selectedCat ? selectedCat.name : '',
+            createdAt: firebase.firestore.FieldValue.serverTimestamp()
+          });
+
+          // 3. Deduct 1st installment from Account Balance
+          const accRef = db.collection('users').doc(currentUser.uid).collection('accounts').doc(selectedAccountId);
+          const accDoc = await accRef.get();
+          if (accDoc.exists) {
+            batch.update(accRef, { balance: accDoc.data().balance - firstInstallmentAmt });
+          }
+
+          await batch.commit();
+          alert(`สร้างแผนผ่อนชำระเรียบร้อย! บันทึกงวด 1/${totalCount} (฿${firstInstallmentAmt.toLocaleString()}) แล้ว`);
+
+          document.getElementById('tx-amount').value = '';
+          document.getElementById('tx-note').value = '';
+          document.getElementById('is-installment').checked = false;
+          toggleInstallmentFields();
+        } catch (err) { alert("สร้างแผนผ่อนชำระไม่สำเร็จ: " + err.message); }
+
+        return;
+      }
+
+      // Normal Expense / Income Logic
       const isReimburse = currentTxType === 'expense' && document.getElementById('is-reimburse').checked;
-      let myShare = totalAmount;
+      let myShare = rawAmount;
       let friendShare = 0;
       let remainingPending = 0;
 
       if (isReimburse) {
         const myShareVal = document.getElementById('my-share-amount').value;
         myShare = myShareVal === '' ? 0 : parseFloat(myShareVal) || 0;
-        friendShare = Math.max(0, totalAmount - myShare);
+        friendShare = Math.max(0, rawAmount - myShare);
         remainingPending = friendShare;
       }
 
@@ -979,7 +1152,7 @@
         await db.collection('users').doc(currentUser.uid).collection('transactions').add({
           kind: 'transaction',
           type: currentTxType,
-          amount: totalAmount,
+          amount: rawAmount,
           myShare: myShare,
           friendShare: friendShare,
           remainingPending: remainingPending,
@@ -996,7 +1169,7 @@
         await db.runTransaction(async (transaction) => {
           const accDoc = await transaction.get(accRef);
           if (accDoc.exists) {
-            const newBalance = currentTxType === 'income' ? accDoc.data().balance + totalAmount : accDoc.data().balance - totalAmount;
+            const newBalance = currentTxType === 'income' ? accDoc.data().balance + rawAmount : accDoc.data().balance - rawAmount;
             transaction.update(accRef, { balance: newBalance });
           }
         });
@@ -1186,6 +1359,169 @@
         switchEntryMode('expense');
       } catch (err) { alert("บันทึกไม่สำเร็จ: " + err.message); }
     });
+
+    // AUTOMATED INSTALLMENT PROCESSING ENGINE
+    async function checkAndProcessDueInstallmentPlans(plans) {
+      if (!currentUser || !plans || plans.length === 0) return;
+
+      const todayStr = new Date().toISOString().split('T')[0];
+      const activePlans = plans.filter(p => p.status === 'active' && p.currentCount < p.totalCount);
+
+      for (const plan of activePlans) {
+        if (plan.nextDueDate <= todayStr) {
+          const nextCount = plan.currentCount + 1;
+          const isFinal = nextCount === plan.totalCount;
+          const chargeAmount = isFinal ? plan.finalAmount : plan.normalAmount;
+          const dueDateStr = plan.nextDueDate;
+
+          try {
+            const batch = db.batch();
+
+            // 1. Create Transaction for this due installment
+            const txRef = db.collection('users').doc(currentUser.uid).collection('transactions').doc();
+            batch.set(txRef, {
+              kind: 'transaction',
+              type: 'expense',
+              amount: chargeAmount,
+              myShare: chargeAmount,
+              friendShare: 0,
+              remainingPending: 0,
+              isReimburse: false,
+              isInstallment: true,
+              installmentPlanId: plan.id,
+              installmentCurrentCount: nextCount,
+              installmentTotalCount: plan.totalCount,
+              note: `${plan.title ? plan.title + ' ' : ''}(ผ่อนชำระ ${nextCount}/${plan.totalCount})`,
+              date: dueDateStr,
+              accountId: plan.accountId,
+              categoryId: plan.categoryId,
+              categoryName: plan.categoryName || '',
+              createdAt: firebase.firestore.FieldValue.serverTimestamp()
+            });
+
+            // 2. Update Installment Plan State
+            const planRef = db.collection('users').doc(currentUser.uid).collection('installment_plans').doc(plan.id);
+            const nextDueDateStr = isFinal ? '' : getNextDueDateString(dueDateStr, plan.payDay);
+            const newStatus = isFinal ? 'completed' : 'active';
+
+            batch.update(planRef, {
+              currentCount: nextCount,
+              nextDueDate: nextDueDateStr,
+              status: newStatus
+            });
+
+            // 3. Deduct Account Balance
+            const accRef = db.collection('users').doc(currentUser.uid).collection('accounts').doc(plan.accountId);
+            const accDoc = await accRef.get();
+            if (accDoc.exists) {
+              batch.update(accRef, { balance: accDoc.data().balance - chargeAmount });
+            }
+
+            await batch.commit();
+            console.log(`Auto-processed installment: ${plan.title} (${nextCount}/${plan.totalCount})`);
+          } catch (err) {
+            console.error("Auto installment processing error:", err);
+          }
+        }
+      }
+    }
+
+    // REALTIME INSTALLMENT TRACKER LISTENER & RENDERER
+    function loadInstallmentPlansRealtime(userId) {
+      if (unsubscribeInst) unsubscribeInst();
+
+      unsubscribeInst = db.collection('users').doc(userId).collection('installment_plans')
+        .orderBy('createdAt', 'desc')
+        .onSnapshot((snapshot) => {
+          activeInstallmentPlans = [];
+          snapshot.forEach(doc => activeInstallmentPlans.push({ id: doc.id, ...doc.data() }));
+
+          checkAndProcessDueInstallmentPlans(activeInstallmentPlans);
+          renderInstallmentTracker();
+        });
+    }
+
+    function renderInstallmentTracker() {
+      const container = document.getElementById('installment-tracker-container');
+      const activeList = activeInstallmentPlans.filter(p => p.status === 'active');
+
+      document.getElementById('lbl-total-active-inst').innerText = `${activeList.length} รายการ`;
+
+      if (activeList.length === 0) {
+        container.innerHTML = '<p class="text-center text-xs text-gray-400 py-4 border border-dashed rounded-2xl">ไม่มีรายการผ่อนชำระในระบบ</p>';
+        return;
+      }
+
+      container.innerHTML = '';
+      activeList.forEach(plan => {
+        const acc = accountsList.find(a => a.id === plan.accountId);
+        const accName = acc ? acc.name : 'บัญชี';
+
+        const normalCountPaid = Math.max(0, plan.currentCount - 1);
+        const isCompleted = plan.currentCount >= plan.totalCount;
+
+        const totalPaid = isCompleted
+          ? plan.totalAmount
+          : (normalCountPaid * plan.normalAmount);
+        
+        const remainingAmt = Math.max(0, plan.totalAmount - totalPaid);
+        const pct = Math.min(100, Math.round((plan.currentCount / plan.totalCount) * 100));
+
+        const div = document.createElement('div');
+        div.className = "bg-indigo-50/70 border border-indigo-100 p-3 rounded-2xl space-y-2 text-xs shadow-xs";
+        div.innerHTML = `
+          <div class="flex justify-between items-start">
+            <div>
+              <h4 class="font-bold text-indigo-950 text-xs">${escapeHtml(plan.title)}</h4>
+              <p class="text-[10px] text-indigo-500">${accName} • [${escapeHtml(plan.categoryName || 'ผ่อนชำระ')}]</p>
+            </div>
+            <div class="text-right">
+              <span class="text-[10px] font-bold text-indigo-700 bg-white px-2 py-0.5 rounded-lg border border-indigo-200">
+                ${plan.currentCount}/${plan.totalCount} งวด (${pct}%)
+              </span>
+            </div>
+          </div>
+
+          <!-- Progress Bar -->
+          <div class="w-full h-2 bg-indigo-200/80 rounded-full overflow-hidden border border-indigo-200">
+            <div class="h-full bg-indigo-600 transition-all duration-500" style="width: ${pct}%"></div>
+          </div>
+
+          <!-- Financial Breakdown -->
+          <div class="grid grid-cols-3 gap-1 text-[10px] text-center bg-white p-1.5 rounded-xl border border-indigo-100">
+            <div>
+              <span class="text-gray-400 block">ผ่อนทั้งหมด</span>
+              <b class="text-indigo-900">${userSettings.currency}${plan.totalAmount.toLocaleString()}</b>
+            </div>
+            <div>
+              <span class="text-gray-400 block">จ่ายแล้ว</span>
+              <b class="text-emerald-600">${userSettings.currency}${totalPaid.toLocaleString()}</b>
+            </div>
+            <div>
+              <span class="text-gray-400 block">คงเหลือ</span>
+              <b class="text-rose-600">${userSettings.currency}${remainingAmt.toLocaleString()}</b>
+            </div>
+          </div>
+
+          <!-- Footer Actions & Next Due Date -->
+          <div class="flex justify-between items-center text-[10px] pt-0.5">
+            <span class="text-indigo-700 font-medium">📅 งวดถัดไป: ${plan.nextDueDate || 'ครบแล้ว'}</span>
+            <button type="button" onclick="cancelInstallmentPlan('${plan.id}')" class="text-rose-400 hover:text-rose-600 underline">ยกเลิกสัญญา</button>
+          </div>
+        `;
+        container.appendChild(div);
+      });
+    }
+
+    async function cancelInstallmentPlan(planId) {
+      if (!currentUser || !confirm("ต้องการยกเลิกแผนผ่อนชำระนี้ใช่หรือไม่? (รายการที่เคยจ่ายไปแล้วจะไม่ถูกลบ)")) return;
+      try {
+        await db.collection('users').doc(currentUser.uid).collection('installment_plans').doc(planId).update({
+          status: 'cancelled'
+        });
+        alert("ยกเลิกแผนผ่อนชำระเรียบร้อย");
+      } catch (err) { alert("ยกเลิกไม่สำเร็จ: " + err.message); }
+    }
 
     // CASHFLOW LOGIC & BOUNDARY CONTROLS
     function getMinAccountCreationDate() {
@@ -1398,6 +1734,8 @@
                   badge = item.remainingPending > 0 
                     ? `<span class="text-[9px] bg-amber-100 text-amber-800 px-1 py-0.5 rounded ml-1">รอคืน ฿${item.remainingPending.toLocaleString()}</span>`
                     : `<span class="text-[9px] bg-emerald-100 text-emerald-800 px-1 py-0.5 rounded ml-1">คืนครบ ✓</span>`;
+                } else if (item.isInstallment) {
+                  badge = `<span class="text-[9px] bg-indigo-100 text-indigo-800 px-1 py-0.5 rounded ml-1">ผ่อนชำระ</span>`;
                 }
 
                 fullHtml += `
