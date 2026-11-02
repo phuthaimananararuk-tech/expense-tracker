@@ -121,7 +121,7 @@
       <section id="entry-view" class="hidden space-y-3 flex-1 flex flex-col justify-between">
         
         <div class="space-y-3">
-          <!-- 5 Mode Selectors -->
+          <!-- 5 Mode Selectors (Dynamically managed by CSS grid and hidden classes) -->
           <div id="mode-buttons-container" class="grid grid-cols-5 gap-1 bg-gray-200 p-1 rounded-xl text-center">
             <button type="button" id="btn-mode-expense" onclick="switchEntryMode('expense')" class="py-1.5 text-[10px] sm:text-[11px] font-semibold rounded-lg transition bg-rose-600 text-white shadow-xs">Expense</button>
             <button type="button" id="btn-mode-income" onclick="switchEntryMode('income')" class="py-1.5 text-[10px] sm:text-[11px] font-semibold rounded-lg transition text-gray-700">Income</button>
@@ -287,7 +287,7 @@
           </form>
         </div>
 
-        <!-- Net Cash Flow Balance Bar (Moved to Bottom - Always Current Month Only) -->
+        <!-- Net Cash Flow Balance Bar -->
         <div class="bg-gray-50 border border-gray-200 rounded-2xl p-2.5 shadow-xs space-y-1.5 mt-3">
           <div class="flex items-center justify-between text-xs font-semibold text-gray-700">
             <div class="flex items-center space-x-1">
@@ -299,7 +299,7 @@
             </button>
           </div>
 
-          <!-- Balance Bar Visual (Current Month Only) -->
+          <!-- Balance Bar Visual -->
           <div class="relative w-full h-3.5 bg-gray-200 rounded-full overflow-hidden flex items-center border border-gray-300">
             <div class="absolute left-1/2 top-0 bottom-0 w-0.5 bg-gray-500 z-10"></div>
             <div id="entry-cashflow-bar-fill" class="h-full transition-all duration-500 ease-out"></div>
@@ -435,7 +435,7 @@
     </footer>
   </div>
 
-  <!-- POP-UP MODAL: CASH FLOW INSPECTOR -->
+  <!-- POP-UP MODAL: CASH FLOW -->
   <div id="cashflow-modal" class="hidden fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
     <div class="bg-white rounded-3xl w-full max-w-xs p-4 space-y-4 shadow-2xl relative">
       <!-- Close X Button -->
@@ -725,7 +725,7 @@
       document.querySelectorAll('.currency-symbol').forEach(el => el.innerText = userSettings.currency);
     }
 
-    // TOGGLE SETTLE & SPLIT VISIBILITY (FIXED BUG)
+    // TOGGLE SETTLE & SPLIT VISIBILITY (STRICT HIDE)
     function applyAdvancedFeaturesVisibility() {
       const enable = userSettings.enableAdvanced !== false;
       const bSt = document.getElementById('btn-mode-settle');
@@ -1221,7 +1221,6 @@
       if (popupMonth > 12) { popupMonth = 1; popupYear++; }
       else if (popupMonth < 1) { popupMonth = 12; popupYear--; }
 
-      // Clamp boundaries between minAccountDate and current month
       const currentNumericVal = popupYear * 12 + popupMonth;
       const minNumericVal = minYear * 12 + minMonth;
       const maxNumericVal = maxYear * 12 + maxMonth;
@@ -1288,7 +1287,6 @@
       const monthNames = ["มกราคม", "กุมภาพันธ์", "มีนาคม", "เมษายน", "พฤษภาคม", "มิถุนายน", "กรกฎาคม", "สิงหาคม", "กันยายน", "ตุลาคม", "พฤศจิกายน", "ธันวาคม"];
       document.getElementById('popup-cashflow-month-label').innerText = `${monthNames[popupMonth - 1]} ${popupYear}`;
 
-      // Check button disabled states based on boundaries
       const minDate = getMinAccountCreationDate();
       const minYear = minDate.getFullYear();
       const minMonth = minDate.getMonth() + 1;
