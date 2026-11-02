@@ -121,7 +121,7 @@
       <section id="entry-view" class="hidden space-y-3 flex-1 flex flex-col justify-between">
         
         <div class="space-y-3">
-          <!-- 5 Mode Selectors -->
+          <!-- 5 Mode Selectors (Grid classes dynamically updated via applyAdvancedFeaturesVisibility) -->
           <div id="mode-buttons-container" class="grid grid-cols-3 gap-1 bg-gray-200 p-1 rounded-xl text-center">
             <button type="button" id="btn-mode-expense" onclick="switchEntryMode('expense')" class="py-1.5 text-[10px] sm:text-[11px] font-semibold rounded-lg transition bg-rose-600 text-white shadow-xs">Expense</button>
             <button type="button" id="btn-mode-income" onclick="switchEntryMode('income')" class="py-1.5 text-[10px] sm:text-[11px] font-semibold rounded-lg transition text-gray-700">Income</button>
@@ -517,7 +517,7 @@
     let unsubscribeAcc = null;
     let unsubscribeCat = null;
 
-    let userSettings = { currency: '฿', enableAdvanced: false }; // Default to false initially to prevent pop-in
+    let userSettings = { currency: '฿', enableAdvanced: false };
     let accountsList = [];
     let categoriesList = [];
     let allTransactions = [];
@@ -726,7 +726,7 @@
       document.querySelectorAll('.currency-symbol').forEach(el => el.innerText = userSettings.currency);
     }
 
-    // TOGGLE SETTLE & SPLIT VISIBILITY (STRICT HIDE)
+    // STRICT VISIBILITY CONTROLLER
     function applyAdvancedFeaturesVisibility() {
       const enable = userSettings.enableAdvanced === true;
       const bSt = document.getElementById('btn-mode-settle');
@@ -754,7 +754,7 @@
       }
     }
 
-    // ENTRY MODES SWITCHING
+    // ENTRY MODES SWITCHING (GUARDED AGAINST UNAUTHORIZED SHOWING)
     function switchEntryMode(mode) {
       const enable = userSettings.enableAdvanced === true;
       if (!enable && (mode === 'settle' || mode === 'split')) return;
@@ -804,6 +804,9 @@
         renderSplitAccountButtons();
         renderSplitCategoryButtons();
       }
+
+      // CRITICAL FIX: Ensure hidden state is forcefully reapplied after any mode switch
+      applyAdvancedFeaturesVisibility();
     }
 
     function toggleReimburseFields() {
