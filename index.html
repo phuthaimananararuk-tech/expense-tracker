@@ -367,13 +367,12 @@
       <section id="setting-view" class="hidden space-y-4">
         <div class="flex items-center justify-between border-b pb-2">
           <h2 class="text-xs font-bold text-gray-700 uppercase tracking-wider">Setting - ตั้งค่าระบบ</h2>
-          <button onclick="goToEntryView()" class="text-xs font-semibold text-emerald-600 hover:underline">← กลับหน้า Entry</button>
         </div>
 
         <!-- Currency Setting -->
         <div class="space-y-1">
           <label class="block text-xs font-bold text-gray-700">สกุลเงินทั่วแอป</label>
-          <select id="setting-currency" class="w-full px-3 py-2 text-xs border rounded-xl bg-white">
+          <select id="setting-currency" onchange="autoSaveSettings()" class="w-full px-3 py-2 text-xs border rounded-xl bg-white">
             <option value="฿">บาท (฿)</option>
             <option value="$">ดอลลาร์ ($)</option>
             <option value="€">ยูโร (€)</option>
@@ -426,10 +425,6 @@
             </div>
           </div>
         </div>
-
-        <button type="button" onclick="saveSettings()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-medium py-2 rounded-xl text-xs shadow-xs transition">
-          บันทึกการตั้งค่า
-        </button>
       </section>
 
     </main>
@@ -442,10 +437,12 @@
 
   <!-- POP-UP MODAL: CASH FLOW MONTH INSPECTOR -->
   <div id="cashflow-modal" class="hidden fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
-    <div class="bg-white rounded-3xl w-full max-w-xs p-4 space-y-4 shadow-2xl">
-      <div class="flex justify-between items-center border-b pb-2">
+    <div class="bg-white rounded-3xl w-full max-w-xs p-4 space-y-4 shadow-2xl relative">
+      <!-- Close X Button -->
+      <button onclick="closeCashflowPopUpModal()" class="absolute top-3 right-4 text-gray-400 hover:text-gray-600 font-bold text-base">✕</button>
+
+      <div class="border-b pb-2 pr-6">
         <h3 class="text-xs font-bold text-gray-700 uppercase">📊 Cash Flow Inspector</h3>
-        <button onclick="closeCashflowPopUpModal()" class="text-gray-400 hover:text-gray-600 font-bold text-base px-1">✕</button>
       </div>
 
       <!-- Month Selector Controls -->
@@ -467,10 +464,6 @@
           <span class="text-emerald-500 font-medium">รับ</span>
         </div>
       </div>
-
-      <button onclick="closeCashflowPopUpModal()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-medium py-2 rounded-xl text-xs transition">
-        ปิดหน้าต่าง
-      </button>
     </div>
   </div>
 
@@ -556,7 +549,7 @@
     const openSettingsBtn = document.getElementById('open-settings-btn');
     const authStatusBar = document.getElementById('auth-status-bar');
 
-    // Page Switching (4 Official Views with Top persistent tabs)
+    // Page Switching
     function showView(viewName) {
       [loginView, registerView, entryView, summaryView, historyView, settingView].forEach(v => v.classList.add('hidden'));
       logoutBtn.classList.add('hidden');
@@ -570,13 +563,11 @@
         registerView.classList.remove('hidden');
         authStatusBar.innerText = 'สถานะ: กำลังสมัครสมาชิก';
       } else {
-        // Show Top Persistent Nav Tabs for Main Views
         topNavTabs.classList.remove('hidden');
         logoutBtn.classList.remove('hidden');
         openSettingsBtn.classList.remove('hidden');
         authStatusBar.innerText = `ผู้ใช้งาน: ${currentUser ? (currentUser.email || currentUser.displayName) : ''}`;
 
-        // Reset Tab Styles
         const tabE = document.getElementById('nav-tab-entry');
         const tabS = document.getElementById('nav-tab-summary');
         const tabH = document.getElementById('nav-tab-history');
@@ -764,6 +755,9 @@
 
     // ENTRY MODES SWITCHING
     function switchEntryMode(mode) {
+      const enable = userSettings.enableAdvanced !== false;
+      if (!enable && (mode === 'settle' || mode === 'split')) return;
+
       currentEntryMode = mode;
       const bExp = document.getElementById('btn-mode-expense');
       const bInc = document.getElementById('btn-mode-income');
@@ -798,12 +792,12 @@
         bTr.className = "py-1.5 text-[10px] sm:text-[11px] font-semibold rounded-lg transition bg-blue-600 text-white shadow-xs";
         trForm.classList.remove('hidden');
         renderTransferButtons();
-      } else if (mode === 'settle') {
+      } else if (mode === 'settle' && enable) {
         bSt.className = "py-1.5 text-[10px] sm:text-[11px] font-semibold rounded-lg transition bg-amber-600 text-white shadow-xs";
         stForm.classList.remove('hidden');
         renderSettleAccountButtons();
         renderPendingItemsList();
-      } else if (mode === 'split') {
+      } else if (mode === 'split' && enable) {
         bSp.className = "py-1.5 text-[10px] sm:text-[11px] font-semibold rounded-lg transition bg-purple-600 text-white shadow-xs";
         spForm.classList.remove('hidden');
         renderSplitAccountButtons();
@@ -1189,7 +1183,7 @@
       } catch (err) { alert("บันทึกไม่สำเร็จ: " + err.message); }
     });
 
-    // CASHFLOW LOGIC (ENTRY ALWAYS CURRENT MONTH, POPUP ALLOWS MONTH SWITCHING)
+    // CASHFLOW LOGIC
     function openCashflowPopUpModal() {
       popupYear = new Date().getFullYear();
       popupMonth = new Date().getMonth() + 1;
@@ -1230,7 +1224,6 @@
       return { incSum, expSum, netFlow: incSum - expSum };
     }
 
-    // Render Entry Cashflow (Current Month Only)
     function updateEntryCurrentMonthCashFlowUI() {
       const now = new Date();
       const { netFlow, incSum, expSum } = calculateCashflowForMonth(now.getFullYear(), now.getMonth() + 1);
@@ -1256,7 +1249,6 @@
       }
     }
 
-    // Render Pop-up Cashflow (Selected Month)
     function updatePopupCashflowUI() {
       const monthNames = ["มกราคม", "กุมภาพันธ์", "มีนาคม", "เมษายน", "พฤษภาคม", "มิถุนายน", "กรกฎาคม", "สิงหาคม", "กันยายน", "ตุลาคม", "พฤศจิกายน", "ธันวาคม"];
       document.getElementById('popup-cashflow-month-label').innerText = `${monthNames[popupMonth - 1]} ${popupYear}`;
@@ -1320,7 +1312,6 @@
             updatePopupCashflowUI();
           }
 
-          // Render History Logs
           let grouped = {};
           allTransactions.forEach(item => {
             const d = item.date || 'ไม่ระบุวันที่';
@@ -1505,7 +1496,7 @@
       } catch (err) { alert("ลบไม่สำเร็จ: " + err.message); }
     }
 
-    // SETTINGS MANAGEMENT
+    // SETTINGS MANAGEMENT (AUTO-SAVE)
     function renderSettingsAccounts() {
       const container = document.getElementById('accounts-settings-list');
       container.innerHTML = '';
@@ -1606,12 +1597,13 @@
       } catch (err) { alert("ลบหมวดหมู่ไม่สำเร็จ: " + err.message); }
     }
 
-    function toggleAdvancedFeaturesSetting() {
+    async function toggleAdvancedFeaturesSetting() {
       userSettings.enableAdvanced = document.getElementById('setting-enable-advanced').checked;
       applyAdvancedFeaturesVisibility();
+      await autoSaveSettings();
     }
 
-    async function saveSettings() {
+    async function autoSaveSettings() {
       const currency = document.getElementById('setting-currency').value;
       const enableAdvanced = document.getElementById('setting-enable-advanced').checked;
       try {
@@ -1622,10 +1614,7 @@
         userSettings.currency = currency;
         userSettings.enableAdvanced = enableAdvanced;
         updateCurrencyUI();
-        applyAdvancedFeaturesVisibility();
-        alert("บันทึกการตั้งค่าเรียบร้อย!");
-        goToEntryView();
-      } catch (err) { alert("บันทึกไม่สำเร็จ: " + err.message); }
+      } catch (err) { console.warn("Auto-save warning:", err.message); }
     }
 
     function escapeHtml(text) {
