@@ -189,7 +189,7 @@
               </div>
             </div>
 
-            <!-- Reimbursement Sub-section (Expense Only - Hidden for Income & when Settle/Split is disabled) -->
+            <!-- Reimbursement Sub-section (Expense Only - Strictly hidden for Income) -->
             <div id="reimburse-section" class="border-t pt-2 space-y-1 hidden">
               <label class="flex items-center space-x-2 cursor-pointer">
                 <input type="checkbox" id="is-reimburse" onchange="toggleReimburseFields()" class="rounded text-emerald-600 focus:ring-emerald-500 w-4 h-4">
@@ -465,7 +465,7 @@
     </footer>
   </div>
 
-  <!-- CUSTOM ON-SCREEN NUMERIC KEYPAD POP-UP (WITH * / () AND LARGE TEXT) -->
+  <!-- CUSTOM ON-SCREEN NUMERIC KEYPAD POP-UP (WITH LIVE DISPLAY BAR & REARRANGED OPERATORS/COLUMNS) -->
   <div id="custom-keypad-overlay" class="hidden fixed inset-0 bg-black/40 flex items-end justify-center z-50 transition-opacity">
     <div class="bg-white w-full max-w-md rounded-t-3xl p-4 shadow-2xl border-t border-gray-200 space-y-3 animate-slide-up">
       <div class="flex justify-between items-center border-b pb-2">
@@ -473,32 +473,44 @@
         <button type="button" onclick="closeCustomKeypad()" class="text-gray-400 hover:text-gray-600 font-bold px-2 py-0.5 rounded-lg text-sm">✕ ปิด</button>
       </div>
 
-      <!-- Keypad Grid (Large text, compact buttons) -->
-      <div class="grid grid-cols-4 gap-2 font-bold">
-        <button type="button" onclick="keypadPress('(')" class="bg-indigo-50 text-indigo-700 hover:bg-indigo-100 py-2.5 rounded-2xl active:bg-indigo-200 transition text-2xl">(</button>
-        <button type="button" onclick="keypadPress(')')" class="bg-indigo-50 text-indigo-700 hover:bg-indigo-100 py-2.5 rounded-2xl active:bg-indigo-200 transition text-2xl">)</button>
-        <button type="button" onclick="keypadClear()" class="bg-rose-50 text-rose-600 hover:bg-rose-100 py-2.5 rounded-2xl active:bg-rose-200 transition text-xl">C</button>
-        <button type="button" onclick="keypadBackspace()" class="bg-gray-200 hover:bg-gray-300 py-2.5 rounded-2xl active:bg-gray-400 transition flex items-center justify-center text-xl">⌫</button>
+      <!-- Live Display Bar (Shows currently typing number/expression) -->
+      <div id="keypad-live-display" class="bg-gray-100 border border-gray-200 rounded-2xl px-3 py-2 text-right text-xl font-bold text-gray-800 tracking-wider overflow-x-auto min-h-[44px] flex items-center justify-end">
+        0
+      </div>
 
+      <!-- Keypad Grid (Operators on top row, specials on right column) -->
+      <div class="grid grid-cols-4 gap-2 font-bold">
+        <!-- Top Row: Operators (+, -, *, /) -->
+        <button type="button" onclick="keypadPress('+')" class="bg-indigo-50 text-indigo-700 hover:bg-indigo-100 py-2.5 rounded-2xl active:bg-indigo-200 transition text-3xl">+</button>
+        <button type="button" onclick="keypadPress('-')" class="bg-indigo-50 text-indigo-700 hover:bg-indigo-100 py-2.5 rounded-2xl active:bg-indigo-200 transition text-3xl">-</button>
+        <button type="button" onclick="keypadPress('*')" class="bg-indigo-50 text-indigo-700 hover:bg-indigo-100 py-2.5 rounded-2xl active:bg-indigo-200 transition text-3xl">×</button>
+        <button type="button" onclick="keypadPress('/')" class="bg-indigo-50 text-indigo-700 hover:bg-indigo-100 py-2.5 rounded-2xl active:bg-indigo-200 transition text-3xl">÷</button>
+
+        <!-- Row 2: 7, 8, 9, ( -->
         <button type="button" onclick="keypadPress('7')" class="bg-gray-100 hover:bg-gray-200 py-2.5 rounded-2xl active:bg-gray-300 transition text-3xl">7</button>
         <button type="button" onclick="keypadPress('8')" class="bg-gray-100 hover:bg-gray-200 py-2.5 rounded-2xl active:bg-gray-300 transition text-3xl">8</button>
         <button type="button" onclick="keypadPress('9')" class="bg-gray-100 hover:bg-gray-200 py-2.5 rounded-2xl active:bg-gray-300 transition text-3xl">9</button>
-        <button type="button" onclick="keypadPress('+')" class="bg-indigo-50 text-indigo-700 hover:bg-indigo-100 py-2.5 rounded-2xl active:bg-indigo-200 transition text-3xl">+</button>
+        <button type="button" onclick="keypadPress('(')" class="bg-gray-200 hover:bg-gray-300 py-2.5 rounded-2xl active:bg-gray-400 transition text-2xl text-gray-700">(</button>
 
+        <!-- Row 3: 4, 5, 6, ) -->
         <button type="button" onclick="keypadPress('4')" class="bg-gray-100 hover:bg-gray-200 py-2.5 rounded-2xl active:bg-gray-300 transition text-3xl">4</button>
         <button type="button" onclick="keypadPress('5')" class="bg-gray-100 hover:bg-gray-200 py-2.5 rounded-2xl active:bg-gray-300 transition text-3xl">5</button>
         <button type="button" onclick="keypadPress('6')" class="bg-gray-100 hover:bg-gray-200 py-2.5 rounded-2xl active:bg-gray-300 transition text-3xl">6</button>
-        <button type="button" onclick="keypadPress('-')" class="bg-indigo-50 text-indigo-700 hover:bg-indigo-100 py-2.5 rounded-2xl active:bg-indigo-200 transition text-3xl">-</button>
+        <button type="button" onclick="keypadPress(')')" class="bg-gray-200 hover:bg-gray-300 py-2.5 rounded-2xl active:bg-gray-400 transition text-2xl text-gray-700">)</button>
 
+        <!-- Row 4: 1, 2, 3, Backspace -->
         <button type="button" onclick="keypadPress('1')" class="bg-gray-100 hover:bg-gray-200 py-2.5 rounded-2xl active:bg-gray-300 transition text-3xl">1</button>
         <button type="button" onclick="keypadPress('2')" class="bg-gray-100 hover:bg-gray-200 py-2.5 rounded-2xl active:bg-gray-300 transition text-3xl">2</button>
         <button type="button" onclick="keypadPress('3')" class="bg-gray-100 hover:bg-gray-200 py-2.5 rounded-2xl active:bg-gray-300 transition text-3xl">3</button>
-        <button type="button" onclick="keypadPress('*')" class="bg-indigo-50 text-indigo-700 hover:bg-indigo-100 py-2.5 rounded-2xl active:bg-indigo-200 transition text-3xl">×</button>
+        <button type="button" onclick="keypadBackspace()" class="bg-gray-200 hover:bg-gray-300 py-2.5 rounded-2xl active:bg-gray-400 transition flex items-center justify-center text-xl text-gray-700">⌫</button>
 
-        <button type="button" onclick="keypadPress('0')" class="bg-gray-100 hover:bg-gray-200 py-2.5 rounded-2xl active:bg-gray-300 transition text-3xl">0</button>
+        <!-- Row 5: 0, ., C, Done (✓) -->
+        <button type="button" onclick="keypadPress('0')" class="bg-gray-100 hover:bg-gray-200 py-2.5 rounded-2xl active:bg-gray-300 transition text-3xl col-span-2">0</button>
         <button type="button" onclick="keypadPress('.')" class="bg-gray-100 hover:bg-gray-200 py-2.5 rounded-2xl active:bg-gray-300 transition text-3xl">.</button>
-        <button type="button" onclick="keypadPress('/')" class="bg-indigo-50 text-indigo-700 hover:bg-indigo-100 py-2.5 rounded-2xl active:bg-indigo-200 transition text-3xl">÷</button>
-        <button type="button" onclick="keypadDone()" class="bg-emerald-600 hover:bg-emerald-700 text-white py-2.5 rounded-2xl active:bg-emerald-800 transition text-xl shadow-sm">✓</button>
+        <button type="button" onclick="keypadClear()" class="bg-rose-50 text-rose-600 hover:bg-rose-100 py-2.5 rounded-2xl active:bg-rose-200 transition text-xl">C</button>
+
+        <!-- Final Done Button -->
+        <button type="button" onclick="keypadDone()" class="bg-emerald-600 hover:bg-emerald-700 text-white py-2.5 rounded-2xl col-span-4 active:bg-emerald-800 transition text-xl shadow-sm">เสร็จสิ้น (✓)</button>
       </div>
     </div>
   </div>
@@ -613,9 +625,11 @@
     const openSettingsBtn = document.getElementById('open-settings-btn');
     const authStatusBar = document.getElementById('auth-status-bar');
 
-    // CUSTOM KEYPAD CONTROLLERS (WITH SAFE EXPRESSION EVALUATION INCLUDING PARENTHESES)
+    // CUSTOM KEYPAD CONTROLLERS (WITH LIVE DISPLAY BAR SYNC)
     function openCustomKeypad(fieldId) {
       activeKeypadFieldId = fieldId;
+      const el = document.getElementById(fieldId);
+      document.getElementById('keypad-live-display').innerText = el.value || '0';
       document.getElementById('custom-keypad-overlay').classList.remove('hidden');
     }
 
@@ -629,6 +643,7 @@
       if (!activeKeypadFieldId) return;
       const el = document.getElementById(activeKeypadFieldId);
       el.value = (el.value === '0' && val !== '.') ? val : (el.value + val);
+      document.getElementById('keypad-live-display').innerText = el.value || '0';
       triggerFieldInputEvent(el);
     }
 
@@ -636,6 +651,7 @@
       if (!activeKeypadFieldId) return;
       const el = document.getElementById(activeKeypadFieldId);
       el.value = '';
+      document.getElementById('keypad-live-display').innerText = '0';
       triggerFieldInputEvent(el);
     }
 
@@ -643,6 +659,7 @@
       if (!activeKeypadFieldId) return;
       const el = document.getElementById(activeKeypadFieldId);
       el.value = el.value.slice(0, -1);
+      document.getElementById('keypad-live-display').innerText = el.value || '0';
       triggerFieldInputEvent(el);
     }
 
@@ -657,11 +674,11 @@
       if (!valStr) return;
 
       try {
-        // Sanitize mathematical expression to allow safe evaluation including parentheses and operators
         if (/^[0-9+\-*/().\s]+$/.test(valStr)) {
           let result = Function('"use strict";return (' + valStr + ')')();
           if (!isNaN(result) && isFinite(result)) {
             el.value = result;
+            document.getElementById('keypad-live-display').innerText = result;
             triggerFieldInputEvent(el);
           }
         }
