@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>YUET (v1.0) - บันทึกการเงินและจัดการทีมงาน</title>
+  <title>YUET (v1.1) - บันทึกการเงินและจัดการทีมงาน</title>
   
   <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
@@ -39,7 +39,7 @@
       <div class="flex flex-col items-center">
         <div class="flex items-baseline space-x-1">
           <h1 class="text-xl font-black tracking-wider uppercase drop-shadow-sm">YUET</h1>
-          <span class="text-[9px] font-medium text-emerald-200 tracking-tight">(v1.0)</span>
+          <span class="text-[9px] font-medium text-emerald-200 tracking-tight">(v1.1)</span>
         </div>
         <p class="text-[8px] text-emerald-100/80 tracking-tight font-light">by Phuthai Mananararuk & Gemini</p>
       </div>
@@ -189,7 +189,7 @@
               </div>
             </div>
 
-            <!-- Reimbursement Sub-section (Expense Only - Hidden when Settle/Split is disabled) -->
+            <!-- Reimbursement Sub-section (Expense Only - Hidden for Income & when Settle/Split is disabled) -->
             <div id="reimburse-section" class="border-t pt-2 space-y-1 hidden">
               <label class="flex items-center space-x-2 cursor-pointer">
                 <input type="checkbox" id="is-reimburse" onchange="toggleReimburseFields()" class="rounded text-emerald-600 focus:ring-emerald-500 w-4 h-4">
@@ -239,7 +239,7 @@
               <input type="text" id="tr-note" placeholder="เช่น กด ATM, ย้ายเงินเก็บ" class="w-full px-2 py-1.5 text-xs border rounded-xl bg-white">
             </div>
             <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 rounded-xl text-xs shadow-xs transition">
-              🔄 บันทึกการโอนเงิน
+              บันทึกการโอนเงิน
             </button>
           </form>
 
@@ -270,7 +270,7 @@
               <input type="text" id="settle-note" placeholder="เช่น เพื่อนโอนคืนค่าอาหาร" class="w-full px-2 py-1.5 text-xs border rounded-xl bg-white">
             </div>
             <button type="submit" class="w-full bg-amber-600 hover:bg-amber-700 text-white font-medium py-2 rounded-xl text-xs shadow-xs transition">
-              ✓ ยืนยันรับเงินคืน (Settle)
+              ยืนยันรับเงินคืน (Settle)
             </button>
           </form>
 
@@ -313,7 +313,7 @@
             </div>
 
             <button type="submit" class="w-full bg-purple-600 hover:bg-purple-700 text-white font-medium py-2 rounded-xl text-xs shadow-xs transition">
-              🤝 บันทึกรับเงินแทน (Split)
+              บันทึกรับเงินแทน (Split)
             </button>
           </form>
         </div>
@@ -322,7 +322,7 @@
         <div class="bg-gray-50 border border-gray-200 rounded-2xl p-2.5 shadow-xs space-y-1.5 mt-3">
           <div class="flex items-center justify-between text-xs font-semibold text-gray-700">
             <div class="flex items-center space-x-1">
-              <span>📊 Cash Flow (เดือนปัจจุบัน)</span>
+              <span>Cash Flow (เดือนปัจจุบัน)</span>
             </div>
             <button type="button" onclick="openCashflowPopUpModal()" class="text-gray-400 hover:text-gray-600 p-1 rounded-lg transition" title="ดูเดือนอื่น">
               <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"/></svg>
@@ -377,7 +377,7 @@
         <div class="space-y-2 border-t pt-3">
           <div class="flex justify-between items-center">
             <h3 class="text-xs font-bold text-indigo-900 uppercase flex items-center gap-1">
-              <span>🔄 สัญญาผ่อนชำระ (Installment Tracker)</span>
+              <span>สัญญาผ่อนชำระ (Installment Tracker)</span>
             </h3>
             <span id="lbl-total-active-inst" class="text-[10px] font-semibold text-indigo-600 bg-indigo-50 px-2 py-0.5 rounded-full border border-indigo-100">0 รายการ</span>
           </div>
@@ -465,7 +465,7 @@
     </footer>
   </div>
 
-  <!-- CUSTOM ON-SCREEN NUMERIC KEYPAD POP-UP -->
+  <!-- CUSTOM ON-SCREEN NUMERIC KEYPAD POP-UP (WITH * / () AND LARGE TEXT) -->
   <div id="custom-keypad-overlay" class="hidden fixed inset-0 bg-black/40 flex items-end justify-center z-50 transition-opacity">
     <div class="bg-white w-full max-w-md rounded-t-3xl p-4 shadow-2xl border-t border-gray-200 space-y-3 animate-slide-up">
       <div class="flex justify-between items-center border-b pb-2">
@@ -473,28 +473,32 @@
         <button type="button" onclick="closeCustomKeypad()" class="text-gray-400 hover:text-gray-600 font-bold px-2 py-0.5 rounded-lg text-sm">✕ ปิด</button>
       </div>
 
-      <!-- Keypad Grid -->
-      <div class="grid grid-cols-4 gap-2 text-sm font-semibold">
-        <button type="button" onclick="keypadPress('7')" class="bg-gray-100 hover:bg-gray-200 py-3 rounded-2xl active:bg-gray-300 transition">7</button>
-        <button type="button" onclick="keypadPress('8')" class="bg-gray-100 hover:bg-gray-200 py-3 rounded-2xl active:bg-gray-300 transition">8</button>
-        <button type="button" onclick="keypadPress('9')" class="bg-gray-100 hover:bg-gray-200 py-3 rounded-2xl active:bg-gray-300 transition">9</button>
-        <button type="button" onclick="keypadPress('+')" class="bg-indigo-50 text-indigo-700 hover:bg-indigo-100 py-3 rounded-2xl active:bg-indigo-200 transition">+</button>
+      <!-- Keypad Grid (Large text, compact buttons) -->
+      <div class="grid grid-cols-4 gap-2 font-bold">
+        <button type="button" onclick="keypadPress('(')" class="bg-indigo-50 text-indigo-700 hover:bg-indigo-100 py-2.5 rounded-2xl active:bg-indigo-200 transition text-2xl">(</button>
+        <button type="button" onclick="keypadPress(')')" class="bg-indigo-50 text-indigo-700 hover:bg-indigo-100 py-2.5 rounded-2xl active:bg-indigo-200 transition text-2xl">)</button>
+        <button type="button" onclick="keypadClear()" class="bg-rose-50 text-rose-600 hover:bg-rose-100 py-2.5 rounded-2xl active:bg-rose-200 transition text-xl">C</button>
+        <button type="button" onclick="keypadBackspace()" class="bg-gray-200 hover:bg-gray-300 py-2.5 rounded-2xl active:bg-gray-400 transition flex items-center justify-center text-xl">⌫</button>
 
-        <button type="button" onclick="keypadPress('4')" class="bg-gray-100 hover:bg-gray-200 py-3 rounded-2xl active:bg-gray-300 transition">4</button>
-        <button type="button" onclick="keypadPress('5')" class="bg-gray-100 hover:bg-gray-200 py-3 rounded-2xl active:bg-gray-300 transition">5</button>
-        <button type="button" onclick="keypadPress('6')" class="bg-gray-100 hover:bg-gray-200 py-3 rounded-2xl active:bg-gray-300 transition">6</button>
-        <button type="button" onclick="keypadPress('-')" class="bg-indigo-50 text-indigo-700 hover:bg-indigo-100 py-3 rounded-2xl active:bg-indigo-200 transition">-</button>
+        <button type="button" onclick="keypadPress('7')" class="bg-gray-100 hover:bg-gray-200 py-2.5 rounded-2xl active:bg-gray-300 transition text-3xl">7</button>
+        <button type="button" onclick="keypadPress('8')" class="bg-gray-100 hover:bg-gray-200 py-2.5 rounded-2xl active:bg-gray-300 transition text-3xl">8</button>
+        <button type="button" onclick="keypadPress('9')" class="bg-gray-100 hover:bg-gray-200 py-2.5 rounded-2xl active:bg-gray-300 transition text-3xl">9</button>
+        <button type="button" onclick="keypadPress('+')" class="bg-indigo-50 text-indigo-700 hover:bg-indigo-100 py-2.5 rounded-2xl active:bg-indigo-200 transition text-3xl">+</button>
 
-        <button type="button" onclick="keypadPress('1')" class="bg-gray-100 hover:bg-gray-200 py-3 rounded-2xl active:bg-gray-300 transition">1</button>
-        <button type="button" onclick="keypadPress('2')" class="bg-gray-100 hover:bg-gray-200 py-3 rounded-2xl active:bg-gray-300 transition">2</button>
-        <button type="button" onclick="keypadPress('3')" class="bg-gray-100 hover:bg-gray-200 py-3 rounded-2xl active:bg-gray-300 transition">3</button>
-        <button type="button" onclick="keypadClear()" class="bg-rose-50 text-rose-600 hover:bg-rose-100 py-3 rounded-2xl active:bg-rose-200 transition text-xs font-bold">C</button>
+        <button type="button" onclick="keypadPress('4')" class="bg-gray-100 hover:bg-gray-200 py-2.5 rounded-2xl active:bg-gray-300 transition text-3xl">4</button>
+        <button type="button" onclick="keypadPress('5')" class="bg-gray-100 hover:bg-gray-200 py-2.5 rounded-2xl active:bg-gray-300 transition text-3xl">5</button>
+        <button type="button" onclick="keypadPress('6')" class="bg-gray-100 hover:bg-gray-200 py-2.5 rounded-2xl active:bg-gray-300 transition text-3xl">6</button>
+        <button type="button" onclick="keypadPress('-')" class="bg-indigo-50 text-indigo-700 hover:bg-indigo-100 py-2.5 rounded-2xl active:bg-indigo-200 transition text-3xl">-</button>
 
-        <button type="button" onclick="keypadPress('0')" class="bg-gray-100 hover:bg-gray-200 py-3 rounded-2xl active:bg-gray-300 transition col-span-2">0</button>
-        <button type="button" onclick="keypadPress('.')" class="bg-gray-100 hover:bg-gray-200 py-3 rounded-2xl active:bg-gray-300 transition">.</button>
-        <button type="button" onclick="keypadBackspace()" class="bg-gray-200 hover:bg-gray-300 py-3 rounded-2xl active:bg-gray-400 transition flex items-center justify-center">⌫</button>
+        <button type="button" onclick="keypadPress('1')" class="bg-gray-100 hover:bg-gray-200 py-2.5 rounded-2xl active:bg-gray-300 transition text-3xl">1</button>
+        <button type="button" onclick="keypadPress('2')" class="bg-gray-100 hover:bg-gray-200 py-2.5 rounded-2xl active:bg-gray-300 transition text-3xl">2</button>
+        <button type="button" onclick="keypadPress('3')" class="bg-gray-100 hover:bg-gray-200 py-2.5 rounded-2xl active:bg-gray-300 transition text-3xl">3</button>
+        <button type="button" onclick="keypadPress('*')" class="bg-indigo-50 text-indigo-700 hover:bg-indigo-100 py-2.5 rounded-2xl active:bg-indigo-200 transition text-3xl">×</button>
 
-        <button type="button" onclick="keypadDone()" class="bg-emerald-600 hover:bg-emerald-700 text-white py-3 rounded-2xl col-span-4 active:bg-emerald-800 transition font-bold shadow-sm">เสร็จสิ้น (✓)</button>
+        <button type="button" onclick="keypadPress('0')" class="bg-gray-100 hover:bg-gray-200 py-2.5 rounded-2xl active:bg-gray-300 transition text-3xl">0</button>
+        <button type="button" onclick="keypadPress('.')" class="bg-gray-100 hover:bg-gray-200 py-2.5 rounded-2xl active:bg-gray-300 transition text-3xl">.</button>
+        <button type="button" onclick="keypadPress('/')" class="bg-indigo-50 text-indigo-700 hover:bg-indigo-100 py-2.5 rounded-2xl active:bg-indigo-200 transition text-3xl">÷</button>
+        <button type="button" onclick="keypadDone()" class="bg-emerald-600 hover:bg-emerald-700 text-white py-2.5 rounded-2xl active:bg-emerald-800 transition text-xl shadow-sm">✓</button>
       </div>
     </div>
   </div>
@@ -504,7 +508,7 @@
     <div class="bg-white rounded-3xl w-full max-w-xs p-4 space-y-4 shadow-2xl relative">
       <button onclick="closeCashflowPopUpModal()" class="absolute top-3 right-4 text-gray-400 hover:text-gray-600 font-bold text-base">✕</button>
       <div class="border-b pb-2 pr-6">
-        <h3 class="text-xs font-bold text-gray-700 uppercase">📊 Cash Flow</h3>
+        <h3 class="text-xs font-bold text-gray-700 uppercase">Cash Flow</h3>
       </div>
       <div class="flex items-center justify-between bg-gray-50 p-2 rounded-2xl border border-gray-200">
         <button id="popup-prev-month-btn" onclick="changePopupCashflowMonth(-1)" class="p-1.5 hover:bg-gray-200 rounded-xl text-gray-700 font-bold transition">←</button>
@@ -609,7 +613,7 @@
     const openSettingsBtn = document.getElementById('open-settings-btn');
     const authStatusBar = document.getElementById('auth-status-bar');
 
-    // CUSTOM KEYPAD CONTROLLERS
+    // CUSTOM KEYPAD CONTROLLERS (WITH SAFE EXPRESSION EVALUATION INCLUDING PARENTHESES)
     function openCustomKeypad(fieldId) {
       activeKeypadFieldId = fieldId;
       document.getElementById('custom-keypad-overlay').classList.remove('hidden');
@@ -653,8 +657,8 @@
       if (!valStr) return;
 
       try {
-        // Sanitize mathematical expression to allow safe evaluation of arithmetic like "120+45"
-        if (/^[0-9+\-*/.\s]+$/.test(valStr)) {
+        // Sanitize mathematical expression to allow safe evaluation including parentheses and operators
+        if (/^[0-9+\-*/().\s]+$/.test(valStr)) {
           let result = Function('"use strict";return (' + valStr + ')')();
           if (!isNaN(result) && isFinite(result)) {
             el.value = result;
@@ -922,7 +926,7 @@
       } else if (mode === 'income') {
         bInc.className = "py-1.5 text-[10px] sm:text-[11px] font-semibold rounded-lg transition bg-emerald-600 text-white shadow-xs";
         txForm.classList.remove('hidden');
-        reimburseSec.classList.add('hidden');
+        reimburseSec.classList.add('hidden'); // Ensure reimburse is strictly hidden for Income
         instSec.classList.add('hidden');
         lblAmount.innerHTML = `จำนวนเงิน (<span class="currency-symbol">${userSettings.currency}</span>)`;
         document.getElementById('is-reimburse').checked = false;
@@ -990,7 +994,7 @@
         updateInstallmentMath();
       } else {
         fields.classList.add('hidden');
-        if (userSettings.enableAdvanced) reimburseSec.classList.remove('hidden');
+        if (userSettings.enableAdvanced && currentTxType === 'expense') reimburseSec.classList.remove('hidden');
         lblAmount.innerHTML = `จำนวนเงิน (<span class="currency-symbol">${userSettings.currency}</span>)`;
       }
     }
@@ -1610,7 +1614,7 @@
 
           <!-- Footer Actions & Next Due Date -->
           <div class="flex justify-between items-center text-[10px] pt-0.5">
-            <span class="text-indigo-700 font-medium">📅 งวดถัดไป: ${plan.nextDueDate || 'ครบแล้ว'}</span>
+            <span class="text-indigo-700 font-medium">งวดถัดไป: ${plan.nextDueDate || 'ครบแล้ว'}</span>
             <button type="button" onclick="cancelInstallmentPlan('${plan.id}')" class="text-rose-400 hover:text-rose-600 underline">ยกเลิกสัญญา</button>
           </div>
         `;
@@ -1825,7 +1829,7 @@
           const sortedDates = Object.keys(grouped).sort((a, b) => b.localeCompare(a));
 
           sortedDates.forEach(dateStr => {
-            fullHtml += `<div class="sticky top-0 bg-gray-100/95 backdrop-blur-xs px-3 py-1 text-[11px] font-bold text-gray-600 rounded-lg my-1.5 shadow-2xs">📅 วันที่ ${dateStr}</div>`;
+            fullHtml += `<div class="sticky top-0 bg-gray-100/95 backdrop-blur-xs px-3 py-1 text-[11px] font-bold text-gray-600 rounded-lg my-1.5 shadow-2xs">วันที่ ${dateStr}</div>`;
             
             grouped[dateStr].forEach(item => {
               if (item.kind === 'transaction') {
@@ -1838,7 +1842,7 @@
                 if (item.isReimburse) {
                   badge = item.remainingPending > 0 
                     ? `<span class="text-[9px] bg-amber-100 text-amber-800 px-1 py-0.5 rounded ml-1">รอคืน ฿${item.remainingPending.toLocaleString()}</span>`
-                    : `<span class="text-[9px] bg-emerald-100 text-emerald-800 px-1 py-0.5 rounded ml-1">คืนครบ ✓</span>`;
+                    : `<span class="text-[9px] bg-emerald-100 text-emerald-800 px-1 py-0.5 rounded ml-1">คืนครบ</span>`;
                 } else if (item.isInstallment) {
                   badge = `<span class="text-[9px] bg-indigo-100 text-indigo-800 px-1 py-0.5 rounded ml-1">ผ่อนชำระ</span>`;
                 }
@@ -1860,7 +1864,7 @@
                 fullHtml += `
                   <div class="flex justify-between items-center p-2.5 bg-blue-50/50 border border-blue-100 rounded-xl text-xs">
                     <div class="flex flex-col">
-                      <span class="font-medium text-blue-700">🔄 โอนเงิน: ${escapeHtml(item.fromAccountName)} ➔ ${escapeHtml(item.toAccountName)}</span>
+                      <span class="font-medium text-blue-700">โอนเงิน: ${escapeHtml(item.fromAccountName)} ➔ ${escapeHtml(item.toAccountName)}</span>
                       <span class="text-[10px] text-gray-400">${escapeHtml(item.note || 'โอนเงินระหว่างบัญชี')}</span>
                     </div>
                     <div class="flex items-center space-x-2">
@@ -1873,7 +1877,7 @@
                 fullHtml += `
                   <div class="flex justify-between items-center p-2.5 bg-amber-50/50 border border-amber-100 rounded-xl text-xs">
                     <div class="flex flex-col">
-                      <span class="font-medium text-amber-700">💵 รับเงินคืนจากเพื่อน (${acc ? acc.name : 'บัญชี'})</span>
+                      <span class="font-medium text-amber-700">รับเงินคืนจากเพื่อน (${acc ? acc.name : 'บัญชี'})</span>
                       <span class="text-[10px] text-gray-400">${escapeHtml(item.note || 'Settle ยอดสำรองจ่าย')}</span>
                     </div>
                     <div class="flex items-center space-x-2">
@@ -1886,7 +1890,7 @@
                 fullHtml += `
                   <div class="flex justify-between items-center p-2.5 bg-purple-50/50 border border-purple-100 rounded-xl text-xs">
                     <div class="flex flex-col">
-                      <span class="font-medium text-purple-800">🤝 รับเงินแทนลูกค้า (${acc ? acc.name : 'บัญชี'})</span>
+                      <span class="font-medium text-purple-800">รับเงินแทนลูกค้า (${acc ? acc.name : 'บัญชี'})</span>
                       <span class="text-[10px] text-purple-600">เราได้ ฿${item.myShare.toLocaleString()} | รอจ่ายทีม ฿${item.teamShare.toLocaleString()}</span>
                     </div>
                     <div class="flex items-center space-x-2">
