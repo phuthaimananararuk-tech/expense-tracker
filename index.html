@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>YUET (v1.4) - แบ่งรับชำระอัจฉริยะ</title>
+  <title>YUET (v1.5) - Dedicated Mode & Re-tap Action</title>
   
   <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
@@ -38,7 +38,7 @@
       <div class="flex flex-col items-center">
         <div class="flex items-baseline space-x-1">
           <h1 class="text-xl font-black tracking-wider uppercase drop-shadow-sm">YUET</h1>
-          <span class="text-[9px] font-medium text-emerald-200 tracking-tight">(v1.4)</span>
+          <span class="text-[9px] font-medium text-emerald-200 tracking-tight">(v1.5)</span>
         </div>
         <p class="text-[8px] text-emerald-100/80 tracking-tight font-light">by Phuthai Mananararuk & Gemini</p>
       </div>
@@ -81,13 +81,14 @@
       <section id="entry-view" class="hidden space-y-3 flex-1 flex flex-col justify-between">
         
         <div class="space-y-3">
+          <!-- Re-tap Action Mode Buttons -->
           <div id="mode-buttons-container" class="grid grid-cols-3 gap-1 bg-gray-200 p-1 rounded-xl text-center">
-            <button type="button" id="btn-mode-expense" onclick="switchEntryMode('expense')" class="py-1.5 text-[10px] sm:text-[11px] font-semibold rounded-lg transition bg-rose-600 text-white shadow-xs">Expense</button>
-            <button type="button" id="btn-mode-income" onclick="switchEntryMode('income')" class="py-1.5 text-[10px] sm:text-[11px] font-semibold rounded-lg transition text-gray-700">Income</button>
-            <button type="button" id="btn-mode-transfer" onclick="switchEntryMode('transfer')" class="py-1.5 text-[10px] sm:text-[11px] font-semibold rounded-lg transition text-gray-700">Transfer</button>
+            <button type="button" id="btn-mode-expense" onclick="handleModeClick('expense')" class="py-1.5 text-[10px] sm:text-[11px] font-semibold rounded-lg transition bg-rose-600 text-white shadow-xs">Expense</button>
+            <button type="button" id="btn-mode-income" onclick="handleModeClick('income')" class="py-1.5 text-[10px] sm:text-[11px] font-semibold rounded-lg transition text-gray-700">Income</button>
+            <button type="button" id="btn-mode-transfer" onclick="handleModeClick('transfer')" class="py-1.5 text-[10px] sm:text-[11px] font-semibold rounded-lg transition text-gray-700">Transfer</button>
           </div>
 
-          <!-- FORM 1: Expense & Income Form -->
+          <!-- FORM 1: Expense & Income Normal Form -->
           <form id="tx-form" class="bg-gray-50 p-3 rounded-2xl border border-gray-200 space-y-2">
             <div><label class="block text-[11px] text-gray-500 mb-1">เลือกบัญชี</label><div id="account-buttons-container" class="flex flex-wrap gap-1"></div></div>
             <div><label class="block text-[11px] text-gray-500 mb-1">เลือกหมวดหมู่</label><div id="category-buttons-container" class="flex flex-wrap gap-1"></div></div>
@@ -102,21 +103,13 @@
 
             <div>
               <label class="block text-[11px] text-gray-500 mb-1">บันทึกช่วยจำ (ไม่บังคับ)</label>
-              <input type="text" id="tx-note" placeholder="เช่น ค่าอาหาร, ผ่อนของ, ชื่อโปรเจกต์" class="w-full px-2 py-1.5 text-xs border rounded-xl bg-white focus:ring-1 focus:ring-emerald-500">
-            </div>
-
-            <!-- SPECIAL FUNCTIONS BUTTON -->
-            <div class="pt-1">
-              <button type="button" id="btn-open-special" onclick="openSpecialModal()" class="w-full bg-indigo-50 border border-indigo-100 hover:bg-indigo-100 text-indigo-700 font-bold py-1.5 rounded-xl text-[11px] shadow-xs transition hidden flex items-center justify-center gap-1">
-                ✨ ฟังก์ชันพิเศษ
-              </button>
-              <div id="special-active-badges" class="hidden flex flex-wrap gap-1 mt-1.5 justify-center"></div>
+              <input type="text" id="tx-note" placeholder="เช่น ค่าอาหาร, ซื้อของ" class="w-full px-2 py-1.5 text-xs border rounded-xl bg-white focus:ring-1 focus:ring-emerald-500">
             </div>
 
             <button type="submit" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-medium py-2 rounded-xl text-xs shadow-xs transition mt-1">+ บันทึกรายการ</button>
           </form>
 
-          <!-- FORM 2: Transfer Form -->
+          <!-- DEDICATED FORM 2: Transfer Form -->
           <form id="transfer-form" class="hidden bg-gray-50 p-3 rounded-2xl border border-gray-200 space-y-2.5">
             <div class="grid grid-cols-2 gap-2">
               <div><label class="block text-[11px] text-gray-500 mb-1">ต้นทาง</label><div id="transfer-from-container" class="flex flex-col gap-1"></div></div>
@@ -130,10 +123,10 @@
             <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 rounded-xl text-xs shadow-xs transition">บันทึกการโอนเงิน</button>
           </form>
 
-          <!-- FORM 3: Settle Form (รับเงินคืน) -->
+          <!-- DEDICATED FORM 3: Settle Form (รับเงินคืน) -->
           <form id="settle-form" class="hidden bg-amber-50 p-3 rounded-2xl border border-amber-200 space-y-2.5">
             <div class="flex justify-between items-center mb-1.5 border-b border-amber-200 pb-1.5">
-              <h3 class="text-[11px] font-bold text-amber-800 uppercase">รับเงินคืนจากเพื่อน (Settle)</h3>
+              <h3 class="text-[11px] font-bold text-amber-800 uppercase">รับเงินคืน</h3>
               <button type="button" onclick="switchEntryMode('income')" class="text-[10px] bg-white px-2 py-0.5 rounded-lg border border-amber-200 text-amber-700">ยกเลิก</button>
             </div>
             <div><label class="block text-[11px] text-gray-600 mb-1">บัญชีที่เงินเข้า</label><div id="settle-account-buttons" class="flex flex-wrap gap-1"></div></div>
@@ -146,10 +139,10 @@
             <button type="submit" class="w-full bg-amber-600 hover:bg-amber-700 text-white font-medium py-2 rounded-xl text-xs shadow-xs transition">ยืนยันรับเงินคืน</button>
           </form>
 
-          <!-- FORM 4: Split Form (รับเงินแทน) -->
+          <!-- DEDICATED FORM 4: Split Form (รับเงินแทน) -->
           <form id="split-form" class="hidden bg-purple-50 p-3 rounded-2xl border border-purple-200 space-y-2.5">
             <div class="flex justify-between items-center mb-1.5 border-b border-purple-200 pb-1.5">
-              <h3 class="text-[11px] font-bold text-purple-900 uppercase">รับเงินแทนทีมงาน (Split)</h3>
+              <h3 class="text-[11px] font-bold text-purple-900 uppercase">รับเงินแทน</h3>
               <button type="button" onclick="switchEntryMode('income')" class="text-[10px] bg-white px-2 py-0.5 rounded-lg border border-purple-200 text-purple-700">ยกเลิก</button>
             </div>
             <div><label class="block text-[11px] text-purple-900 font-medium mb-1">บัญชีที่เงินก้อนเข้า</label><div id="split-account-buttons" class="flex flex-wrap gap-1"></div></div>
@@ -167,6 +160,51 @@
             <div><label class="block text-[11px] text-purple-900 mb-1">บันทึกช่วยจำ</label><input type="text" id="split-note" class="w-full px-2 py-1.5 text-xs border rounded-xl bg-white"></div>
             <button type="submit" class="w-full bg-purple-600 hover:bg-purple-700 text-white font-medium py-2 rounded-xl text-xs shadow-xs transition">บันทึกรับเงินแทน</button>
           </form>
+
+          <!-- DEDICATED FORM 5: Installment Form (ผ่อนชำระ) -->
+          <form id="installment-form" class="hidden bg-indigo-50 p-3 rounded-2xl border border-indigo-200 space-y-2.5">
+            <div class="flex justify-between items-center mb-1.5 border-b border-indigo-200 pb-1.5">
+              <h3 class="text-[11px] font-bold text-indigo-900 uppercase">ผ่อนชำระ</h3>
+              <button type="button" onclick="switchEntryMode('expense')" class="text-[10px] bg-white px-2 py-0.5 rounded-lg border border-indigo-200 text-indigo-700">ยกเลิก</button>
+            </div>
+            <div><label class="block text-[11px] text-indigo-900 mb-1">เลือกบัญชีที่ตัดเงิน</label><div id="inst-account-buttons" class="flex flex-wrap gap-1"></div></div>
+            <div><label class="block text-[11px] text-indigo-900 mb-1">เลือกหมวดหมู่รายจ่าย</label><div id="inst-category-buttons" class="flex flex-wrap gap-1"></div></div>
+            <div class="grid grid-cols-2 gap-2">
+              <div><label class="block text-[11px] text-indigo-900 mb-1">ยอดรวมเต็ม (<span class="currency-symbol">฿</span>)</label><input type="text" id="inst-total-amount" readonly onclick="openCustomKeypad('inst-total-amount')" required oninput="updateDedicatedInstMath()" class="w-full px-2 py-1.5 text-xs border rounded-xl bg-white cursor-pointer"></div>
+              <div><label class="block text-[11px] text-indigo-900 mb-1">จำนวนงวดทั้งหมด</label><input type="number" id="inst-count" min="2" max="120" value="3" required oninput="updateDedicatedInstMath()" class="w-full px-2 py-1.5 text-xs border rounded-xl bg-white"></div>
+            </div>
+            <div class="grid grid-cols-2 gap-2">
+              <div><label class="block text-[11px] text-indigo-900 mb-1">ตัดเงินทุกวันที่</label><input type="number" id="inst-day" min="1" max="31" value="1" required class="w-full px-2 py-1.5 text-xs border rounded-xl bg-white"></div>
+              <div><label class="block text-[11px] text-indigo-900 mb-1">วันที่เริ่มสัญญา</label><input type="date" id="inst-date" required class="w-full px-2 py-1.5 text-xs border rounded-xl bg-white"></div>
+            </div>
+            <div class="bg-white p-2 rounded-xl border border-indigo-200 text-[10px] space-y-0.5 text-indigo-800">
+              <div class="flex justify-between font-medium"><span>งวดทั่วไป (1 - <span id="lbl-ded-inst-cnt">2</span>):</span><b id="lbl-ded-inst-norm">฿0.00</b></div>
+              <div class="flex justify-between font-medium text-indigo-950"><span>งวดสุดท้าย:</span><b id="lbl-ded-inst-final">฿0.00</b></div>
+            </div>
+            <div><label class="block text-[11px] text-indigo-900 mb-1">ชื่อสัญญา / บันทึกช่วยจำ</label><input type="text" id="inst-note" placeholder="เช่น ผ่อนโทรศัพท์" class="w-full px-2 py-1.5 text-xs border rounded-xl bg-white"></div>
+            <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2 rounded-xl text-xs shadow-xs transition">สร้างสัญญาผ่อนชำระ</button>
+          </form>
+
+          <!-- DEDICATED FORM 6: Reimburse Form (หารค่าใช้จ่าย) -->
+          <form id="reimburse-form" class="hidden bg-amber-50 p-3 rounded-2xl border border-amber-200 space-y-2.5">
+            <div class="flex justify-between items-center mb-1.5 border-b border-amber-200 pb-1.5">
+              <h3 class="text-[11px] font-bold text-amber-900 uppercase">หารค่าใช้จ่าย (สำรองจ่าย)</h3>
+              <button type="button" onclick="switchEntryMode('expense')" class="text-[10px] bg-white px-2 py-0.5 rounded-lg border border-amber-200 text-amber-700">ยกเลิก</button>
+            </div>
+            <div><label class="block text-[11px] text-amber-900 mb-1">เลือกบัญชีที่จ่ายเงินออก</label><div id="reimb-account-buttons" class="flex flex-wrap gap-1"></div></div>
+            <div><label class="block text-[11px] text-amber-900 mb-1">เลือกหมวดหมู่รายจ่าย</label><div id="reimb-category-buttons" class="flex flex-wrap gap-1"></div></div>
+            <div class="grid grid-cols-2 gap-2">
+              <div><label class="block text-[11px] text-amber-900 mb-1">จ่ายจริงทั้งหมด (<span class="currency-symbol">฿</span>)</label><input type="text" id="reimb-total-amount" readonly onclick="openCustomKeypad('reimb-total-amount')" required oninput="updateDedicatedReimbMath()" class="w-full px-2 py-1.5 text-xs border rounded-xl bg-white cursor-pointer"></div>
+              <div><label class="block text-[11px] text-amber-900 mb-1">ส่วนของเราจริง (<span class="currency-symbol">฿</span>)</label><input type="text" id="reimb-my-share" readonly onclick="openCustomKeypad('reimb-my-share')" oninput="updateDedicatedReimbMath()" placeholder="0.00" class="w-full px-2 py-1.5 text-xs border rounded-xl bg-white cursor-pointer"></div>
+            </div>
+            <div class="bg-white p-2 rounded-xl border border-amber-200 flex justify-between items-center text-xs">
+              <span class="text-amber-800">ส่วนของเพื่อน (รอคืน):</span><b id="lbl-ded-reimb-friend" class="text-amber-950 text-sm">฿0.00</b>
+            </div>
+            <div><label class="block text-[11px] text-amber-900 mb-1">วันที่</label><input type="date" id="reimb-date" required class="w-full px-2 py-1.5 text-xs border rounded-xl bg-white"></div>
+            <div><label class="block text-[11px] text-amber-900 mb-1">บันทึกช่วยจำ</label><input type="text" id="reimb-note" placeholder="เช่น ค่าอาหารมื้อเย็นสำรองจ่ายไปก่อน" class="w-full px-2 py-1.5 text-xs border rounded-xl bg-white"></div>
+            <button type="submit" class="w-full bg-amber-600 hover:bg-amber-700 text-white font-medium py-2 rounded-xl text-xs shadow-xs transition">บันทึกสำรองจ่าย</button>
+          </form>
+
         </div>
 
         <!-- Net Cash Flow Balance Bar -->
@@ -194,7 +232,6 @@
           <div class="bg-blue-50 p-3 rounded-2xl border border-blue-100 shadow-xs col-span-2"><p class="text-[10px] font-bold text-blue-600">คงเหลือรวมทุกบัญชี</p><p id="total-balance" class="text-base font-extrabold text-blue-800">฿0.00</p></div>
           <div id="card-pending-friend" class="bg-amber-50 p-3 rounded-2xl border border-amber-100 shadow-xs hidden col-span-2 sm:col-span-1"><p class="text-[10px] font-bold text-amber-600">เงินรอคืน (เพื่อน)</p><p id="total-pending-friend" class="text-sm font-bold text-amber-700">฿0.00</p></div>
           <div id="card-pending-team" class="bg-purple-50 p-3 rounded-2xl border border-purple-100 shadow-xs hidden col-span-2 sm:col-span-1"><p class="text-[10px] font-bold text-purple-600">เงินรอจ่าย (ทีมงาน)</p><p id="total-pending-team" class="text-sm font-bold text-purple-700">฿0.00</p></div>
-          <div id="card-pending-client" class="bg-teal-50 p-3 rounded-2xl border border-teal-100 shadow-xs hidden col-span-2"><p class="text-[10px] font-bold text-teal-600">รอรับเพิ่ม (ลูกค้ามัดจำ)</p><p id="total-pending-client" class="text-sm font-bold text-teal-700">฿0.00</p></div>
         </div>
         <div class="space-y-2 border-t pt-3">
           <div class="flex justify-between items-center"><h3 class="text-xs font-bold text-indigo-900 uppercase flex items-center gap-1"><span>สัญญาผ่อนชำระ</span></h3><span id="lbl-total-active-inst" class="text-[10px] font-semibold text-indigo-600 bg-indigo-50 px-2 py-0.5 rounded-full border">0 รายการ</span></div>
@@ -212,7 +249,7 @@
       <section id="setting-view" class="hidden space-y-4">
         <div class="border-b pb-2"><h2 class="text-xs font-bold text-gray-700 uppercase">Setting - ตั้งค่าระบบ</h2></div>
         <div class="space-y-1"><label class="block text-xs font-bold text-gray-700">สกุลเงินทั่วแอป</label><select id="setting-currency" onchange="autoSaveSettings()" class="w-full px-3 py-2 text-xs border rounded-xl bg-white"><option value="฿">บาท (฿)</option><option value="$">ดอลลาร์ ($)</option><option value="€">ยูโร (€)</option><option value="¥">เยน (¥)</option></select></div>
-        <div class="bg-indigo-50 p-3 rounded-2xl border border-indigo-100 space-y-1.5"><label class="flex items-center space-x-2 cursor-pointer"><input type="checkbox" id="setting-enable-advanced" onchange="toggleAdvancedFeaturesSetting()" class="rounded text-indigo-600 focus:ring-indigo-500 w-4 h-4"><span class="text-xs font-bold text-indigo-900">เปิดใช้งานฟังก์ชันพิเศษ </span></label><p class="text-[10px] text-indigo-600/80 leading-relaxed">เพิ่มปุ่ม <b>"✨ ฟังก์ชันพิเศษ"</b> ในหน้า Entry สำหรับ: ผ่อนชำระ, หารบิลกับเพื่อน, <u>แบ่งรับชำระ(มัดจำ)</u>, รับเงินคืน, รับแทนทีมงาน</p></div>
+        <div class="bg-indigo-50 p-3 rounded-2xl border border-indigo-100 space-y-1.5"><label class="flex items-center space-x-2 cursor-pointer"><input type="checkbox" id="setting-enable-advanced" onchange="toggleAdvancedFeaturesSetting()" class="rounded text-indigo-600 focus:ring-indigo-500 w-4 h-4"><span class="text-xs font-bold text-indigo-900">เปิดใช้งานฟังก์ชันพิเศษ </span></label><p class="text-[10px] text-indigo-600/80 leading-relaxed">กดปุ่มโหมด (Expense / Income) ซ้ำอีกครั้งเพื่อเปิดเมนูฟังก์ชันพิเศษ: <u>ผ่อนชำระ, หารค่าใช้จ่าย, รับเงินคืน, รับเงินแทน</u></p></div>
         <div class="space-y-2 border-t pt-3"><h3 class="text-xs font-bold text-gray-700 uppercase">จัดการบัญชีเงิน</h3><div id="accounts-settings-list" class="space-y-1 max-h-24 overflow-y-auto pr-1"></div><div class="bg-gray-50 p-2 rounded-xl border space-y-1.5"><p class="text-[11px] font-semibold text-gray-600">เพิ่มบัญชีใหม่</p><div class="grid grid-cols-2 gap-2"><input type="text" id="new-acc-name" placeholder="ชื่อบัญชี" class="px-2 py-1 text-xs border rounded-lg bg-white"><input type="text" id="new-acc-balance" readonly onclick="openCustomKeypad('new-acc-balance')" placeholder="ยอดเริ่มต้น" class="px-2 py-1 text-xs border rounded-lg bg-white cursor-pointer"></div><button type="button" onclick="addNewAccount()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-1 rounded-lg text-xs transition">+ เพิ่มบัญชี</button></div></div>
         <div class="space-y-2 border-t pt-3"><h3 class="text-xs font-bold text-gray-700 uppercase">จัดการหมวดหมู่</h3><div class="grid grid-cols-2 gap-2"><div class="space-y-1.5"><p class="text-[11px] font-semibold text-rose-600">รายจ่าย</p><div id="expense-cats-list" class="space-y-1 max-h-24 overflow-y-auto pr-1"></div><div class="flex space-x-1"><input type="text" id="new-exp-cat-name" class="w-full px-1.5 py-1 text-xs border rounded bg-white"><button onclick="addNewCategory('expense')" class="bg-rose-600 text-white px-2 py-1 rounded text-xs">+</button></div></div><div class="space-y-1.5"><p class="text-[11px] font-semibold text-emerald-600">รายรับ</p><div id="income-cats-list" class="space-y-1 max-h-24 overflow-y-auto pr-1"></div><div class="flex space-x-1"><input type="text" id="new-inc-cat-name" class="w-full px-1.5 py-1 text-xs border rounded bg-white"><button onclick="addNewCategory('income')" class="bg-emerald-600 text-white px-2 py-1 rounded text-xs">+</button></div></div></div></div>
       </section>
@@ -222,87 +259,34 @@
     <footer id="auth-status-bar" class="bg-gray-100 p-2 text-center text-[10px] text-gray-400 border-t border-gray-100">สถานะ: ยังไม่ได้เข้าสู่ระบบ</footer>
   </div>
 
-  <!-- ==================== POP-UP MODALS ==================== -->
-  
-  <!-- SPECIAL FUNCTIONS MODAL -->
+  <!-- ==================== RE-TAP SPECIAL MODAL ==================== -->
   <div id="special-modal" class="hidden fixed inset-0 bg-black/60 flex items-center justify-center p-4 z-40 transition-opacity">
-    <div class="bg-white rounded-3xl w-full max-w-sm p-5 space-y-4 shadow-2xl relative max-h-[85vh] overflow-y-auto animate-slide-up">
+    <div class="bg-white rounded-3xl w-full max-w-sm p-5 space-y-4 shadow-2xl relative animate-slide-up">
       <button type="button" onclick="closeSpecialModal()" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600 font-bold text-lg">✕</button>
       <h3 class="text-sm font-bold text-indigo-900 uppercase border-b pb-2 flex items-center gap-1.5">✨ ฟังก์ชันพิเศษ</h3>
       
-      <!-- Expense Content -->
-      <div id="special-expense-content" class="space-y-4 hidden">
-        <div class="space-y-2 bg-indigo-50/50 p-3 rounded-2xl border border-indigo-100">
-          <label class="flex items-center space-x-2 cursor-pointer">
-            <input type="checkbox" id="is-installment" onchange="toggleInstallmentFields()" class="rounded text-indigo-600 focus:ring-indigo-500 w-4 h-4"><span class="text-xs font-bold text-indigo-800">แบ่งจ่าย / ผ่อนชำระ</span>
-          </label>
-          <div id="installment-fields" class="hidden pt-1 space-y-2">
-            <div class="grid grid-cols-2 gap-2"><div><label class="block text-[10px] text-indigo-900 font-semibold">จำนวนงวดทั้งหมด</label><input type="number" id="inst-total-count" min="2" value="3" oninput="updateInstallmentMath()" class="w-full px-2 py-1 text-xs border rounded-lg bg-white"></div><div><label class="block text-[10px] text-indigo-900 font-semibold">ตัดเงินทุกวันที่</label><input type="number" id="inst-pay-day" min="1" max="31" value="1" class="w-full px-2 py-1 text-xs border rounded-lg bg-white"></div></div>
-            <div class="bg-white p-2 rounded-lg border border-indigo-200 text-[10px] space-y-0.5 text-indigo-800"><div class="flex justify-between font-medium"><span>งวดทั่วไป (1-<span id="lbl-preview-normal-cnt">2</span>):</span><b id="lbl-preview-normal-amt">฿0.00</b></div><div class="flex justify-between font-medium text-indigo-950"><span>งวดสุดท้าย:</span><b id="lbl-preview-final-amt">฿0.00</b></div></div>
-          </div>
-        </div>
-
-        <div class="space-y-2 bg-amber-50/50 p-3 rounded-2xl border border-amber-100">
-          <label class="flex items-center space-x-2 cursor-pointer">
-            <input type="checkbox" id="is-reimburse" onchange="toggleReimburseFields()" class="rounded text-amber-600 focus:ring-amber-500 w-4 h-4"><span class="text-xs font-bold text-amber-800">หารค่าใช้จ่าย / สำรองจ่ายเพื่อน</span>
-          </label>
-          <div id="reimburse-fields" class="hidden pt-1 space-y-1.5">
-            <div class="flex justify-between text-[11px] text-amber-800"><span>จ่ายจริงทั้งหมด: <b id="lbl-total-pay">0</b></span><span>ส่วนของเพื่อน: <b id="lbl-friend-pay" class="text-amber-900">0</b></span></div>
-            <div><label class="block text-[10px] text-gray-600">ยอดที่เป็นส่วนของเราจริงๆ</label><input type="text" id="my-share-amount" readonly onclick="openCustomKeypad('my-share-amount')" placeholder="0.00" class="w-full px-2 py-1 text-xs border rounded-lg bg-white cursor-pointer"></div>
-          </div>
-        </div>
+      <!-- Special Options for Expense -->
+      <div id="special-expense-content" class="space-y-2.5 hidden">
+        <button type="button" onclick="activateSubMode('installment')" class="w-full flex items-center bg-white hover:bg-indigo-50 text-indigo-900 border border-indigo-200 py-3 rounded-2xl text-xs font-bold transition px-3 shadow-xs">
+          <span class="text-base mr-2 text-indigo-600">📅</span> ผ่อนชำระ
+        </button>
+        <button type="button" onclick="activateSubMode('reimburse')" class="w-full flex items-center bg-white hover:bg-amber-50 text-amber-900 border border-amber-200 py-3 rounded-2xl text-xs font-bold transition px-3 shadow-xs">
+          <span class="text-base mr-2 text-amber-600">🤝</span> หารค่าใช้จ่าย
+        </button>
       </div>
 
-      <!-- Income Content (NEW SPLIT PAYMENT LOGIC) -->
-      <div id="special-income-content" class="space-y-4 hidden">
-        <div class="space-y-2 bg-teal-50/50 p-3 rounded-2xl border border-teal-100">
-          <label class="flex items-center space-x-2 cursor-pointer">
-            <input type="checkbox" id="is-partial-income" onchange="togglePartialIncomeFields()" class="rounded text-teal-600 focus:ring-teal-500 w-4 h-4">
-            <span class="text-xs font-bold text-teal-800">แบ่งรับชำระ (รับมัดจำ / เคลียร์ยอดค้าง)</span>
-          </label>
-          <div id="partial-income-fields" class="hidden pt-1 space-y-2">
-            <div>
-               <label class="block text-[10px] text-teal-800 font-semibold mb-1">เลือกโปรเจกต์</label>
-               <select id="partial-payment-project" onchange="togglePartialIncomeType()" class="w-full px-2 py-1.5 text-xs border rounded-lg bg-white text-teal-900 font-medium">
-                 <!-- Options populated dynamically by JS -->
-               </select>
-            </div>
-            
-            <!-- Show when NEW project is selected -->
-            <div id="partial-new-fields" class="space-y-2">
-              <div>
-                <label class="block text-[10px] text-teal-800">ยอดเงินเต็มของโปรเจกต์ทั้งหมด</label>
-                <input type="text" id="deposit-total-amount" readonly onclick="openCustomKeypad('deposit-total-amount')" placeholder="0.00" class="w-full px-2 py-1 text-xs border rounded-lg bg-white cursor-pointer">
-              </div>
-              <div class="flex justify-between text-[11px] text-teal-800 mt-1 bg-white p-1.5 rounded border border-teal-100">
-                <span>รับแล้วรอบนี้: <b id="lbl-deposit-paid">0</b></span>
-                <span>รอลูกค้าจ่ายเพิ่ม: <b id="lbl-deposit-pending" class="text-teal-900">0</b></span>
-              </div>
-            </div>
-
-            <!-- Show when EXISTING project is selected -->
-            <div id="partial-exist-fields" class="hidden space-y-2">
-              <div class="flex justify-between text-[11px] text-teal-800 mt-1 bg-white p-1.5 rounded border border-teal-100">
-                <span>ค้างเดิม: <b id="lbl-exist-pending-old">0</b></span>
-                <span>หลังหักรอบนี้จะเหลือค้าง: <b id="lbl-exist-pending-new" class="text-teal-900">0</b></span>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div class="border-t pt-3 space-y-2.5">
-          <p class="text-[11px] font-bold text-gray-600 text-center">ทางเลือกรับเงินประเภทอื่น</p>
-          <button type="button" onclick="activateSubMode('settle')" class="w-full flex items-center bg-white hover:bg-amber-50 text-amber-700 border border-amber-200 py-2.5 rounded-xl text-xs font-bold transition px-3 shadow-xs">
-            <span class="text-base mr-2">🤝</span> รับเงินคืน (Settle จากเพื่อน)
-          </button>
-          <button type="button" onclick="activateSubMode('split')" class="w-full flex items-center bg-white hover:bg-purple-50 text-purple-700 border border-purple-200 py-2.5 rounded-xl text-xs font-bold transition px-3 shadow-xs">
-            <span class="text-base mr-2">📊</span> รับเงินแทนทีมงาน (Split)
-          </button>
-        </div>
+      <!-- Special Options for Income -->
+      <div id="special-income-content" class="space-y-2.5 hidden">
+        <button type="button" onclick="activateSubMode('settle')" class="w-full flex items-center bg-white hover:bg-amber-50 text-amber-900 border border-amber-200 py-3 rounded-2xl text-xs font-bold transition px-3 shadow-xs">
+          <span class="text-base mr-2 text-amber-600">💵</span> รับเงินคืน
+        </button>
+        <button type="button" onclick="activateSubMode('split')" class="w-full flex items-center bg-white hover:bg-purple-50 text-purple-900 border border-purple-200 py-3 rounded-2xl text-xs font-bold transition px-3 shadow-xs">
+          <span class="text-base mr-2 text-purple-600">📊</span> รับเงินแทน
+        </button>
       </div>
 
-      <div class="pt-2">
-        <button type="button" onclick="closeSpecialModal()" class="w-full bg-gray-800 hover:bg-gray-900 text-white py-2.5 rounded-xl text-xs font-medium shadow-xs">ตกลง / ปิดหน้าต่างนี้</button>
+      <div class="pt-1">
+        <button type="button" onclick="closeSpecialModal()" class="w-full bg-gray-100 hover:bg-gray-200 text-gray-700 py-2 rounded-xl text-xs font-medium">ยกเลิก</button>
       </div>
     </div>
   </div>
@@ -353,7 +337,14 @@
     let currentUser = null, unsubscribeTx = null, unsubscribeAcc = null, unsubscribeCat = null, unsubscribeInst = null;
     let userSettings = { currency: '฿', enableAdvanced: false };
     let accountsList = [], categoriesList = [], allTransactions = [], activeInstallmentPlans = [];
-    let selectedAccountId = null, selectedCategoryId = null, selectedSettleAccountId = null, selectedSplitAccountId = null, transferFromId = null, transferToId = null;
+    
+    // Dedicated Account & Category Selected IDs
+    let selectedAccountId = null, selectedCategoryId = null;
+    let selectedSettleAccountId = null, selectedSplitAccountId = null, selectedSplitCategoryId = null;
+    let selectedInstAccountId = null, selectedInstCategoryId = null;
+    let selectedReimbAccountId = null, selectedReimbCategoryId = null;
+    let transferFromId = null, transferToId = null;
+
     let currentTxType = 'expense', currentEntryMode = 'expense';
     let popupYear = new Date().getFullYear(), popupMonth = new Date().getMonth() + 1;
     let activeKeypadFieldId = null;
@@ -402,8 +393,7 @@
     // DATA INIT
     async function initUserData(uid) {
       const todayStr = new Date().toISOString().split('T')[0];
-      ['tx-date', 'tr-date', 'settle-date', 'split-date'].forEach(id => document.getElementById(id).value = todayStr);
-      document.getElementById('inst-pay-day').value = new Date().getDate();
+      ['tx-date', 'tr-date', 'settle-date', 'split-date', 'inst-date', 'reimb-date'].forEach(id => document.getElementById(id).value = todayStr);
 
       const doc = await db.collection('users').doc(uid).collection('settings').doc('config').get();
       if (doc.exists) userSettings = { currency: '฿', enableAdvanced: false, ...doc.data() }; 
@@ -417,12 +407,19 @@
           if (!selectedAccountId || !accountsList.some(a => a.id === selectedAccountId)) selectedAccountId = accountsList[0].id;
           if (!selectedSettleAccountId || !accountsList.some(a => a.id === selectedSettleAccountId)) selectedSettleAccountId = accountsList[0].id;
           if (!selectedSplitAccountId || !accountsList.some(a => a.id === selectedSplitAccountId)) selectedSplitAccountId = accountsList[0].id;
+          if (!selectedInstAccountId || !accountsList.some(a => a.id === selectedInstAccountId)) selectedInstAccountId = accountsList[0].id;
+          if (!selectedReimbAccountId || !accountsList.some(a => a.id === selectedReimbAccountId)) selectedReimbAccountId = accountsList[0].id;
           if (!transferFromId || !accountsList.some(a => a.id === transferFromId)) transferFromId = accountsList[0].id;
           if (!transferToId || !accountsList.some(a => a.id === transferToId)) transferToId = accountsList.length > 1 ? accountsList[1].id : accountsList[0].id;
-          renderAccountButtons(); renderTransferButtons(); renderSettleAccountButtons(); renderSplitAccountButtons(); renderSettingsAccounts();
+
+          renderAccountButtons(); renderTransferButtons(); renderSettleAccountButtons(); renderSplitAccountButtons();
+          renderInstAccountButtons(); renderReimbAccountButtons(); renderSettingsAccounts();
         });
 
-      unsubscribeCat = db.collection('users').doc(uid).collection('categories').orderBy('createdAt','asc').onSnapshot(snap => { categoriesList = []; snap.forEach(d => categoriesList.push({ id: d.id, ...d.data() })); renderCategoryButtons(); renderSplitCategoryButtons(); renderSettingsCategories(); });
+      unsubscribeCat = db.collection('users').doc(uid).collection('categories').orderBy('createdAt','asc').onSnapshot(snap => { 
+        categoriesList = []; snap.forEach(d => categoriesList.push({ id: d.id, ...d.data() })); 
+        renderCategoryButtons(); renderSplitCategoryButtons(); renderInstCategoryButtons(); renderReimbCategoryButtons(); renderSettingsCategories(); 
+      });
       loadTransactionsRealtime(uid); loadInstallmentPlansRealtime(uid); showView('entry');
     }
 
@@ -430,174 +427,156 @@
 
     function applyAdvancedFeaturesVisibility() {
       const en = userSettings.enableAdvanced === true;
-      ['card-pending-friend','card-pending-team','card-pending-client'].forEach(id=>document.getElementById(id).classList.toggle('hidden',!en));
-      const btnSpec = document.getElementById('btn-open-special');
-      if(en) { if(currentEntryMode==='expense'||currentEntryMode==='income') btnSpec.classList.remove('hidden'); }
-      else {
-        btnSpec.classList.add('hidden');
-        ['is-installment','is-reimburse','is-partial-income'].forEach(id=>document.getElementById(id).checked=false);
-        toggleInstallmentFields(); toggleReimburseFields(); togglePartialIncomeFields();
-        if(['settle','split'].includes(currentEntryMode)) switchEntryMode('income');
+      ['card-pending-friend','card-pending-team'].forEach(id=>document.getElementById(id).classList.toggle('hidden',!en));
+      if (!en && ['settle','split','installment','reimburse'].includes(currentEntryMode)) switchEntryMode('expense');
+      renderModeButtonsState();
+    }
+
+    // RE-TAP ACTION LOGIC
+    function handleModeClick(mode) {
+      const en = userSettings.enableAdvanced === true;
+      // If clicking the current active mode (and advanced features are enabled), open special modal!
+      if (en && currentEntryMode === mode && (mode === 'expense' || mode === 'income')) {
+        openSpecialModal();
+      } else {
+        switchEntryMode(mode);
       }
     }
 
-    // SPECIAL MODAL
     function openSpecialModal() {
       document.getElementById('special-modal').classList.remove('hidden');
-      document.getElementById('special-expense-content').classList.toggle('hidden', currentEntryMode!=='expense');
-      document.getElementById('special-income-content').classList.toggle('hidden', currentEntryMode!=='income');
-      if(currentEntryMode==='income') renderPendingClientProjects();
+      document.getElementById('special-expense-content').classList.toggle('hidden', currentEntryMode !== 'expense');
+      document.getElementById('special-income-content').classList.toggle('hidden', currentEntryMode !== 'income');
     }
-    function closeSpecialModal() { document.getElementById('special-modal').classList.add('hidden'); updateSpecialBadgesUI(); }
+    function closeSpecialModal() { document.getElementById('special-modal').classList.add('hidden'); }
     function activateSubMode(mode) { closeSpecialModal(); switchEntryMode(mode); }
-    function updateSpecialBadgesUI() {
-       const con = document.getElementById('special-active-badges'); con.innerHTML = ''; let h = false;
-       if (currentEntryMode === 'expense') {
-          if (document.getElementById('is-installment').checked) { con.innerHTML += `<span class="bg-indigo-100 text-indigo-700 px-2 py-0.5 rounded-lg border border-indigo-200 text-[10px] font-bold">ผ่อนชำระ</span>`; h = true; }
-          if (document.getElementById('is-reimburse').checked) { con.innerHTML += `<span class="bg-amber-100 text-amber-700 px-2 py-0.5 rounded-lg border border-amber-200 text-[10px] font-bold">หารค่าใช้จ่าย</span>`; h = true; }
-       } else if (currentEntryMode === 'income') {
-          if (document.getElementById('is-partial-income').checked) { con.innerHTML += `<span class="bg-teal-100 text-teal-700 px-2 py-0.5 rounded-lg border border-teal-200 text-[10px] font-bold">แบ่งรับชำระ</span>`; h = true; }
-       }
-       con.classList.toggle('hidden', !h);
+
+    function renderModeButtonsState() {
+      const en = userSettings.enableAdvanced === true;
+      ['btn-mode-expense','btn-mode-income','btn-mode-transfer'].forEach(id => document.getElementById(id).className = "py-1.5 text-[10px] sm:text-[11px] font-semibold rounded-lg transition text-gray-700");
+
+      if (['expense', 'installment', 'reimburse'].includes(currentEntryMode)) {
+        const star = (en && currentEntryMode === 'expense') ? ' ✨' : '';
+        document.getElementById('btn-mode-expense').className = "py-1.5 text-[10px] sm:text-[11px] font-semibold rounded-lg transition text-white shadow-xs bg-rose-600";
+        document.getElementById('btn-mode-expense').innerText = `Expense${star}`;
+        document.getElementById('btn-mode-income').innerText = "Income";
+      } else if (['income', 'settle', 'split'].includes(currentEntryMode)) {
+        const star = (en && currentEntryMode === 'income') ? ' ✨' : '';
+        document.getElementById('btn-mode-income').className = "py-1.5 text-[10px] sm:text-[11px] font-semibold rounded-lg transition text-white shadow-xs bg-emerald-600";
+        document.getElementById('btn-mode-income').innerText = `Income${star}`;
+        document.getElementById('btn-mode-expense').innerText = "Expense";
+      } else if (currentEntryMode === 'transfer') {
+        document.getElementById('btn-mode-transfer').className = "py-1.5 text-[10px] sm:text-[11px] font-semibold rounded-lg transition text-white shadow-xs bg-blue-600";
+        document.getElementById('btn-mode-expense').innerText = "Expense";
+        document.getElementById('btn-mode-income').innerText = "Income";
+      }
     }
 
-    // ENTRY MODES
+    // ENTRY MODES SWITCHING
     function switchEntryMode(mode) {
-      const en = userSettings.enableAdvanced === true;
-      if (!en && ['settle','split'].includes(mode)) return;
       currentEntryMode = mode;
-      ['btn-mode-expense','btn-mode-income','btn-mode-transfer'].forEach(id => document.getElementById(id).className = "py-1.5 text-[10px] sm:text-[11px] font-semibold rounded-lg transition text-gray-700");
-      ['tx-form','transfer-form','settle-form','split-form'].forEach(id => document.getElementById(id).classList.add('hidden'));
+      renderModeButtonsState();
 
-      if (['expense','income','transfer'].includes(mode)) {
-         const cols = { expense:'bg-rose-600', income:'bg-emerald-600', transfer:'bg-blue-600' };
-         document.getElementById('btn-mode-'+mode).className = `py-1.5 text-[10px] sm:text-[11px] font-semibold rounded-lg transition text-white shadow-xs ${cols[mode]}`;
-      } else document.getElementById('btn-mode-income').className = `py-1.5 text-[10px] sm:text-[11px] font-semibold rounded-lg transition text-white shadow-xs bg-emerald-600`;
-      
-      const forms = { expense:'tx-form', income:'tx-form', transfer:'transfer-form', settle:'settle-form', split:'split-form' };
+      ['tx-form','transfer-form','settle-form','split-form','installment-form','reimburse-form'].forEach(id => document.getElementById(id).classList.add('hidden'));
+
+      const forms = { 
+        expense:'tx-form', income:'tx-form', transfer:'transfer-form', 
+        settle:'settle-form', split:'split-form', installment:'installment-form', reimburse:'reimburse-form' 
+      };
       document.getElementById(forms[mode]).classList.remove('hidden');
 
-      const btnSpec = document.getElementById('btn-open-special'), lblAmt = document.getElementById('lbl-tx-amount');
-      if (mode === 'expense') {
-        currentTxType = 'expense'; renderCategoryButtons(); btnSpec.classList.toggle('hidden',!en); updateSpecialBadgesUI();
-        lblAmt.innerHTML = document.getElementById('is-installment').checked ? `ยอดรวมเต็มที่ต้องผ่อน (<span class="currency-symbol">${userSettings.currency}</span>)` : `จำนวนเงิน (<span class="currency-symbol">${userSettings.currency}</span>)`;
-      } else if (mode === 'income') {
-        currentTxType = 'income'; renderCategoryButtons(); btnSpec.classList.toggle('hidden',!en); updateSpecialBadgesUI();
-        lblAmt.innerHTML = document.getElementById('is-partial-income').checked ? `รับแล้วรอบนี้ (<span class="currency-symbol">${userSettings.currency}</span>)` : `จำนวนเงิน (<span class="currency-symbol">${userSettings.currency}</span>)`;
-      } else if (mode === 'transfer') { btnSpec.classList.add('hidden'); document.getElementById('special-active-badges').classList.add('hidden'); renderTransferButtons(); } 
-      else if (mode === 'settle') { btnSpec.classList.add('hidden'); document.getElementById('special-active-badges').classList.add('hidden'); renderSettleAccountButtons(); renderPendingFriendList(); } 
-      else if (mode === 'split') { btnSpec.classList.add('hidden'); document.getElementById('special-active-badges').classList.add('hidden'); renderSplitAccountButtons(); renderSplitCategoryButtons(); }
+      if (mode === 'expense') { currentTxType = 'expense'; renderCategoryButtons(); } 
+      else if (mode === 'income') { currentTxType = 'income'; renderCategoryButtons(); } 
+      else if (mode === 'transfer') { renderTransferButtons(); } 
+      else if (mode === 'settle') { renderSettleAccountButtons(); renderPendingFriendList(); } 
+      else if (mode === 'split') { renderSplitAccountButtons(); renderSplitCategoryButtons(); }
+      else if (mode === 'installment') { renderInstAccountButtons(); renderInstCategoryButtons(); updateDedicatedInstMath(); }
+      else if (mode === 'reimburse') { renderReimbAccountButtons(); renderReimbCategoryButtons(); updateDedicatedReimbMath(); }
     }
 
-    // MATH
-    function updateInstallmentMath() { if(!document.getElementById('is-installment').checked)return; const t=parseFloat(document.getElementById('tx-amount').value)||0, c=parseInt(document.getElementById('inst-total-count').value)||1; const n=Math.floor((t/c)*100)/100; document.getElementById('lbl-preview-normal-cnt').innerText=c>1?(c-1):1; document.getElementById('lbl-preview-normal-amt').innerText=`${userSettings.currency}${n.toLocaleString()}`; document.getElementById('lbl-preview-final-amt').innerText=`${userSettings.currency}${(Math.round((t-(n*(c-1)))*100)/100).toLocaleString()}`; }
-    function toggleInstallmentFields() { const c=document.getElementById('is-installment').checked; document.getElementById('installment-fields').classList.toggle('hidden',!c); if(c){ document.getElementById('is-reimburse').checked=false; toggleReimburseFields(); document.getElementById('lbl-tx-amount').innerHTML=`ยอดรวมเต็มที่ต้องผ่อน (<span class="currency-symbol">${userSettings.currency}</span>)`; updateInstallmentMath(); } else document.getElementById('lbl-tx-amount').innerHTML=`จำนวนเงิน (<span class="currency-symbol">${userSettings.currency}</span>)`; updateSpecialBadgesUI(); }
-    
-    function updateReimburseMath() { const t=parseFloat(document.getElementById('tx-amount').value)||0, v=document.getElementById('my-share-amount').value, m=v===''?0:parseFloat(v)||0; document.getElementById('lbl-total-pay').innerText=`${userSettings.currency}${t.toLocaleString()}`; document.getElementById('lbl-friend-pay').innerText=`${userSettings.currency}${Math.max(0,t-m).toLocaleString()}`; }
-    function toggleReimburseFields() { const c=document.getElementById('is-reimburse').checked; document.getElementById('reimburse-fields').classList.toggle('hidden',!c); if(c){ document.getElementById('is-installment').checked=false; toggleInstallmentFields(); updateReimburseMath(); } updateSpecialBadgesUI(); }
+    // MATH HELPERS
+    function updateDedicatedInstMath() {
+      const tot = parseFloat(document.getElementById('inst-total-amount').value) || 0;
+      const count = parseInt(document.getElementById('inst-count').value) || 1;
+      const normalAmt = Math.floor((tot / count) * 100) / 100;
+      const finalAmt = Math.round((tot - (normalAmt * (count - 1))) * 100) / 100;
+      document.getElementById('lbl-ded-inst-cnt').innerText = count > 1 ? (count - 1) : 1;
+      document.getElementById('lbl-ded-inst-norm').innerText = `${userSettings.currency}${normalAmt.toLocaleString()}`;
+      document.getElementById('lbl-ded-inst-final').innerText = `${userSettings.currency}${finalAmt.toLocaleString()}`;
+    }
 
-    function renderPendingClientProjects() {
-        const sel = document.getElementById('partial-payment-project'); if(!sel)return;
-        const cur = sel.value; const list = allTransactions.filter(t => t.kind==='transaction' && t.isDeposit && t.pendingClient>0);
-        let h = '<option value="new">➕ สร้างโปรเจกต์ใหม่ (รับมัดจำรอบแรก)</option>';
-        list.forEach(t => h += `<option value="${t.id}" data-max="${t.pendingClient}">${escapeHtml(t.note||'ไม่มีชื่อ')} (ค้าง ฿${t.pendingClient.toLocaleString()})</option>`);
-        sel.innerHTML = h; sel.value = list.some(t=>t.id===cur) ? cur : 'new'; togglePartialIncomeType();
-    }
-    function updatePartialIncomeMath() {
-        const rcv = parseFloat(document.getElementById('tx-amount').value) || 0;
-        const sel = document.getElementById('partial-payment-project'); if(!sel) return;
-        if(sel.value === 'new') {
-            const v = document.getElementById('deposit-total-amount').value, tot = v===''?0:parseFloat(v)||0;
-            document.getElementById('lbl-deposit-paid').innerText = `${userSettings.currency}${rcv.toLocaleString()}`;
-            document.getElementById('lbl-deposit-pending').innerText = `${userSettings.currency}${Math.max(0,tot-rcv).toLocaleString()}`;
-        } else {
-            const max = parseFloat(sel.options[sel.selectedIndex].getAttribute('data-max')) || 0;
-            document.getElementById('lbl-exist-pending-old').innerText = `${userSettings.currency}${max.toLocaleString()}`;
-            document.getElementById('lbl-exist-pending-new').innerText = `${userSettings.currency}${Math.max(0, max-rcv).toLocaleString()}`;
-        }
-    }
-    function togglePartialIncomeType() {
-        const v = document.getElementById('partial-payment-project').value;
-        document.getElementById('partial-new-fields').classList.toggle('hidden', v !== 'new');
-        document.getElementById('partial-exist-fields').classList.toggle('hidden', v === 'new');
-        updatePartialIncomeMath();
-    }
-    function togglePartialIncomeFields() {
-        const c = document.getElementById('is-partial-income').checked;
-        document.getElementById('partial-income-fields').classList.toggle('hidden', !c);
-        if(c){ updatePartialIncomeMath(); document.getElementById('lbl-tx-amount').innerHTML=`รับแล้วรอบนี้ (<span class="currency-symbol">${userSettings.currency}</span>)`; } 
-        else document.getElementById('lbl-tx-amount').innerHTML=`จำนวนเงิน (<span class="currency-symbol">${userSettings.currency}</span>)`;
-        updateSpecialBadgesUI();
+    function updateDedicatedReimbMath() {
+      const tot = parseFloat(document.getElementById('reimb-total-amount').value) || 0;
+      const my = parseFloat(document.getElementById('reimb-my-share').value) || 0;
+      document.getElementById('lbl-ded-reimb-friend').innerText = `${userSettings.currency}${Math.max(0, tot - my).toLocaleString()}`;
     }
 
     function updateSplitMath() { const t=parseFloat(document.getElementById('split-total-amount').value)||0, m=parseFloat(document.getElementById('split-my-share').value)||0; document.getElementById('split-team-share-lbl').innerText=`${userSettings.currency}${Math.max(0,t-m).toLocaleString()}`; }
 
-    document.getElementById('tx-amount').addEventListener('input', () => { updateReimburseMath(); updatePartialIncomeMath(); updateInstallmentMath(); });
-    document.getElementById('my-share-amount').addEventListener('input', () => { const t=parseFloat(document.getElementById('tx-amount').value)||0; if(parseFloat(document.getElementById('my-share-amount').value)>t) document.getElementById('my-share-amount').value=t; updateReimburseMath(); });
-    document.getElementById('deposit-total-amount').addEventListener('input', updatePartialIncomeMath);
+    // RENDER BUTTONS
+    function genBtns(list, selId, cb, act, nor) { 
+      return list.map(i=>`<button type="button" onclick="${cb}='${i.id}'; ${
+        cb.includes('InstCat')?'renderInstCategoryButtons()':cb.includes('ReimbCat')?'renderReimbCategoryButtons()':cb.includes('SplitCat')?'renderSplitCategoryButtons()':cb.includes('Cat')?'renderCategoryButtons()':
+        cb.includes('InstAcc')?'renderInstAccountButtons()':cb.includes('ReimbAcc')?'renderReimbAccountButtons()':cb.includes('SplitAcc')?'renderSplitAccountButtons()':cb.includes('SettleAcc')?'renderSettleAccountButtons()':'renderAccountButtons()'
+      }" class="px-2 py-1 rounded-lg text-xs font-medium transition border ${i.id===selId?act:nor}">${i.name}</button>`).join(''); 
+    }
 
-    // RENDER BTNS
-    function genBtns(list, selId, cb, act, nor) { return list.map(i=>`<button type="button" onclick="${cb}='${i.id}'; ${cb.includes('Cat')?(currentTxType==='expense'?'renderCategoryButtons()':'renderSplitCategoryButtons()'):cb.includes('Split')?'renderSplitAccountButtons()':cb.includes('Settle')?'renderSettleAccountButtons()':'renderAccountButtons()'}" class="px-2 py-1 rounded-lg text-xs font-medium transition border ${i.id===selId?act:nor}">${i.name}</button>`).join(''); }
     function renderAccountButtons() { document.getElementById('account-buttons-container').innerHTML=genBtns(accountsList,selectedAccountId,'selectedAccountId','bg-emerald-600 text-white border-emerald-600 shadow-xs','bg-white text-gray-700 border-gray-200'); }
     function renderTransferButtons() { document.getElementById('transfer-from-container').innerHTML=accountsList.map(a=>`<button type="button" onclick="transferFromId='${a.id}';renderTransferButtons()" class="px-2 py-1 rounded-lg text-xs font-medium transition border text-left ${a.id===transferFromId?'bg-blue-600 text-white border-blue-600':'bg-white text-gray-700'}">${a.name}</button>`).join(''); document.getElementById('transfer-to-container').innerHTML=accountsList.map(a=>`<button type="button" onclick="transferToId='${a.id}';renderTransferButtons()" class="px-2 py-1 rounded-lg text-xs font-medium transition border text-left ${a.id===transferToId?'bg-blue-600 text-white border-blue-600':'bg-white text-gray-700'}">${a.name}</button>`).join(''); }
     function renderSettleAccountButtons() { document.getElementById('settle-account-buttons').innerHTML=genBtns(accountsList,selectedSettleAccountId,'selectedSettleAccountId','bg-amber-600 text-white border-amber-600 shadow-xs','bg-white text-gray-700 border-gray-200'); }
     function renderSplitAccountButtons() { document.getElementById('split-account-buttons').innerHTML=genBtns(accountsList,selectedSplitAccountId,'selectedSplitAccountId','bg-purple-600 text-white border-purple-600 shadow-xs','bg-white text-gray-700 border-gray-200'); }
+    function renderInstAccountButtons() { document.getElementById('inst-account-buttons').innerHTML=genBtns(accountsList,selectedInstAccountId,'selectedInstAccountId','bg-indigo-600 text-white border-indigo-600 shadow-xs','bg-white text-gray-700 border-gray-200'); }
+    function renderReimbAccountButtons() { document.getElementById('reimb-account-buttons').innerHTML=genBtns(accountsList,selectedReimbAccountId,'selectedReimbAccountId','bg-amber-600 text-white border-amber-600 shadow-xs','bg-white text-gray-700 border-gray-200'); }
+
     function renderCategoryButtons() { const c=categoriesList.filter(x=>x.type===currentTxType); if(!selectedCategoryId||!c.some(x=>x.id===selectedCategoryId))if(c.length)selectedCategoryId=c[0].id; document.getElementById('category-buttons-container').innerHTML=genBtns(c,selectedCategoryId,'selectedCategoryId',currentTxType==='expense'?'bg-rose-600 text-white border-rose-600 shadow-xs':'bg-emerald-600 text-white border-emerald-600 shadow-xs','bg-white text-gray-700 border-gray-200'); }
     function renderSplitCategoryButtons() { const c=categoriesList.filter(x=>x.type==='income'); if(!selectedSplitCategoryId||!c.some(x=>x.id===selectedSplitCategoryId))if(c.length)selectedSplitCategoryId=c[0].id; document.getElementById('split-category-buttons').innerHTML=genBtns(c,selectedSplitCategoryId,'selectedSplitCategoryId','bg-purple-600 text-white border-purple-600 shadow-xs','bg-white text-gray-700 border-gray-200'); }
+    function renderInstCategoryButtons() { const c=categoriesList.filter(x=>x.type==='expense'); if(!selectedInstCategoryId||!c.some(x=>x.id===selectedInstCategoryId))if(c.length)selectedInstCategoryId=c[0].id; document.getElementById('inst-category-buttons').innerHTML=genBtns(c,selectedInstCategoryId,'selectedInstCategoryId','bg-indigo-600 text-white border-indigo-600 shadow-xs','bg-white text-gray-700 border-gray-200'); }
+    function renderReimbCategoryButtons() { const c=categoriesList.filter(x=>x.type==='expense'); if(!selectedReimbCategoryId||!c.some(x=>x.id===selectedReimbCategoryId))if(c.length)selectedReimbCategoryId=c[0].id; document.getElementById('reimb-category-buttons').innerHTML=genBtns(c,selectedReimbCategoryId,'selectedReimbCategoryId','bg-amber-600 text-white border-amber-600 shadow-xs','bg-white text-gray-700 border-gray-200'); }
 
-    // SUBMIT TX
+    // SUBMIT FORM 1: Normal Expense / Income
     document.getElementById('tx-form').addEventListener('submit', async (e) => {
       e.preventDefault(); if(!currentUser||!selectedAccountId||!selectedCategoryId)return alert("เลือกบัญชีและหมวดหมู่");
       const amt=parseFloat(document.getElementById('tx-amount').value), n=document.getElementById('tx-note').value.trim(), d=document.getElementById('tx-date').value, cat=categoriesList.find(c=>c.id===selectedCategoryId);
       if(isNaN(amt)||amt<=0)return alert("จำนวนเงินไม่ถูกต้อง");
+      try {
+        await db.collection('users').doc(currentUser.uid).collection('transactions').add({kind:'transaction',type:currentTxType,amount:amt,myShare:amt,friendShare:0,remainingPending:0,isReimburse:false,isDeposit:false,note:n,date:d,accountId:selectedAccountId,categoryId:selectedCategoryId,categoryName:cat?.name||'',createdAt:firebase.firestore.FieldValue.serverTimestamp()});
+        const ar=db.collection('users').doc(currentUser.uid).collection('accounts').doc(selectedAccountId);
+        await db.runTransaction(async t=>{const a=await t.get(ar);if(a.exists)t.update(ar,{balance:a.data().balance+(currentTxType==='income'?amt:-amt)});});
+        document.getElementById('tx-amount').value=''; document.getElementById('tx-note').value='';
+      } catch(err){alert(err.message);}
+    });
 
-      const isInst = currentTxType==='expense' && document.getElementById('is-installment').checked;
-      const isPartialIncome = userSettings.enableAdvanced && currentTxType==='income' && document.getElementById('is-partial-income').checked;
+    // SUBMIT DEDICATED FORM: Installment (ผ่อนชำระ)
+    document.getElementById('installment-form').addEventListener('submit', async (e) => {
+      e.preventDefault(); if(!currentUser||!selectedInstAccountId||!selectedInstCategoryId)return alert("เลือกบัญชีและหมวดหมู่");
+      const amt=parseFloat(document.getElementById('inst-total-amount').value), c=parseInt(document.getElementById('inst-count').value)||2, p=parseInt(document.getElementById('inst-day').value)||1;
+      const d=document.getElementById('inst-date').value, n=document.getElementById('inst-note').value.trim(), cat=categoriesList.find(x=>x.id===selectedInstCategoryId);
+      if(isNaN(amt)||amt<=0||c<2)return alert("กรอกข้อมูลการผ่อนให้ถูกต้อง (อย่างน้อย 2 งวด)");
+      
+      const nAmt=Math.floor((amt/c)*100)/100, fAmt=(c===1)?amt:nAmt;
+      try {
+        const b=db.batch(), ref=db.collection('users').doc(currentUser.uid).collection('installment_plans').doc();
+        let tm=new Date(d).getMonth()+1, ty=new Date(d).getFullYear(); if(tm>11){tm=0;ty++;}
+        b.set(ref, {title:n||cat?.name||'ผ่อนชำระ',totalAmount:amt,totalCount:c,currentCount:1,normalAmount:nAmt,finalAmount:(Math.round((amt-(nAmt*(c-1)))*100)/100),payDay:p,status:'active',accountId:selectedInstAccountId,categoryId:selectedInstCategoryId,categoryName:cat?.name||'',startDate:d,nextDueDate:new Date(ty,tm,Math.min(p,new Date(ty,tm+1,0).getDate())).toISOString().split('T')[0],createdAt:firebase.firestore.FieldValue.serverTimestamp()});
+        b.set(db.collection('users').doc(currentUser.uid).collection('transactions').doc(), {kind:'transaction',type:'expense',amount:fAmt,myShare:fAmt,friendShare:0,remainingPending:0,isReimburse:false,isInstallment:true,installmentPlanId:ref.id,installmentCurrentCount:1,installmentTotalCount:c,note:`${n||'ผ่อนชำระ'} (1/${c})`,date:d,accountId:selectedInstAccountId,categoryId:selectedInstCategoryId,categoryName:cat?.name||'',createdAt:firebase.firestore.FieldValue.serverTimestamp()});
+        const a=await db.collection('users').doc(currentUser.uid).collection('accounts').doc(selectedInstAccountId).get(); if(a.exists) b.update(a.ref,{balance:a.data().balance-fAmt});
+        await b.commit(); alert("สร้างสัญญาผ่อนชำระเรียบร้อย!"); document.getElementById('inst-total-amount').value=''; document.getElementById('inst-note').value=''; switchEntryMode('expense');
+      } catch(err){alert(err.message);}
+    });
 
-      // Expense Installment
-      if(isInst) {
-        const c=parseInt(document.getElementById('inst-total-count').value)||2, p=parseInt(document.getElementById('inst-pay-day').value)||1;
-        if(c<2)return alert("ผ่อนต้อง 2 งวดขึ้นไป");
-        const nAmt=Math.floor((amt/c)*100)/100, fAmt=(c===1)?amt:nAmt;
-        try {
-          const b=db.batch(), ref=db.collection('users').doc(currentUser.uid).collection('installment_plans').doc();
-          let tm=new Date(d).getMonth()+1, ty=new Date(d).getFullYear(); if(tm>11){tm=0;ty++;}
-          b.set(ref, {title:n||cat?.name||'ผ่อน',totalAmount:amt,totalCount:c,currentCount:1,normalAmount:nAmt,finalAmount:(Math.round((amt-(nAmt*(c-1)))*100)/100),payDay:p,status:'active',accountId:selectedAccountId,categoryId:selectedCategoryId,categoryName:cat?.name||'',startDate:d,nextDueDate:new Date(ty,tm,Math.min(p,new Date(ty,tm+1,0).getDate())).toISOString().split('T')[0],createdAt:firebase.firestore.FieldValue.serverTimestamp()});
-          b.set(db.collection('users').doc(currentUser.uid).collection('transactions').doc(), {kind:'transaction',type:'expense',amount:fAmt,myShare:fAmt,friendShare:0,remainingPending:0,isReimburse:false,isInstallment:true,installmentPlanId:ref.id,installmentCurrentCount:1,installmentTotalCount:c,note:`${n}(1/${c})`,date:d,accountId:selectedAccountId,categoryId:selectedCategoryId,categoryName:cat?.name||'',createdAt:firebase.firestore.FieldValue.serverTimestamp()});
-          const a=await db.collection('users').doc(currentUser.uid).collection('accounts').doc(selectedAccountId).get(); if(a.exists) b.update(a.ref,{balance:a.data().balance-fAmt});
-          await b.commit(); alert("บันทึกงวดแรกเรียบร้อย!");
-        } catch(err){return alert(err.message);}
-      } 
-      // Income Collection (Existing Project)
-      else if (isPartialIncome && document.getElementById('partial-payment-project').value !== 'new') {
-        const pId = document.getElementById('partial-payment-project').value;
-        const opt = document.getElementById('partial-payment-project').options[document.getElementById('partial-payment-project').selectedIndex];
-        const deduct = Math.min(amt, parseFloat(opt.getAttribute('data-max')));
-        try {
-          const b=db.batch(), txRef=db.collection('users').doc(currentUser.uid).collection('transactions').doc(pId);
-          b.update(txRef, { pendingClient: allTransactions.find(t=>t.id===pId).pendingClient - deduct });
-          b.set(db.collection('users').doc(currentUser.uid).collection('transactions').doc(), {kind:'collection', amount:amt, accountId:selectedAccountId, note:n||'รับยอดค้าง', date:d, createdAt:firebase.firestore.FieldValue.serverTimestamp()});
-          const a=await db.collection('users').doc(currentUser.uid).collection('accounts').doc(selectedAccountId).get(); if(a.exists) b.update(a.ref,{balance:a.data().balance+amt});
-          await b.commit(); alert("บันทึกรับยอดค้างเรียบร้อย!");
-        } catch(err){return alert(err.message);}
-      } 
-      // Normal Expense / New Income Deposit
-      else {
-        const isReimburse = userSettings.enableAdvanced && currentTxType==='expense' && document.getElementById('is-reimburse').checked;
-        const isDeposit = isPartialIncome && document.getElementById('partial-payment-project').value === 'new';
-        let myS=amt, frS=0, rem=0, tProj=amt, pCli=0;
-        if(isReimburse) { const m=document.getElementById('my-share-amount').value; myS=m===''?0:parseFloat(m)||0; frS=rem=Math.max(0,amt-myS); }
-        if(isDeposit) { const t=document.getElementById('deposit-total-amount').value; tProj=t===''?0:parseFloat(t)||0; pCli=Math.max(0,tProj-amt); }
-        try {
-          await db.collection('users').doc(currentUser.uid).collection('transactions').add({kind:'transaction',type:currentTxType,amount:amt,myShare:myS,friendShare:frS,remainingPending:rem,isReimburse,isDeposit,totalProjectAmount:tProj,pendingClient:pCli,note:n,date:d,accountId:selectedAccountId,categoryId:selectedCategoryId,categoryName:cat?.name||'',createdAt:firebase.firestore.FieldValue.serverTimestamp()});
-          const ar=db.collection('users').doc(currentUser.uid).collection('accounts').doc(selectedAccountId);
-          await db.runTransaction(async t=>{const a=await t.get(ar);if(a.exists)t.update(ar,{balance:a.data().balance+(currentTxType==='income'?amt:-amt)});});
-        } catch(err){return alert(err.message);}
-      }
-
-      document.getElementById('tx-amount').value=''; document.getElementById('tx-note').value='';
-      ['is-installment','is-reimburse','is-partial-income'].forEach(id=>document.getElementById(id).checked=false);
-      toggleInstallmentFields(); toggleReimburseFields(); togglePartialIncomeFields();
+    // SUBMIT DEDICATED FORM: Reimburse (หารค่าใช้จ่าย)
+    document.getElementById('reimburse-form').addEventListener('submit', async (e) => {
+      e.preventDefault(); if(!currentUser||!selectedReimbAccountId||!selectedReimbCategoryId)return alert("เลือกบัญชีและหมวดหมู่");
+      const tot=parseFloat(document.getElementById('reimb-total-amount').value), myVal=document.getElementById('reimb-my-share').value;
+      const myS=myVal===''?0:parseFloat(myVal)||0, d=document.getElementById('reimb-date').value, n=document.getElementById('reimb-note').value.trim(), cat=categoriesList.find(x=>x.id===selectedReimbCategoryId);
+      if(isNaN(tot)||tot<=0||myS>tot)return alert("ยอดเงินไม่ถูกต้อง");
+      const frS=Math.max(0, tot-myS);
+      try {
+        await db.collection('users').doc(currentUser.uid).collection('transactions').add({kind:'transaction',type:'expense',amount:tot,myShare:myS,friendShare:frS,remainingPending:frS,isReimburse:true,isDeposit:false,note:n,date:d,accountId:selectedReimbAccountId,categoryId:selectedReimbCategoryId,categoryName:cat?.name||'',createdAt:firebase.firestore.FieldValue.serverTimestamp()});
+        const ar=db.collection('users').doc(currentUser.uid).collection('accounts').doc(selectedReimbAccountId);
+        await db.runTransaction(async t=>{const a=await t.get(ar);if(a.exists)t.update(ar,{balance:a.data().balance-tot});});
+        document.getElementById('reimb-total-amount').value=''; document.getElementById('reimb-my-share').value=''; document.getElementById('reimb-note').value=''; alert("บันทึกสำรองจ่ายเรียบร้อย!"); switchEntryMode('expense');
+      } catch(err){alert(err.message);}
     });
 
     document.getElementById('transfer-form').addEventListener('submit', async (e) => {
@@ -657,7 +636,7 @@
       allTransactions.forEach(t => {
         if(!t.date?.startsWith(mStr)) return;
         if(t.kind==='transaction') { if(t.type==='income') inc+=t.amount; else exp+=(t.isReimburse?t.myShare:t.amount); }
-        else if(t.kind==='split') inc+=t.myShare; else if(t.kind==='collection'||t.kind==='settlement') inc+=t.amount;
+        else if(t.kind==='split') inc+=t.myShare; else if(t.kind==='settlement') inc+=t.amount;
       }); return { inc, exp, netFlow: inc - exp };
     }
     
@@ -675,25 +654,24 @@
     function loadTransactionsRealtime(uid) {
       if(unsubscribeTx) unsubscribeTx();
       unsubscribeTx = db.collection('users').doc(uid).collection('transactions').orderBy('createdAt', 'desc').onSnapshot(snap => {
-        let tInc=0, tExp=0, pFr=0, pTm=0, pCl=0; allTransactions = [];
+        let tInc=0, tExp=0, pFr=0, pTm=0; allTransactions = [];
         snap.forEach(d => { const t={id:d.id,...d.data()}; allTransactions.push(t);
-          if(t.kind==='transaction') { if(t.type==='income')tInc+=t.amount; else tExp+=(t.isReimburse?t.myShare:t.amount); if(t.isReimburse&&t.remainingPending>0)pFr+=t.remainingPending; if(t.isDeposit&&t.pendingClient>0)pCl+=t.pendingClient; }
-          else if(t.kind==='settlement'||t.kind==='collection') tInc+=t.amount; else if(t.kind==='split') { tInc+=t.myShare; if(t.remainingTeamPending>0)pTm+=t.remainingTeamPending; }
+          if(t.kind==='transaction') { if(t.type==='income')tInc+=t.amount; else tExp+=(t.isReimburse?t.myShare:t.amount); if(t.isReimburse&&t.remainingPending>0)pFr+=t.remainingPending; }
+          else if(t.kind==='settlement') tInc+=t.amount; else if(t.kind==='split') { tInc+=t.myShare; if(t.remainingTeamPending>0)pTm+=t.remainingTeamPending; }
         });
         updateEntryCurrentMonthCashFlowUI(); if(!document.getElementById('cashflow-modal').classList.contains('hidden')) updatePopupCashflowUI();
-        if(currentEntryMode==='income') renderPendingClientProjects();
         
         let grp={}; allTransactions.forEach(t => { if(!grp[t.date])grp[t.date]=[]; grp[t.date].push(t); });
         document.getElementById('full-tx-list').innerHTML = Object.keys(grp).sort((a,b)=>b.localeCompare(a)).map(d => `<div class="sticky top-0 bg-gray-100/95 px-3 py-1 text-[11px] font-bold text-gray-600 rounded-lg my-1.5 shadow-2xs">${d}</div>` + grp[d].map(t => {
           if(t.kind==='transaction'){
-            let b=''; if(t.isReimburse) b=t.remainingPending>0?`<span class="text-[9px] bg-amber-100 text-amber-800 px-1 py-0.5 rounded ml-1">รอ ${t.remainingPending}</span>`:`<span class="text-[9px] bg-emerald-100 text-emerald-800 px-1 py-0.5 rounded ml-1">คืนครบ</span>`; else if(t.isInstallment) b=`<span class="text-[9px] bg-indigo-100 text-indigo-800 px-1 py-0.5 rounded ml-1">ผ่อน</span>`; else if(t.isDeposit) b=t.pendingClient>0?`<span class="text-[9px] bg-teal-100 text-teal-800 px-1 py-0.5 rounded ml-1">รอยอดค้าง ${t.pendingClient}</span>`:`<span class="text-[9px] bg-emerald-100 text-emerald-800 px-1 py-0.5 rounded ml-1">เก็บครบ</span>`;
+            let b=''; if(t.isReimburse) b=t.remainingPending>0?`<span class="text-[9px] bg-amber-100 text-amber-800 px-1 py-0.5 rounded ml-1">รอ ${t.remainingPending}</span>`:`<span class="text-[9px] bg-emerald-100 text-emerald-800 px-1 py-0.5 rounded ml-1">คืนครบ</span>`; else if(t.isInstallment) b=`<span class="text-[9px] bg-indigo-100 text-indigo-800 px-1 py-0.5 rounded ml-1">ผ่อน</span>`;
             return `<div onclick="openEditModal('${t.id}')" class="flex justify-between items-center p-2.5 bg-gray-50 border rounded-xl text-xs hover:bg-gray-100 cursor-pointer mb-1"><div class="flex flex-col"><span class="font-medium">${escapeHtml(t.note||'-')} ${b}</span><span class="text-[10px] text-gray-400">${accountsList.find(a=>a.id===t.accountId)?.name||''} • [${t.categoryName}]</span></div><div class="flex items-center space-x-2"><span class="font-bold ${t.type==='income'?'text-emerald-600':'text-rose-600'}">${t.type==='income'?'+':'-'}${t.amount.toLocaleString()}</span><button onclick="event.stopPropagation(); deleteTx('${t.id}')" class="text-gray-300 hover:text-rose-500 font-bold px-1">×</button></div></div>`;
           }
-          return `<div class="flex justify-between items-center p-2.5 border rounded-xl text-xs mb-1 ${t.kind==='transfer'?'bg-blue-50/50 border-blue-100':t.kind==='split'?'bg-purple-50/50 border-purple-100':t.kind==='settlement'?'bg-amber-50/50 border-amber-100':'bg-teal-50/50 border-teal-100'}"><div class="flex flex-col"><span class="font-medium">${t.kind==='transfer'?`โอน: ${t.fromAccountName} ➔ ${t.toAccountName}`:t.kind==='split'?`รับแทนทีม (${accountsList.find(a=>a.id===t.accountId)?.name})`:t.kind==='settlement'?'รับคืน (Settle)':'รับค้างจ่าย (Collect)'}</span><span class="text-[10px] text-gray-400">${escapeHtml(t.note||'-')}</span></div><div class="flex items-center space-x-2"><span class="font-bold">${t.kind==='split'?'+'+t.totalAmount.toLocaleString():t.kind==='transfer'?t.amount.toLocaleString():'+'+t.amount.toLocaleString()}</span><button onclick="deleteTx('${t.id}')" class="text-gray-300 hover:text-rose-500 font-bold px-1">×</button></div></div>`;
+          return `<div class="flex justify-between items-center p-2.5 border rounded-xl text-xs mb-1 ${t.kind==='transfer'?'bg-blue-50/50 border-blue-100':t.kind==='split'?'bg-purple-50/50 border-purple-100':'bg-amber-50/50 border-amber-100'}"><div class="flex flex-col"><span class="font-medium">${t.kind==='transfer'?`โอน: ${t.fromAccountName} ➔ ${t.toAccountName}`:t.kind==='split'?`รับแทนทีม (${accountsList.find(a=>a.id===t.accountId)?.name})`:'รับเงินคืน'}</span><span class="text-[10px] text-gray-400">${escapeHtml(t.note||'-')}</span></div><div class="flex items-center space-x-2"><span class="font-bold">${t.kind==='split'?'+'+t.totalAmount.toLocaleString():t.kind==='transfer'?t.amount.toLocaleString():'+'+t.amount.toLocaleString()}</span><button onclick="deleteTx('${t.id}')" class="text-gray-300 hover:text-rose-500 font-bold px-1">×</button></div></div>`;
         }).join('')).join('') || '<p class="text-center text-xs py-6">ไม่มีประวัติ</p>';
 
         document.getElementById('total-income').innerText=`${userSettings.currency}${tInc.toLocaleString()}`; document.getElementById('total-expense').innerText=`${userSettings.currency}${tExp.toLocaleString()}`; document.getElementById('total-balance').innerText=`${userSettings.currency}${accountsList.reduce((s,a)=>s+a.balance,0).toLocaleString()}`;
-        document.getElementById('total-pending-friend').innerText=`${userSettings.currency}${pFr.toLocaleString()}`; document.getElementById('total-pending-team').innerText=`${userSettings.currency}${pTm.toLocaleString()}`; document.getElementById('total-pending-client').innerText=`${userSettings.currency}${pCl.toLocaleString()}`;
+        document.getElementById('total-pending-friend').innerText=`${userSettings.currency}${pFr.toLocaleString()}`; document.getElementById('total-pending-team').innerText=`${userSettings.currency}${pTm.toLocaleString()}`;
       });
     }
 
@@ -701,7 +679,7 @@
     function openEditModal(id) { const t=allTransactions.find(x=>x.id===id); if(t.kind!=='transaction')return; document.getElementById('edit-tx-id').value=t.id; document.getElementById('edit-amount').value=t.amount; document.getElementById('edit-date').value=t.date; document.getElementById('edit-note').value=t.note||''; document.getElementById('edit-modal').classList.remove('hidden'); }
     function closeEditModal() { document.getElementById('edit-modal').classList.add('hidden'); }
     async function saveEditedTransaction() { const id=document.getElementById('edit-tx-id').value, amt=parseFloat(document.getElementById('edit-amount').value), d=document.getElementById('edit-date').value, n=document.getElementById('edit-note').value, t=allTransactions.find(x=>x.id===id); if(isNaN(amt)||amt<=0)return; try { const r=db.collection('users').doc(currentUser.uid).collection('accounts').doc(t.accountId); await db.runTransaction(async tr=>{ const a=await tr.get(r); if(a.exists) tr.update(r, {balance: a.data().balance + (t.type==='income'?(amt-t.amount):-(amt-t.amount))}); tr.update(db.collection('users').doc(currentUser.uid).collection('transactions').doc(id), {amount:amt, date:d, note:n}); }); closeEditModal(); } catch (err) { alert(err.message); } }
-    async function deleteTx(id) { if(!confirm("ลบรายการ?")) return; const t=allTransactions.find(x=>x.id===id); try { if(t.kind==='transaction'||t.kind==='settlement'||t.kind==='collection'||t.kind==='split') { const r=db.collection('users').doc(currentUser.uid).collection('accounts').doc(t.accountId); await db.runTransaction(async tr=>{ const a=await tr.get(r); if(a.exists) tr.update(r,{balance: a.data().balance + (t.type==='income'||t.kind!=='transaction'?- (t.totalAmount||t.amount):t.amount)}); }); } else if(t.kind==='transfer') { const f=db.collection('users').doc(currentUser.uid).collection('accounts').doc(t.fromAccountId), to=db.collection('users').doc(currentUser.uid).collection('accounts').doc(t.toAccountId); await db.runTransaction(async tr=>{ const aF=await tr.get(f), aT=await tr.get(to); if(aF.exists)tr.update(f,{balance:aF.data().balance+t.amount}); if(aT.exists)tr.update(to,{balance:aT.data().balance-t.amount}); }); } await db.collection('users').doc(currentUser.uid).collection('transactions').doc(id).delete(); } catch (err) { alert(err.message); } }
+    async function deleteTx(id) { if(!confirm("ลบรายการ?")) return; const t=allTransactions.find(x=>x.id===id); try { if(t.kind==='transaction'||t.kind==='settlement'||t.kind==='split') { const r=db.collection('users').doc(currentUser.uid).collection('accounts').doc(t.accountId); await db.runTransaction(async tr=>{ const a=await tr.get(r); if(a.exists) tr.update(r,{balance: a.data().balance + (t.type==='income'||t.kind!=='transaction'?- (t.totalAmount||t.amount):t.amount)}); }); } else if(t.kind==='transfer') { const f=db.collection('users').doc(currentUser.uid).collection('accounts').doc(t.fromAccountId), to=db.collection('users').doc(currentUser.uid).collection('accounts').doc(t.toAccountId); await db.runTransaction(async tr=>{ const aF=await tr.get(f), aT=await tr.get(to); if(aF.exists)tr.update(f,{balance:aF.data().balance+t.amount}); if(aT.exists)tr.update(to,{balance:aT.data().balance-t.amount}); }); } await db.collection('users').doc(currentUser.uid).collection('transactions').doc(id).delete(); } catch (err) { alert(err.message); } }
 
     // SETTINGS
     function renderSettingsAccounts() { document.getElementById('accounts-settings-list').innerHTML = accountsList.map(a=>`<div class="flex justify-between p-2 bg-gray-50 border rounded-xl text-xs"><div><span class="font-semibold">${escapeHtml(a.name)}</span> <span class="text-gray-500">(${a.balance.toLocaleString()})</span></div><div class="flex"><input type="text" id="edit-acc-${a.id}" readonly onclick="openCustomKeypad('edit-acc-${a.id}')" value="${a.balance}" class="w-14 px-1 py-1 border rounded bg-white cursor-pointer"><button onclick="updateAccountBalance('${a.id}')" class="bg-blue-50 text-blue-600 px-1 mx-1 rounded">แก้</button>${!a.isDefault?`<button onclick="deleteAccount('${a.id}')" class="text-rose-500 font-bold px-1">×</button>`:''}</div></div>`).join(''); }
