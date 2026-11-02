@@ -145,7 +145,7 @@
             <div class="grid grid-cols-2 gap-2">
               <div>
                 <label id="lbl-tx-amount" class="block text-[11px] text-gray-500 mb-1">จำนวนเงิน (<span class="currency-symbol">฿</span>)</label>
-                <input type="number" id="tx-amount" inputmode="decimal" step="any" min="0" placeholder="0.00" required oninput="updateInstallmentMath()" class="w-full px-2 py-1.5 text-xs border rounded-xl bg-white focus:ring-1 focus:ring-emerald-500">
+                <input type="text" id="tx-amount" readonly onclick="openCustomKeypad('tx-amount')" placeholder="0.00" required class="w-full px-2 py-1.5 text-xs border rounded-xl bg-white focus:ring-1 focus:ring-emerald-500 cursor-pointer">
               </div>
               <div>
                 <label class="block text-[11px] text-gray-500 mb-1">วันที่</label>
@@ -162,17 +162,17 @@
             <div id="installment-section" class="border-t pt-2 space-y-1">
               <label class="flex items-center space-x-2 cursor-pointer">
                 <input type="checkbox" id="is-installment" onchange="toggleInstallmentFields()" class="rounded text-indigo-600 focus:ring-indigo-500 w-4 h-4">
-                <span class="text-xs font-medium text-indigo-700">ผ่อนชำระสินค้า (Installment)</span>
+                <span class="text-xs font-medium text-indigo-700">ผ่อนชำระ</span>
               </label>
               <div id="installment-fields" class="hidden bg-indigo-50 p-2.5 rounded-xl border border-indigo-100 space-y-2">
                 <div class="grid grid-cols-2 gap-2">
                   <div>
                     <label class="block text-[10px] text-indigo-900 font-semibold">จำนวนงวดทั้งหมด</label>
-                    <input type="number" id="inst-total-count" inputmode="numeric" min="2" max="120" value="3" oninput="updateInstallmentMath()" class="w-full px-2 py-1 text-xs border rounded-lg bg-white">
+                    <input type="number" inputmode="numeric" id="inst-total-count" min="2" max="120" value="3" oninput="updateInstallmentMath()" class="w-full px-2 py-1 text-xs border rounded-lg bg-white">
                   </div>
                   <div>
                     <label class="block text-[10px] text-indigo-900 font-semibold">ตัดเงินทุกวันที่</label>
-                    <input type="number" id="inst-pay-day" inputmode="numeric" min="1" max="31" value="1" class="w-full px-2 py-1 text-xs border rounded-lg bg-white">
+                    <input type="number" inputmode="numeric" id="inst-pay-day" min="1" max="31" value="1" class="w-full px-2 py-1 text-xs border rounded-lg bg-white">
                   </div>
                 </div>
                 <!-- Calculation Preview Box -->
@@ -193,7 +193,7 @@
             <div id="reimburse-section" class="border-t pt-2 space-y-1 hidden">
               <label class="flex items-center space-x-2 cursor-pointer">
                 <input type="checkbox" id="is-reimburse" onchange="toggleReimburseFields()" class="rounded text-emerald-600 focus:ring-emerald-500 w-4 h-4">
-                <span class="text-xs font-medium text-amber-700">📌 สำรองจ่ายแทนเพื่อน / หารค่าใช้จ่าย</span>
+                <span class="text-xs font-medium text-amber-700">หารค่าใช้จ่าย</span>
               </label>
               <div id="reimburse-fields" class="hidden bg-amber-50 p-2 rounded-xl border border-amber-100 space-y-1">
                 <div class="flex justify-between text-[11px] text-amber-800">
@@ -202,7 +202,7 @@
                 </div>
                 <div>
                   <label class="block text-[10px] text-gray-600">ยอดที่เป็นของเราจริง (ปล่อยว่างได้)</label>
-                  <input type="number" id="my-share-amount" inputmode="decimal" step="any" min="0" placeholder="0.00" class="w-full px-2 py-1 text-xs border rounded-lg bg-white">
+                  <input type="text" id="my-share-amount" readonly onclick="openCustomKeypad('my-share-amount')" placeholder="0.00" class="w-full px-2 py-1 text-xs border rounded-lg bg-white cursor-pointer">
                 </div>
               </div>
             </div>
@@ -227,7 +227,7 @@
             <div class="grid grid-cols-2 gap-2">
               <div>
                 <label class="block text-[11px] text-gray-500 mb-1">จำนวนเงิน (<span class="currency-symbol">฿</span>)</label>
-                <input type="number" id="tr-amount" inputmode="decimal" step="any" min="0" placeholder="0.00" required class="w-full px-2 py-1.5 text-xs border rounded-xl bg-white">
+                <input type="text" id="tr-amount" readonly onclick="openCustomKeypad('tr-amount')" placeholder="0.00" required class="w-full px-2 py-1.5 text-xs border rounded-xl bg-white cursor-pointer">
               </div>
               <div>
                 <label class="block text-[11px] text-gray-500 mb-1">วันที่</label>
@@ -252,7 +252,7 @@
             <div class="grid grid-cols-2 gap-2">
               <div>
                 <label class="block text-[11px] text-gray-600 mb-1">ยอดเงินที่ได้คืน (<span class="currency-symbol">฿</span>)</label>
-                <input type="number" id="settle-received-amount" inputmode="decimal" step="any" min="0" placeholder="0.00" required class="w-full px-2 py-1.5 text-xs border rounded-xl bg-white">
+                <input type="text" id="settle-received-amount" readonly onclick="openCustomKeypad('settle-received-amount')" placeholder="0.00" required class="w-full px-2 py-1.5 text-xs border rounded-xl bg-white cursor-pointer">
               </div>
               <div>
                 <label class="block text-[11px] text-gray-600 mb-1">วันที่</label>
@@ -283,11 +283,11 @@
             <div class="grid grid-cols-2 gap-2">
               <div>
                 <label class="block text-[11px] text-purple-900 mb-1">ยอดเงินเต็มจากลูกค้า (<span class="currency-symbol">฿</span>)</label>
-                <input type="number" id="split-total-amount" inputmode="decimal" step="any" min="0" placeholder="0.00" required oninput="updateSplitMath()" class="w-full px-2 py-1.5 text-xs border rounded-xl bg-white">
+                <input type="text" id="split-total-amount" readonly onclick="openCustomKeypad('split-total-amount')" placeholder="0.00" required oninput="updateSplitMath()" class="w-full px-2 py-1.5 text-xs border rounded-xl bg-white cursor-pointer">
               </div>
               <div>
                 <label class="block text-[11px] text-purple-900 mb-1">ส่วนที่เป็นของเรา (<span class="currency-symbol">฿</span>)</label>
-                <input type="number" id="split-my-share" inputmode="decimal" step="any" min="0" placeholder="0.00" required oninput="updateSplitMath()" class="w-full px-2 py-1.5 text-xs border rounded-xl bg-white">
+                <input type="text" id="split-my-share" readonly onclick="openCustomKeypad('split-my-share')" placeholder="0.00" required oninput="updateSplitMath()" class="w-full px-2 py-1.5 text-xs border rounded-xl bg-white cursor-pointer">
               </div>
             </div>
 
@@ -429,7 +429,7 @@
             <p class="text-[11px] font-semibold text-gray-600">เพิ่มบัญชีใหม่</p>
             <div class="grid grid-cols-2 gap-2">
               <input type="text" id="new-acc-name" placeholder="ชื่อบัญชี" class="px-2 py-1 text-xs border rounded-lg bg-white">
-              <input type="number" id="new-acc-balance" inputmode="decimal" placeholder="ยอดเงินเริ่มต้น" step="any" class="px-2 py-1 text-xs border rounded-lg bg-white">
+              <input type="text" id="new-acc-balance" readonly onclick="openCustomKeypad('new-acc-balance')" placeholder="ยอดเงินเริ่มต้น" class="px-2 py-1 text-xs border rounded-lg bg-white cursor-pointer">
             </div>
             <button type="button" onclick="addNewAccount()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-1 rounded-lg text-xs transition">+ เพิ่มบัญชี</button>
           </div>
@@ -465,6 +465,40 @@
     </footer>
   </div>
 
+  <!-- CUSTOM ON-SCREEN NUMERIC KEYPAD POP-UP -->
+  <div id="custom-keypad-overlay" class="hidden fixed inset-0 bg-black/40 flex items-end justify-center z-50 transition-opacity">
+    <div class="bg-white w-full max-w-md rounded-t-3xl p-4 shadow-2xl border-t border-gray-200 space-y-3 animate-slide-up">
+      <div class="flex justify-between items-center border-b pb-2">
+        <span class="text-xs font-bold text-gray-500 uppercase">คีย์บอร์ดคำนวณ</span>
+        <button type="button" onclick="closeCustomKeypad()" class="text-gray-400 hover:text-gray-600 font-bold px-2 py-0.5 rounded-lg text-sm">✕ ปิด</button>
+      </div>
+
+      <!-- Keypad Grid -->
+      <div class="grid grid-cols-4 gap-2 text-sm font-semibold">
+        <button type="button" onclick="keypadPress('7')" class="bg-gray-100 hover:bg-gray-200 py-3 rounded-2xl active:bg-gray-300 transition">7</button>
+        <button type="button" onclick="keypadPress('8')" class="bg-gray-100 hover:bg-gray-200 py-3 rounded-2xl active:bg-gray-300 transition">8</button>
+        <button type="button" onclick="keypadPress('9')" class="bg-gray-100 hover:bg-gray-200 py-3 rounded-2xl active:bg-gray-300 transition">9</button>
+        <button type="button" onclick="keypadPress('+')" class="bg-indigo-50 text-indigo-700 hover:bg-indigo-100 py-3 rounded-2xl active:bg-indigo-200 transition">+</button>
+
+        <button type="button" onclick="keypadPress('4')" class="bg-gray-100 hover:bg-gray-200 py-3 rounded-2xl active:bg-gray-300 transition">4</button>
+        <button type="button" onclick="keypadPress('5')" class="bg-gray-100 hover:bg-gray-200 py-3 rounded-2xl active:bg-gray-300 transition">5</button>
+        <button type="button" onclick="keypadPress('6')" class="bg-gray-100 hover:bg-gray-200 py-3 rounded-2xl active:bg-gray-300 transition">6</button>
+        <button type="button" onclick="keypadPress('-')" class="bg-indigo-50 text-indigo-700 hover:bg-indigo-100 py-3 rounded-2xl active:bg-indigo-200 transition">-</button>
+
+        <button type="button" onclick="keypadPress('1')" class="bg-gray-100 hover:bg-gray-200 py-3 rounded-2xl active:bg-gray-300 transition">1</button>
+        <button type="button" onclick="keypadPress('2')" class="bg-gray-100 hover:bg-gray-200 py-3 rounded-2xl active:bg-gray-300 transition">2</button>
+        <button type="button" onclick="keypadPress('3')" class="bg-gray-100 hover:bg-gray-200 py-3 rounded-2xl active:bg-gray-300 transition">3</button>
+        <button type="button" onclick="keypadClear()" class="bg-rose-50 text-rose-600 hover:bg-rose-100 py-3 rounded-2xl active:bg-rose-200 transition text-xs font-bold">C</button>
+
+        <button type="button" onclick="keypadPress('0')" class="bg-gray-100 hover:bg-gray-200 py-3 rounded-2xl active:bg-gray-300 transition col-span-2">0</button>
+        <button type="button" onclick="keypadPress('.')" class="bg-gray-100 hover:bg-gray-200 py-3 rounded-2xl active:bg-gray-300 transition">.</button>
+        <button type="button" onclick="keypadBackspace()" class="bg-gray-200 hover:bg-gray-300 py-3 rounded-2xl active:bg-gray-400 transition flex items-center justify-center">⌫</button>
+
+        <button type="button" onclick="keypadDone()" class="bg-emerald-600 hover:bg-emerald-700 text-white py-3 rounded-2xl col-span-4 active:bg-emerald-800 transition font-bold shadow-sm">เสร็จสิ้น (✓)</button>
+      </div>
+    </div>
+  </div>
+
   <!-- POP-UP MODAL: CASH FLOW -->
   <div id="cashflow-modal" class="hidden fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
     <div class="bg-white rounded-3xl w-full max-w-xs p-4 space-y-4 shadow-2xl relative">
@@ -498,7 +532,7 @@
       <input type="hidden" id="edit-tx-id">
       <div>
         <label class="block text-[11px] text-gray-500 mb-1">จำนวนเงิน</label>
-        <input type="number" id="edit-amount" inputmode="decimal" step="any" class="w-full px-2 py-1.5 text-xs border rounded-xl bg-white">
+        <input type="text" id="edit-amount" readonly onclick="openCustomKeypad('edit-amount')" class="w-full px-2 py-1.5 text-xs border rounded-xl bg-white cursor-pointer">
       </div>
       <div>
         <label class="block text-[11px] text-gray-500 mb-1">วันที่</label>
@@ -559,6 +593,9 @@
     let popupYear = new Date().getFullYear();
     let popupMonth = new Date().getMonth() + 1;
 
+    // Custom Keypad Active Target State
+    let activeKeypadFieldId = null;
+
     // DOM References
     const loginView = document.getElementById('login-view');
     const registerView = document.getElementById('register-view');
@@ -571,6 +608,68 @@
     const logoutBtn = document.getElementById('logout-btn');
     const openSettingsBtn = document.getElementById('open-settings-btn');
     const authStatusBar = document.getElementById('auth-status-bar');
+
+    // CUSTOM KEYPAD CONTROLLERS
+    function openCustomKeypad(fieldId) {
+      activeKeypadFieldId = fieldId;
+      document.getElementById('custom-keypad-overlay').classList.remove('hidden');
+    }
+
+    function closeCustomKeypad() {
+      evaluateActiveFieldMath();
+      activeKeypadFieldId = null;
+      document.getElementById('custom-keypad-overlay').classList.add('hidden');
+    }
+
+    function keypadPress(val) {
+      if (!activeKeypadFieldId) return;
+      const el = document.getElementById(activeKeypadFieldId);
+      el.value = (el.value === '0' && val !== '.') ? val : (el.value + val);
+      triggerFieldInputEvent(el);
+    }
+
+    function keypadClear() {
+      if (!activeKeypadFieldId) return;
+      const el = document.getElementById(activeKeypadFieldId);
+      el.value = '';
+      triggerFieldInputEvent(el);
+    }
+
+    function keypadBackspace() {
+      if (!activeKeypadFieldId) return;
+      const el = document.getElementById(activeKeypadFieldId);
+      el.value = el.value.slice(0, -1);
+      triggerFieldInputEvent(el);
+    }
+
+    function keypadDone() {
+      closeCustomKeypad();
+    }
+
+    function evaluateActiveFieldMath() {
+      if (!activeKeypadFieldId) return;
+      const el = document.getElementById(activeKeypadFieldId);
+      let valStr = el.value.trim();
+      if (!valStr) return;
+
+      try {
+        // Sanitize mathematical expression to allow safe evaluation of arithmetic like "120+45"
+        if (/^[0-9+\-*/.\s]+$/.test(valStr)) {
+          let result = Function('"use strict";return (' + valStr + ')')();
+          if (!isNaN(result) && isFinite(result)) {
+            el.value = result;
+            triggerFieldInputEvent(el);
+          }
+        }
+      } catch (e) {
+        // If expression is invalid or incomplete, leave as is
+      }
+    }
+
+    function triggerFieldInputEvent(el) {
+      const event = new Event('input', { bubbles: true });
+      el.dispatchEvent(event);
+    }
 
     function showView(viewName) {
       [loginView, registerView, entryView, summaryView, historyView, settingView].forEach(v => v.classList.add('hidden'));
@@ -1914,7 +2013,7 @@
             <span class="text-gray-500">(${userSettings.currency}${acc.balance.toLocaleString()})</span>
           </div>
           <div class="flex items-center space-x-1">
-            <input type="number" id="edit-acc-${acc.id}" inputmode="decimal" value="${acc.balance}" step="any" class="w-16 px-1 py-1 text-xs border rounded-lg bg-white">
+            <input type="text" id="edit-acc-${acc.id}" readonly onclick="openCustomKeypad('edit-acc-${acc.id}')" value="${acc.balance}" class="w-16 px-1.5 py-1 text-xs border rounded-lg bg-white cursor-pointer">
             <button type="button" onclick="updateAccountBalance('${acc.id}')" class="bg-blue-50 text-blue-600 px-1.5 py-1 rounded-lg">แก้</button>
             ${!acc.isDefault ? `<button type="button" onclick="deleteAccount('${acc.id}')" class="text-gray-300 hover:text-rose-500 font-bold px-1">×</button>` : ''}
           </div>
