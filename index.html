@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>YUET (v1.5) - Dedicated Mode & Re-tap Action</title>
+  <title>YUET (v1.6) - Dedicated Team Transfer & Clean UI</title>
   
   <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
@@ -38,7 +38,7 @@
       <div class="flex flex-col items-center">
         <div class="flex items-baseline space-x-1">
           <h1 class="text-xl font-black tracking-wider uppercase drop-shadow-sm">YUET</h1>
-          <span class="text-[9px] font-medium text-emerald-200 tracking-tight">(v1.5)</span>
+          <span class="text-[9px] font-medium text-emerald-200 tracking-tight">(v1.6)</span>
         </div>
         <p class="text-[8px] text-emerald-100/80 tracking-tight font-light">by Phuthai Mananararuk & Gemini</p>
       </div>
@@ -109,7 +109,7 @@
             <button type="submit" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-medium py-2 rounded-xl text-xs shadow-xs transition mt-1">+ บันทึกรายการ</button>
           </form>
 
-          <!-- DEDICATED FORM 2: Transfer Form -->
+          <!-- DEDICATED FORM 2: Transfer Form (โอนเงินระหว่างบัญชี) -->
           <form id="transfer-form" class="hidden bg-gray-50 p-3 rounded-2xl border border-gray-200 space-y-2.5">
             <div class="grid grid-cols-2 gap-2">
               <div><label class="block text-[11px] text-gray-500 mb-1">ต้นทาง</label><div id="transfer-from-container" class="flex flex-col gap-1"></div></div>
@@ -205,6 +205,22 @@
             <button type="submit" class="w-full bg-amber-600 hover:bg-amber-700 text-white font-medium py-2 rounded-xl text-xs shadow-xs transition">บันทึกสำรองจ่าย</button>
           </form>
 
+          <!-- DEDICATED FORM 7: Team Pay Form (โอนให้ทีม) NEW -->
+          <form id="team-pay-form" class="hidden bg-teal-50 p-3 rounded-2xl border border-teal-200 space-y-2.5">
+            <div class="flex justify-between items-center mb-1.5 border-b border-teal-200 pb-1.5">
+              <h3 class="text-[11px] font-bold text-teal-900 uppercase">โอนให้ทีม (ตัดยอดค้างจ่ายทีมงาน)</h3>
+              <button type="button" onclick="switchEntryMode('transfer')" class="text-[10px] bg-white px-2 py-0.5 rounded-lg border border-teal-200 text-teal-700">ยกเลิก</button>
+            </div>
+            <div><label class="block text-[11px] text-teal-900 mb-1">เลือกบัญชีที่โอนเงินออก</label><div id="team-pay-account-buttons" class="flex flex-wrap gap-1"></div></div>
+            <div class="grid grid-cols-2 gap-2">
+              <div><label class="block text-[11px] text-teal-900 mb-1">จำนวนเงินโอน (<span class="currency-symbol">฿</span>)</label><input type="text" id="team-pay-amount" readonly onclick="openCustomKeypad('team-pay-amount')" required class="w-full px-2 py-1.5 text-xs border rounded-xl bg-white cursor-pointer"></div>
+              <div><label class="block text-[11px] text-teal-900 mb-1">วันที่</label><input type="date" id="team-pay-date" required class="w-full px-2 py-1.5 text-xs border rounded-xl bg-white"></div>
+            </div>
+            <div><label class="block text-[11px] text-teal-900 mb-1">รายการค้างจ่ายทีมงาน (ติ๊กเลือก)</label><div id="pending-team-items-container" class="space-y-1 max-h-32 overflow-y-auto pr-1 border bg-white p-2 rounded-xl"></div></div>
+            <div><label class="block text-[11px] text-teal-900 mb-1">บันทึกช่วยจำ</label><input type="text" id="team-pay-note" placeholder="เช่น โอนจ่ายค่าตัดต่อโปรเจกต์คุณบี" class="w-full px-2 py-1.5 text-xs border rounded-xl bg-white"></div>
+            <button type="submit" class="w-full bg-teal-600 hover:bg-teal-700 text-white font-medium py-2 rounded-xl text-xs shadow-xs transition">ยืนยันการโอนให้ทีม</button>
+          </form>
+
         </div>
 
         <!-- Net Cash Flow Balance Bar -->
@@ -249,7 +265,7 @@
       <section id="setting-view" class="hidden space-y-4">
         <div class="border-b pb-2"><h2 class="text-xs font-bold text-gray-700 uppercase">Setting - ตั้งค่าระบบ</h2></div>
         <div class="space-y-1"><label class="block text-xs font-bold text-gray-700">สกุลเงินทั่วแอป</label><select id="setting-currency" onchange="autoSaveSettings()" class="w-full px-3 py-2 text-xs border rounded-xl bg-white"><option value="฿">บาท (฿)</option><option value="$">ดอลลาร์ ($)</option><option value="€">ยูโร (€)</option><option value="¥">เยน (¥)</option></select></div>
-        <div class="bg-indigo-50 p-3 rounded-2xl border border-indigo-100 space-y-1.5"><label class="flex items-center space-x-2 cursor-pointer"><input type="checkbox" id="setting-enable-advanced" onchange="toggleAdvancedFeaturesSetting()" class="rounded text-indigo-600 focus:ring-indigo-500 w-4 h-4"><span class="text-xs font-bold text-indigo-900">เปิดใช้งานฟังก์ชันพิเศษ </span></label><p class="text-[10px] text-indigo-600/80 leading-relaxed">กดปุ่มโหมด (Expense / Income) ซ้ำอีกครั้งเพื่อเปิดเมนูฟังก์ชันพิเศษ: <u>ผ่อนชำระ, หารค่าใช้จ่าย, รับเงินคืน, รับเงินแทน</u></p></div>
+        <div class="bg-indigo-50 p-3 rounded-2xl border border-indigo-100 space-y-1.5"><label class="flex items-center space-x-2 cursor-pointer"><input type="checkbox" id="setting-enable-advanced" onchange="toggleAdvancedFeaturesSetting()" class="rounded text-indigo-600 focus:ring-indigo-500 w-4 h-4"><span class="text-xs font-bold text-indigo-900">เปิดใช้งานฟังก์ชันพิเศษ </span></label><p class="text-[10px] text-indigo-600/80 leading-relaxed">กดปุ่มโหมด (Expense / Income / Transfer) ซ้ำอีกครั้งเพื่อเปิดเมนูซ่อน: <u>ผ่อนชำระ, หารค่าใช้จ่าย, รับเงินคืน, รับเงินแทน, โอนให้ทีม</u></p></div>
         <div class="space-y-2 border-t pt-3"><h3 class="text-xs font-bold text-gray-700 uppercase">จัดการบัญชีเงิน</h3><div id="accounts-settings-list" class="space-y-1 max-h-24 overflow-y-auto pr-1"></div><div class="bg-gray-50 p-2 rounded-xl border space-y-1.5"><p class="text-[11px] font-semibold text-gray-600">เพิ่มบัญชีใหม่</p><div class="grid grid-cols-2 gap-2"><input type="text" id="new-acc-name" placeholder="ชื่อบัญชี" class="px-2 py-1 text-xs border rounded-lg bg-white"><input type="text" id="new-acc-balance" readonly onclick="openCustomKeypad('new-acc-balance')" placeholder="ยอดเริ่มต้น" class="px-2 py-1 text-xs border rounded-lg bg-white cursor-pointer"></div><button type="button" onclick="addNewAccount()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-1 rounded-lg text-xs transition">+ เพิ่มบัญชี</button></div></div>
         <div class="space-y-2 border-t pt-3"><h3 class="text-xs font-bold text-gray-700 uppercase">จัดการหมวดหมู่</h3><div class="grid grid-cols-2 gap-2"><div class="space-y-1.5"><p class="text-[11px] font-semibold text-rose-600">รายจ่าย</p><div id="expense-cats-list" class="space-y-1 max-h-24 overflow-y-auto pr-1"></div><div class="flex space-x-1"><input type="text" id="new-exp-cat-name" class="w-full px-1.5 py-1 text-xs border rounded bg-white"><button onclick="addNewCategory('expense')" class="bg-rose-600 text-white px-2 py-1 rounded text-xs">+</button></div></div><div class="space-y-1.5"><p class="text-[11px] font-semibold text-emerald-600">รายรับ</p><div id="income-cats-list" class="space-y-1 max-h-24 overflow-y-auto pr-1"></div><div class="flex space-x-1"><input type="text" id="new-inc-cat-name" class="w-full px-1.5 py-1 text-xs border rounded bg-white"><button onclick="addNewCategory('income')" class="bg-emerald-600 text-white px-2 py-1 rounded text-xs">+</button></div></div></div></div>
       </section>
@@ -259,29 +275,35 @@
     <footer id="auth-status-bar" class="bg-gray-100 p-2 text-center text-[10px] text-gray-400 border-t border-gray-100">สถานะ: ยังไม่ได้เข้าสู่ระบบ</footer>
   </div>
 
-  <!-- ==================== RE-TAP SPECIAL MODAL ==================== -->
+  <!-- ==================== RE-TAP SPECIAL MODAL (CLEANED) ==================== -->
   <div id="special-modal" class="hidden fixed inset-0 bg-black/60 flex items-center justify-center p-4 z-40 transition-opacity">
     <div class="bg-white rounded-3xl w-full max-w-sm p-5 space-y-4 shadow-2xl relative animate-slide-up">
       <button type="button" onclick="closeSpecialModal()" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600 font-bold text-lg">✕</button>
-      <h3 class="text-sm font-bold text-indigo-900 uppercase border-b pb-2 flex items-center gap-1.5">✨ ฟังก์ชันพิเศษ</h3>
       
       <!-- Special Options for Expense -->
-      <div id="special-expense-content" class="space-y-2.5 hidden">
-        <button type="button" onclick="activateSubMode('installment')" class="w-full flex items-center bg-white hover:bg-indigo-50 text-indigo-900 border border-indigo-200 py-3 rounded-2xl text-xs font-bold transition px-3 shadow-xs">
-          <span class="text-base mr-2 text-indigo-600">📅</span> ผ่อนชำระ
+      <div id="special-expense-content" class="space-y-2.5 hidden pt-2">
+        <button type="button" onclick="activateSubMode('installment')" class="w-full flex items-center justify-center bg-white hover:bg-indigo-50 text-indigo-900 border border-indigo-200 py-3 rounded-2xl text-xs font-bold transition px-3 shadow-xs">
+          ผ่อนชำระ
         </button>
-        <button type="button" onclick="activateSubMode('reimburse')" class="w-full flex items-center bg-white hover:bg-amber-50 text-amber-900 border border-amber-200 py-3 rounded-2xl text-xs font-bold transition px-3 shadow-xs">
-          <span class="text-base mr-2 text-amber-600">🤝</span> หารค่าใช้จ่าย
+        <button type="button" onclick="activateSubMode('reimburse')" class="w-full flex items-center justify-center bg-white hover:bg-amber-50 text-amber-900 border border-amber-200 py-3 rounded-2xl text-xs font-bold transition px-3 shadow-xs">
+          หารค่าใช้จ่าย
         </button>
       </div>
 
       <!-- Special Options for Income -->
-      <div id="special-income-content" class="space-y-2.5 hidden">
-        <button type="button" onclick="activateSubMode('settle')" class="w-full flex items-center bg-white hover:bg-amber-50 text-amber-900 border border-amber-200 py-3 rounded-2xl text-xs font-bold transition px-3 shadow-xs">
-          <span class="text-base mr-2 text-amber-600">💵</span> รับเงินคืน
+      <div id="special-income-content" class="space-y-2.5 hidden pt-2">
+        <button type="button" onclick="activateSubMode('settle')" class="w-full flex items-center justify-center bg-white hover:bg-amber-50 text-amber-900 border border-amber-200 py-3 rounded-2xl text-xs font-bold transition px-3 shadow-xs">
+          รับเงินคืน
         </button>
-        <button type="button" onclick="activateSubMode('split')" class="w-full flex items-center bg-white hover:bg-purple-50 text-purple-900 border border-purple-200 py-3 rounded-2xl text-xs font-bold transition px-3 shadow-xs">
-          <span class="text-base mr-2 text-purple-600">📊</span> รับเงินแทน
+        <button type="button" onclick="activateSubMode('split')" class="w-full flex items-center justify-center bg-white hover:bg-purple-50 text-purple-900 border border-purple-200 py-3 rounded-2xl text-xs font-bold transition px-3 shadow-xs">
+          รับเงินแทน
+        </button>
+      </div>
+
+      <!-- Special Options for Transfer (NEW) -->
+      <div id="special-transfer-content" class="space-y-2.5 hidden pt-2">
+        <button type="button" onclick="activateSubMode('team-pay')" class="w-full flex items-center justify-center bg-white hover:bg-teal-50 text-teal-900 border border-teal-200 py-3 rounded-2xl text-xs font-bold transition px-3 shadow-xs">
+          โอนให้ทีม
         </button>
       </div>
 
@@ -343,6 +365,7 @@
     let selectedSettleAccountId = null, selectedSplitAccountId = null, selectedSplitCategoryId = null;
     let selectedInstAccountId = null, selectedInstCategoryId = null;
     let selectedReimbAccountId = null, selectedReimbCategoryId = null;
+    let selectedTeamPayAccountId = null;
     let transferFromId = null, transferToId = null;
 
     let currentTxType = 'expense', currentEntryMode = 'expense';
@@ -393,7 +416,7 @@
     // DATA INIT
     async function initUserData(uid) {
       const todayStr = new Date().toISOString().split('T')[0];
-      ['tx-date', 'tr-date', 'settle-date', 'split-date', 'inst-date', 'reimb-date'].forEach(id => document.getElementById(id).value = todayStr);
+      ['tx-date', 'tr-date', 'settle-date', 'split-date', 'inst-date', 'reimb-date', 'team-pay-date'].forEach(id => document.getElementById(id).value = todayStr);
 
       const doc = await db.collection('users').doc(uid).collection('settings').doc('config').get();
       if (doc.exists) userSettings = { currency: '฿', enableAdvanced: false, ...doc.data() }; 
@@ -409,11 +432,12 @@
           if (!selectedSplitAccountId || !accountsList.some(a => a.id === selectedSplitAccountId)) selectedSplitAccountId = accountsList[0].id;
           if (!selectedInstAccountId || !accountsList.some(a => a.id === selectedInstAccountId)) selectedInstAccountId = accountsList[0].id;
           if (!selectedReimbAccountId || !accountsList.some(a => a.id === selectedReimbAccountId)) selectedReimbAccountId = accountsList[0].id;
+          if (!selectedTeamPayAccountId || !accountsList.some(a => a.id === selectedTeamPayAccountId)) selectedTeamPayAccountId = accountsList[0].id;
           if (!transferFromId || !accountsList.some(a => a.id === transferFromId)) transferFromId = accountsList[0].id;
           if (!transferToId || !accountsList.some(a => a.id === transferToId)) transferToId = accountsList.length > 1 ? accountsList[1].id : accountsList[0].id;
 
           renderAccountButtons(); renderTransferButtons(); renderSettleAccountButtons(); renderSplitAccountButtons();
-          renderInstAccountButtons(); renderReimbAccountButtons(); renderSettingsAccounts();
+          renderInstAccountButtons(); renderReimbAccountButtons(); renderTeamPayAccountButtons(); renderSettingsAccounts();
         });
 
       unsubscribeCat = db.collection('users').doc(uid).collection('categories').orderBy('createdAt','asc').onSnapshot(snap => { 
@@ -428,25 +452,31 @@
     function applyAdvancedFeaturesVisibility() {
       const en = userSettings.enableAdvanced === true;
       ['card-pending-friend','card-pending-team'].forEach(id=>document.getElementById(id).classList.toggle('hidden',!en));
-      if (!en && ['settle','split','installment','reimburse'].includes(currentEntryMode)) switchEntryMode('expense');
+      if (!en && ['settle','split','installment','reimburse','team-pay'].includes(currentEntryMode)) switchEntryMode('expense');
       renderModeButtonsState();
     }
 
     // RE-TAP ACTION LOGIC
     function handleModeClick(mode) {
       const en = userSettings.enableAdvanced === true;
-      // If clicking the current active mode (and advanced features are enabled), open special modal!
-      if (en && currentEntryMode === mode && (mode === 'expense' || mode === 'income')) {
-        openSpecialModal();
+      const isBaseMode = (
+        (mode === 'expense' && ['expense', 'installment', 'reimburse'].includes(currentEntryMode)) ||
+        (mode === 'income' && ['income', 'settle', 'split'].includes(currentEntryMode)) ||
+        (mode === 'transfer' && ['transfer', 'team-pay'].includes(currentEntryMode))
+      );
+
+      if (en && isBaseMode) {
+        openSpecialModal(mode);
       } else {
         switchEntryMode(mode);
       }
     }
 
-    function openSpecialModal() {
+    function openSpecialModal(targetMode = currentEntryMode) {
       document.getElementById('special-modal').classList.remove('hidden');
-      document.getElementById('special-expense-content').classList.toggle('hidden', currentEntryMode !== 'expense');
-      document.getElementById('special-income-content').classList.toggle('hidden', currentEntryMode !== 'income');
+      document.getElementById('special-expense-content').classList.toggle('hidden', !['expense','installment','reimburse'].includes(targetMode));
+      document.getElementById('special-income-content').classList.toggle('hidden', !['income','settle','split'].includes(targetMode));
+      document.getElementById('special-transfer-content').classList.toggle('hidden', !['transfer','team-pay'].includes(targetMode));
     }
     function closeSpecialModal() { document.getElementById('special-modal').classList.add('hidden'); }
     function activateSubMode(mode) { closeSpecialModal(); switchEntryMode(mode); }
@@ -456,17 +486,21 @@
       ['btn-mode-expense','btn-mode-income','btn-mode-transfer'].forEach(id => document.getElementById(id).className = "py-1.5 text-[10px] sm:text-[11px] font-semibold rounded-lg transition text-gray-700");
 
       if (['expense', 'installment', 'reimburse'].includes(currentEntryMode)) {
-        const star = (en && currentEntryMode === 'expense') ? ' ✨' : '';
+        const dots = en ? '...' : '';
         document.getElementById('btn-mode-expense').className = "py-1.5 text-[10px] sm:text-[11px] font-semibold rounded-lg transition text-white shadow-xs bg-rose-600";
-        document.getElementById('btn-mode-expense').innerText = `Expense${star}`;
+        document.getElementById('btn-mode-expense').innerText = `Expense${dots}`;
         document.getElementById('btn-mode-income').innerText = "Income";
+        document.getElementById('btn-mode-transfer').innerText = "Transfer";
       } else if (['income', 'settle', 'split'].includes(currentEntryMode)) {
-        const star = (en && currentEntryMode === 'income') ? ' ✨' : '';
+        const dots = en ? '...' : '';
         document.getElementById('btn-mode-income').className = "py-1.5 text-[10px] sm:text-[11px] font-semibold rounded-lg transition text-white shadow-xs bg-emerald-600";
-        document.getElementById('btn-mode-income').innerText = `Income${star}`;
+        document.getElementById('btn-mode-income').innerText = `Income${dots}`;
         document.getElementById('btn-mode-expense').innerText = "Expense";
-      } else if (currentEntryMode === 'transfer') {
+        document.getElementById('btn-mode-transfer').innerText = "Transfer";
+      } else if (['transfer', 'team-pay'].includes(currentEntryMode)) {
+        const dots = en ? '...' : '';
         document.getElementById('btn-mode-transfer').className = "py-1.5 text-[10px] sm:text-[11px] font-semibold rounded-lg transition text-white shadow-xs bg-blue-600";
+        document.getElementById('btn-mode-transfer').innerText = `Transfer${dots}`;
         document.getElementById('btn-mode-expense').innerText = "Expense";
         document.getElementById('btn-mode-income').innerText = "Income";
       }
@@ -477,11 +511,12 @@
       currentEntryMode = mode;
       renderModeButtonsState();
 
-      ['tx-form','transfer-form','settle-form','split-form','installment-form','reimburse-form'].forEach(id => document.getElementById(id).classList.add('hidden'));
+      ['tx-form','transfer-form','settle-form','split-form','installment-form','reimburse-form','team-pay-form'].forEach(id => document.getElementById(id).classList.add('hidden'));
 
       const forms = { 
         expense:'tx-form', income:'tx-form', transfer:'transfer-form', 
-        settle:'settle-form', split:'split-form', installment:'installment-form', reimburse:'reimburse-form' 
+        settle:'settle-form', split:'split-form', installment:'installment-form', reimburse:'reimburse-form',
+        'team-pay':'team-pay-form'
       };
       document.getElementById(forms[mode]).classList.remove('hidden');
 
@@ -492,6 +527,7 @@
       else if (mode === 'split') { renderSplitAccountButtons(); renderSplitCategoryButtons(); }
       else if (mode === 'installment') { renderInstAccountButtons(); renderInstCategoryButtons(); updateDedicatedInstMath(); }
       else if (mode === 'reimburse') { renderReimbAccountButtons(); renderReimbCategoryButtons(); updateDedicatedReimbMath(); }
+      else if (mode === 'team-pay') { renderTeamPayAccountButtons(); renderPendingTeamList(); }
     }
 
     // MATH HELPERS
@@ -517,7 +553,7 @@
     function genBtns(list, selId, cb, act, nor) { 
       return list.map(i=>`<button type="button" onclick="${cb}='${i.id}'; ${
         cb.includes('InstCat')?'renderInstCategoryButtons()':cb.includes('ReimbCat')?'renderReimbCategoryButtons()':cb.includes('SplitCat')?'renderSplitCategoryButtons()':cb.includes('Cat')?'renderCategoryButtons()':
-        cb.includes('InstAcc')?'renderInstAccountButtons()':cb.includes('ReimbAcc')?'renderReimbAccountButtons()':cb.includes('SplitAcc')?'renderSplitAccountButtons()':cb.includes('SettleAcc')?'renderSettleAccountButtons()':'renderAccountButtons()'
+        cb.includes('InstAcc')?'renderInstAccountButtons()':cb.includes('ReimbAcc')?'renderReimbAccountButtons()':cb.includes('SplitAcc')?'renderSplitAccountButtons()':cb.includes('SettleAcc')?'renderSettleAccountButtons()':cb.includes('TeamPayAcc')?'renderTeamPayAccountButtons()':'renderAccountButtons()'
       }" class="px-2 py-1 rounded-lg text-xs font-medium transition border ${i.id===selId?act:nor}">${i.name}</button>`).join(''); 
     }
 
@@ -527,6 +563,7 @@
     function renderSplitAccountButtons() { document.getElementById('split-account-buttons').innerHTML=genBtns(accountsList,selectedSplitAccountId,'selectedSplitAccountId','bg-purple-600 text-white border-purple-600 shadow-xs','bg-white text-gray-700 border-gray-200'); }
     function renderInstAccountButtons() { document.getElementById('inst-account-buttons').innerHTML=genBtns(accountsList,selectedInstAccountId,'selectedInstAccountId','bg-indigo-600 text-white border-indigo-600 shadow-xs','bg-white text-gray-700 border-gray-200'); }
     function renderReimbAccountButtons() { document.getElementById('reimb-account-buttons').innerHTML=genBtns(accountsList,selectedReimbAccountId,'selectedReimbAccountId','bg-amber-600 text-white border-amber-600 shadow-xs','bg-white text-gray-700 border-gray-200'); }
+    function renderTeamPayAccountButtons() { document.getElementById('team-pay-account-buttons').innerHTML=genBtns(accountsList,selectedTeamPayAccountId,'selectedTeamPayAccountId','bg-teal-600 text-white border-teal-600 shadow-xs','bg-white text-gray-700 border-gray-200'); }
 
     function renderCategoryButtons() { const c=categoriesList.filter(x=>x.type===currentTxType); if(!selectedCategoryId||!c.some(x=>x.id===selectedCategoryId))if(c.length)selectedCategoryId=c[0].id; document.getElementById('category-buttons-container').innerHTML=genBtns(c,selectedCategoryId,'selectedCategoryId',currentTxType==='expense'?'bg-rose-600 text-white border-rose-600 shadow-xs':'bg-emerald-600 text-white border-emerald-600 shadow-xs','bg-white text-gray-700 border-gray-200'); }
     function renderSplitCategoryButtons() { const c=categoriesList.filter(x=>x.type==='income'); if(!selectedSplitCategoryId||!c.some(x=>x.id===selectedSplitCategoryId))if(c.length)selectedSplitCategoryId=c[0].id; document.getElementById('split-category-buttons').innerHTML=genBtns(c,selectedSplitCategoryId,'selectedSplitCategoryId','bg-purple-600 text-white border-purple-600 shadow-xs','bg-white text-gray-700 border-gray-200'); }
@@ -594,6 +631,12 @@
       if(!lst.length)return c.innerHTML=`<p class="text-center text-xs text-gray-400 py-3">ไม่มีรายการค้าง</p>`;
       c.innerHTML=lst.map(t=>`<div class="flex justify-between p-1.5 border-b text-xs hover:bg-gray-50"><label class="flex items-center space-x-2 cursor-pointer flex-1"><input type="checkbox" name="settle-item" value="${t.id}" data-max="${t.remainingPending}" class="rounded w-4 h-4"><div class="flex flex-col"><span class="font-medium">${escapeHtml(t.note||'-')}</span><span class="text-[10px] text-gray-400">ค้าง: ${userSettings.currency}${t.remainingPending.toLocaleString()} • ${t.date}</span></div></label></div>`).join('');
     }
+
+    function renderPendingTeamList() {
+      const c=document.getElementById('pending-team-items-container'), lst=allTransactions.filter(t=>t.kind==='split'&&t.remainingTeamPending>0);
+      if(!lst.length)return c.innerHTML=`<p class="text-center text-xs text-gray-400 py-3">ไม่มีรายการค้างจ่ายทีมงาน</p>`;
+      c.innerHTML=lst.map(t=>`<div class="flex justify-between p-1.5 border-b text-xs hover:bg-gray-50"><label class="flex items-center space-x-2 cursor-pointer flex-1"><input type="checkbox" name="team-pay-item" value="${t.id}" data-max="${t.remainingTeamPending}" class="rounded w-4 h-4"><div class="flex flex-col"><span class="font-medium">${escapeHtml(t.note||'-')}</span><span class="text-[10px] text-gray-400">ค้างจ่ายทีม: ${userSettings.currency}${t.remainingTeamPending.toLocaleString()} • ${t.date}</span></div></label></div>`).join('');
+    }
     
     document.getElementById('settle-form').addEventListener('submit', async (e) => {
       e.preventDefault(); const amt=parseFloat(document.getElementById('settle-received-amount').value), cbs=document.querySelectorAll('input[name="settle-item"]:checked');
@@ -614,6 +657,20 @@
         await db.collection('users').doc(currentUser.uid).collection('transactions').add({kind:'split',totalAmount:tot,myShare:my,teamShare:tot-my,remainingTeamPending:tot-my,accountId:selectedSplitAccountId,categoryId:selectedSplitCategoryId,categoryName:categoriesList.find(c=>c.id===selectedSplitCategoryId)?.name||'',note:document.getElementById('split-note').value,date:document.getElementById('split-date').value,createdAt:firebase.firestore.FieldValue.serverTimestamp()});
         const a=await db.collection('users').doc(currentUser.uid).collection('accounts').doc(selectedSplitAccountId).get(); if(a.exists)await a.ref.update({balance:a.data().balance+tot});
         document.getElementById('split-total-amount').value=''; document.getElementById('split-my-share').value=''; updateSplitMath(); alert("บันทึกรับแทน!"); switchEntryMode('income');
+      }catch(err){alert(err.message);}
+    });
+
+    // SUBMIT DEDICATED FORM: Team Pay (โอนให้ทีม) NEW
+    document.getElementById('team-pay-form').addEventListener('submit', async (e) => {
+      e.preventDefault(); const amt=parseFloat(document.getElementById('team-pay-amount').value), cbs=document.querySelectorAll('input[name="team-pay-item"]:checked');
+      if(isNaN(amt)||amt<=0)return alert("กรอกจำนวนเงินให้ถูกต้อง"); if(!cbs.length)return alert("เลือกรายการค้างจ่ายทีมงานอย่างน้อย 1 รายการ"); 
+      document.getElementById('team-pay-amount').value='';
+      try{
+        let r=amt; const b=db.batch();
+        for(const cb of cbs){ if(r<=0)break; const d=Math.min(r,parseFloat(cb.getAttribute('data-max'))); b.update(db.collection('users').doc(currentUser.uid).collection('transactions').doc(cb.value),{remainingTeamPending:allTransactions.find(t=>t.id===cb.value).remainingTeamPending-d}); r-=d; }
+        b.set(db.collection('users').doc(currentUser.uid).collection('transactions').doc(), {kind:'team-pay',amount:amt,accountId:selectedTeamPayAccountId,note:document.getElementById('team-pay-note').value,date:document.getElementById('team-pay-date').value,createdAt:firebase.firestore.FieldValue.serverTimestamp()});
+        const a=await db.collection('users').doc(currentUser.uid).collection('accounts').doc(selectedTeamPayAccountId).get(); if(a.exists)b.update(a.ref,{balance:a.data().balance-amt});
+        await b.commit(); alert("บันทึกการโอนให้ทีมเรียบร้อย!"); switchEntryMode('transfer');
       }catch(err){alert(err.message);}
     });
 
@@ -667,7 +724,7 @@
             let b=''; if(t.isReimburse) b=t.remainingPending>0?`<span class="text-[9px] bg-amber-100 text-amber-800 px-1 py-0.5 rounded ml-1">รอ ${t.remainingPending}</span>`:`<span class="text-[9px] bg-emerald-100 text-emerald-800 px-1 py-0.5 rounded ml-1">คืนครบ</span>`; else if(t.isInstallment) b=`<span class="text-[9px] bg-indigo-100 text-indigo-800 px-1 py-0.5 rounded ml-1">ผ่อน</span>`;
             return `<div onclick="openEditModal('${t.id}')" class="flex justify-between items-center p-2.5 bg-gray-50 border rounded-xl text-xs hover:bg-gray-100 cursor-pointer mb-1"><div class="flex flex-col"><span class="font-medium">${escapeHtml(t.note||'-')} ${b}</span><span class="text-[10px] text-gray-400">${accountsList.find(a=>a.id===t.accountId)?.name||''} • [${t.categoryName}]</span></div><div class="flex items-center space-x-2"><span class="font-bold ${t.type==='income'?'text-emerald-600':'text-rose-600'}">${t.type==='income'?'+':'-'}${t.amount.toLocaleString()}</span><button onclick="event.stopPropagation(); deleteTx('${t.id}')" class="text-gray-300 hover:text-rose-500 font-bold px-1">×</button></div></div>`;
           }
-          return `<div class="flex justify-between items-center p-2.5 border rounded-xl text-xs mb-1 ${t.kind==='transfer'?'bg-blue-50/50 border-blue-100':t.kind==='split'?'bg-purple-50/50 border-purple-100':'bg-amber-50/50 border-amber-100'}"><div class="flex flex-col"><span class="font-medium">${t.kind==='transfer'?`โอน: ${t.fromAccountName} ➔ ${t.toAccountName}`:t.kind==='split'?`รับแทนทีม (${accountsList.find(a=>a.id===t.accountId)?.name})`:'รับเงินคืน'}</span><span class="text-[10px] text-gray-400">${escapeHtml(t.note||'-')}</span></div><div class="flex items-center space-x-2"><span class="font-bold">${t.kind==='split'?'+'+t.totalAmount.toLocaleString():t.kind==='transfer'?t.amount.toLocaleString():'+'+t.amount.toLocaleString()}</span><button onclick="deleteTx('${t.id}')" class="text-gray-300 hover:text-rose-500 font-bold px-1">×</button></div></div>`;
+          return `<div class="flex justify-between items-center p-2.5 border rounded-xl text-xs mb-1 ${t.kind==='transfer'?'bg-blue-50/50 border-blue-100':t.kind==='split'?'bg-purple-50/50 border-purple-100':t.kind==='team-pay'?'bg-teal-50/50 border-teal-100':'bg-amber-50/50 border-amber-100'}"><div class="flex flex-col"><span class="font-medium">${t.kind==='transfer'?`โอน: ${t.fromAccountName} ➔ ${t.toAccountName}`:t.kind==='split'?`รับแทนทีม (${accountsList.find(a=>a.id===t.accountId)?.name})`:t.kind==='team-pay'?`โอนให้ทีม (${accountsList.find(a=>a.id===t.accountId)?.name})`:'รับเงินคืน'}</span><span class="text-[10px] text-gray-400">${escapeHtml(t.note||'-')}</span></div><div class="flex items-center space-x-2"><span class="font-bold">${t.kind==='split'?'+'+t.totalAmount.toLocaleString():t.kind==='transfer'||t.kind==='team-pay'?'-'+t.amount.toLocaleString():'+'+t.amount.toLocaleString()}</span><button onclick="deleteTx('${t.id}')" class="text-gray-300 hover:text-rose-500 font-bold px-1">×</button></div></div>`;
         }).join('')).join('') || '<p class="text-center text-xs py-6">ไม่มีประวัติ</p>';
 
         document.getElementById('total-income').innerText=`${userSettings.currency}${tInc.toLocaleString()}`; document.getElementById('total-expense').innerText=`${userSettings.currency}${tExp.toLocaleString()}`; document.getElementById('total-balance').innerText=`${userSettings.currency}${accountsList.reduce((s,a)=>s+a.balance,0).toLocaleString()}`;
@@ -679,7 +736,7 @@
     function openEditModal(id) { const t=allTransactions.find(x=>x.id===id); if(t.kind!=='transaction')return; document.getElementById('edit-tx-id').value=t.id; document.getElementById('edit-amount').value=t.amount; document.getElementById('edit-date').value=t.date; document.getElementById('edit-note').value=t.note||''; document.getElementById('edit-modal').classList.remove('hidden'); }
     function closeEditModal() { document.getElementById('edit-modal').classList.add('hidden'); }
     async function saveEditedTransaction() { const id=document.getElementById('edit-tx-id').value, amt=parseFloat(document.getElementById('edit-amount').value), d=document.getElementById('edit-date').value, n=document.getElementById('edit-note').value, t=allTransactions.find(x=>x.id===id); if(isNaN(amt)||amt<=0)return; try { const r=db.collection('users').doc(currentUser.uid).collection('accounts').doc(t.accountId); await db.runTransaction(async tr=>{ const a=await tr.get(r); if(a.exists) tr.update(r, {balance: a.data().balance + (t.type==='income'?(amt-t.amount):-(amt-t.amount))}); tr.update(db.collection('users').doc(currentUser.uid).collection('transactions').doc(id), {amount:amt, date:d, note:n}); }); closeEditModal(); } catch (err) { alert(err.message); } }
-    async function deleteTx(id) { if(!confirm("ลบรายการ?")) return; const t=allTransactions.find(x=>x.id===id); try { if(t.kind==='transaction'||t.kind==='settlement'||t.kind==='split') { const r=db.collection('users').doc(currentUser.uid).collection('accounts').doc(t.accountId); await db.runTransaction(async tr=>{ const a=await tr.get(r); if(a.exists) tr.update(r,{balance: a.data().balance + (t.type==='income'||t.kind!=='transaction'?- (t.totalAmount||t.amount):t.amount)}); }); } else if(t.kind==='transfer') { const f=db.collection('users').doc(currentUser.uid).collection('accounts').doc(t.fromAccountId), to=db.collection('users').doc(currentUser.uid).collection('accounts').doc(t.toAccountId); await db.runTransaction(async tr=>{ const aF=await tr.get(f), aT=await tr.get(to); if(aF.exists)tr.update(f,{balance:aF.data().balance+t.amount}); if(aT.exists)tr.update(to,{balance:aT.data().balance-t.amount}); }); } await db.collection('users').doc(currentUser.uid).collection('transactions').doc(id).delete(); } catch (err) { alert(err.message); } }
+    async function deleteTx(id) { if(!confirm("ลบรายการ?")) return; const t=allTransactions.find(x=>x.id===id); try { if(t.kind==='transaction'||t.kind==='settlement'||t.kind==='split'||t.kind==='team-pay') { const r=db.collection('users').doc(currentUser.uid).collection('accounts').doc(t.accountId); await db.runTransaction(async tr=>{ const a=await tr.get(r); if(a.exists) tr.update(r,{balance: a.data().balance + (t.type==='income'||t.kind==='settlement'||t.kind==='split'?- (t.totalAmount||t.amount):t.amount)}); }); } else if(t.kind==='transfer') { const f=db.collection('users').doc(currentUser.uid).collection('accounts').doc(t.fromAccountId), to=db.collection('users').doc(currentUser.uid).collection('accounts').doc(t.toAccountId); await db.runTransaction(async tr=>{ const aF=await tr.get(f), aT=await tr.get(to); if(aF.exists)tr.update(f,{balance:aF.data().balance+t.amount}); if(aT.exists)tr.update(to,{balance:aT.data().balance-t.amount}); }); } await db.collection('users').doc(currentUser.uid).collection('transactions').doc(id).delete(); } catch (err) { alert(err.message); } }
 
     // SETTINGS
     function renderSettingsAccounts() { document.getElementById('accounts-settings-list').innerHTML = accountsList.map(a=>`<div class="flex justify-between p-2 bg-gray-50 border rounded-xl text-xs"><div><span class="font-semibold">${escapeHtml(a.name)}</span> <span class="text-gray-500">(${a.balance.toLocaleString()})</span></div><div class="flex"><input type="text" id="edit-acc-${a.id}" readonly onclick="openCustomKeypad('edit-acc-${a.id}')" value="${a.balance}" class="w-14 px-1 py-1 border rounded bg-white cursor-pointer"><button onclick="updateAccountBalance('${a.id}')" class="bg-blue-50 text-blue-600 px-1 mx-1 rounded">แก้</button>${!a.isDefault?`<button onclick="deleteAccount('${a.id}')" class="text-rose-500 font-bold px-1">×</button>`:''}</div></div>`).join(''); }
