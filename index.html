@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>YUET (v1.1) - บันทึกการเงินและจัดการทีมงาน</title>
+  <title>YUET (v1.2) - บันทึกการเงินและจัดการทีมงาน</title>
   
   <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
@@ -39,7 +39,7 @@
       <div class="flex flex-col items-center">
         <div class="flex items-baseline space-x-1">
           <h1 class="text-xl font-black tracking-wider uppercase drop-shadow-sm">YUET</h1>
-          <span class="text-[9px] font-medium text-emerald-200 tracking-tight">(v1.1)</span>
+          <span class="text-[9px] font-medium text-emerald-200 tracking-tight">(v1.2)</span>
         </div>
         <p class="text-[8px] text-emerald-100/80 tracking-tight font-light">by Phuthai Mananararuk & Gemini</p>
       </div>
@@ -51,7 +51,7 @@
       </div>
     </header>
 
-    <!-- Top Persistent Navigation Tabs (Entry / Summary / History) -->
+    <!-- Top Persistent Navigation Tabs -->
     <nav id="top-nav-tabs" class="hidden bg-gray-100 p-1.5 border-b border-gray-200 grid grid-cols-3 gap-1">
       <button id="nav-tab-entry" onclick="goToEntryView()" class="py-2 text-xs font-bold rounded-xl transition text-center shadow-xs bg-white text-emerald-700">
         Entry
@@ -126,8 +126,9 @@
             <button type="button" id="btn-mode-expense" onclick="switchEntryMode('expense')" class="py-1.5 text-[10px] sm:text-[11px] font-semibold rounded-lg transition bg-rose-600 text-white shadow-xs">Expense</button>
             <button type="button" id="btn-mode-income" onclick="switchEntryMode('income')" class="py-1.5 text-[10px] sm:text-[11px] font-semibold rounded-lg transition text-gray-700">Income</button>
             <button type="button" id="btn-mode-transfer" onclick="switchEntryMode('transfer')" class="py-1.5 text-[10px] sm:text-[11px] font-semibold rounded-lg transition text-gray-700">Transfer</button>
-            <button type="button" id="btn-mode-settle" onclick="switchEntryMode('settle')" class="py-1.5 text-[10px] sm:text-[11px] font-semibold rounded-lg transition text-gray-700 hidden">Settle</button>
-            <button type="button" id="btn-mode-split" onclick="switchEntryMode('split')" class="py-1.5 text-[10px] sm:text-[11px] font-semibold rounded-lg transition text-gray-700 hidden">Split</button>
+            <button type="button" id="btn-mode-settle" onclick="switchEntryMode('settle')" class="py-1.5 text-[10px] sm:text-[11px] font-semibold rounded-lg transition text-gray-700 hidden">Settle (เพื่อน)</button>
+            <button type="button" id="btn-mode-split" onclick="switchEntryMode('split')" class="py-1.5 text-[10px] sm:text-[11px] font-semibold rounded-lg transition text-gray-700 hidden">Split (ทีมงาน)</button>
+            <button type="button" id="btn-mode-collect" onclick="switchEntryMode('collect')" class="py-1.5 text-[10px] sm:text-[11px] font-semibold rounded-lg transition text-gray-700 hidden">Collect (ลูกค้า)</button>
           </div>
 
           <!-- FORM 1: Expense & Income Form -->
@@ -189,11 +190,11 @@
               </div>
             </div>
 
-            <!-- Reimbursement Sub-section (Expense Only - Strictly hidden for Income) -->
+            <!-- Reimbursement Sub-section (Expense Only) -->
             <div id="reimburse-section" class="border-t pt-2 space-y-1 hidden">
               <label class="flex items-center space-x-2 cursor-pointer">
-                <input type="checkbox" id="is-reimburse" onchange="toggleReimburseFields()" class="rounded text-emerald-600 focus:ring-emerald-500 w-4 h-4">
-                <span class="text-xs font-medium text-amber-700">หารค่าใช้จ่าย</span>
+                <input type="checkbox" id="is-reimburse" onchange="toggleReimburseFields()" class="rounded text-amber-600 focus:ring-amber-500 w-4 h-4">
+                <span class="text-xs font-medium text-amber-700">หารค่าใช้จ่าย (สำรองจ่าย)</span>
               </label>
               <div id="reimburse-fields" class="hidden bg-amber-50 p-2 rounded-xl border border-amber-100 space-y-1">
                 <div class="flex justify-between text-[11px] text-amber-800">
@@ -203,6 +204,24 @@
                 <div>
                   <label class="block text-[10px] text-gray-600">ยอดที่เป็นของเราจริง (ปล่อยว่างได้)</label>
                   <input type="text" id="my-share-amount" readonly onclick="openCustomKeypad('my-share-amount')" placeholder="0.00" class="w-full px-2 py-1 text-xs border rounded-lg bg-white cursor-pointer">
+                </div>
+              </div>
+            </div>
+
+            <!-- Deposit Sub-section (Income Only) -->
+            <div id="deposit-section" class="border-t pt-2 space-y-1 hidden">
+              <label class="flex items-center space-x-2 cursor-pointer">
+                <input type="checkbox" id="is-deposit" onchange="toggleDepositFields()" class="rounded text-teal-600 focus:ring-teal-500 w-4 h-4">
+                <span class="text-xs font-medium text-teal-700">รับเงินมัดจำ (ลูกค้าจ่ายบางส่วน)</span>
+              </label>
+              <div id="deposit-fields" class="hidden bg-teal-50 p-2 rounded-xl border border-teal-100 space-y-1">
+                <div>
+                  <label class="block text-[10px] text-teal-800">ยอดเงินเต็มโปรเจกต์</label>
+                  <input type="text" id="deposit-total-amount" readonly onclick="openCustomKeypad('deposit-total-amount')" placeholder="0.00" class="w-full px-2 py-1 text-xs border rounded-lg bg-white cursor-pointer">
+                </div>
+                <div class="flex justify-between text-[11px] text-teal-800 mt-1 bg-white p-1.5 rounded border border-teal-100">
+                  <span>รับแล้วรอบนี้: <b id="lbl-deposit-paid">0</b></span>
+                  <span>รอเก็บเพิ่ม: <b id="lbl-deposit-pending" class="text-teal-900">0</b></span>
                 </div>
               </div>
             </div>
@@ -260,7 +279,7 @@
               </div>
             </div>
             <div>
-              <label class="block text-[11px] text-gray-600 mb-1">เลือกรายการที่ต้องการเคลียร์ยอด (ติ๊กเลือก)</label>
+              <label class="block text-[11px] text-gray-600 mb-1">เลือกรายการที่เพื่อนค้างจ่าย (ติ๊กเลือก)</label>
               <div id="pending-items-container" class="space-y-1 max-h-32 overflow-y-auto pr-1 border bg-white p-2 rounded-xl">
                 <p class="text-center text-xs text-gray-400 py-3">ไม่มีรายการที่รอเพื่อนคืนเงิน</p>
               </div>
@@ -316,6 +335,38 @@
               บันทึกรับเงินแทน (Split)
             </button>
           </form>
+
+          <!-- FORM 5: Collect Form (เรียกเก็บเงินลูกค้าที่ค้าง) -->
+          <form id="collect-form" class="hidden bg-teal-50 p-3 rounded-2xl border border-teal-200 space-y-2.5">
+            <div>
+              <label class="block text-[11px] text-teal-800 mb-1">เลือกบัญชีที่เงินเข้า</label>
+              <div id="collect-account-buttons" class="flex flex-wrap gap-1"></div>
+            </div>
+            <div class="grid grid-cols-2 gap-2">
+              <div>
+                <label class="block text-[11px] text-teal-800 mb-1">ยอดเงินที่ลูกค้าจ่ายเพิ่ม (<span class="currency-symbol">฿</span>)</label>
+                <input type="text" id="collect-received-amount" readonly onclick="openCustomKeypad('collect-received-amount')" placeholder="0.00" required class="w-full px-2 py-1.5 text-xs border rounded-xl bg-white cursor-pointer">
+              </div>
+              <div>
+                <label class="block text-[11px] text-teal-800 mb-1">วันที่</label>
+                <input type="date" id="collect-date" required class="w-full px-2 py-1.5 text-xs border rounded-xl bg-white">
+              </div>
+            </div>
+            <div>
+              <label class="block text-[11px] text-teal-800 mb-1">รายการโปรเจกต์ที่รอเก็บเงิน (ติ๊กเลือก)</label>
+              <div id="pending-client-items-container" class="space-y-1 max-h-32 overflow-y-auto pr-1 border bg-white p-2 rounded-xl">
+                <p class="text-center text-xs text-gray-400 py-3">ไม่มีรายการรอลูกค้าจ่ายเพิ่ม</p>
+              </div>
+            </div>
+            <div>
+              <label class="block text-[11px] text-teal-800 mb-1">บันทึกช่วยจำ (ไม่บังคับ)</label>
+              <input type="text" id="collect-note" placeholder="เช่น ลูกค้าจ่ายส่วนที่เหลือ" class="w-full px-2 py-1.5 text-xs border rounded-xl bg-white">
+            </div>
+            <button type="submit" class="w-full bg-teal-600 hover:bg-teal-700 text-white font-medium py-2 rounded-xl text-xs shadow-xs transition">
+              ยืนยันรับเงินค้างจ่าย (Collect)
+            </button>
+          </form>
+
         </div>
 
         <!-- Net Cash Flow Balance Bar -->
@@ -363,13 +414,18 @@
             <p class="text-[10px] font-bold text-blue-600 uppercase">คงเหลือรวมทุกบัญชี</p>
             <p id="total-balance" class="text-base font-extrabold text-blue-800 mt-0.5">฿0.00</p>
           </div>
-          <div id="card-pending-friend" class="bg-amber-50 p-3 rounded-2xl border border-amber-100 shadow-xs hidden">
+          
+          <div id="card-pending-friend" class="bg-amber-50 p-3 rounded-2xl border border-amber-100 shadow-xs hidden col-span-2 sm:col-span-1">
             <p class="text-[10px] font-bold text-amber-600 uppercase">เงินรอคืน (เพื่อน)</p>
             <p id="total-pending-friend" class="text-sm font-bold text-amber-700 mt-0.5">฿0.00</p>
           </div>
-          <div id="card-pending-team" class="bg-purple-50 p-3 rounded-2xl border border-purple-100 shadow-xs hidden">
+          <div id="card-pending-team" class="bg-purple-50 p-3 rounded-2xl border border-purple-100 shadow-xs hidden col-span-2 sm:col-span-1">
             <p class="text-[10px] font-bold text-purple-600 uppercase">เงินรอจ่าย (ทีมงาน)</p>
             <p id="total-pending-team" class="text-sm font-bold text-purple-700 mt-0.5">฿0.00</p>
+          </div>
+          <div id="card-pending-client" class="bg-teal-50 p-3 rounded-2xl border border-teal-100 shadow-xs hidden col-span-2">
+            <p class="text-[10px] font-bold text-teal-600 uppercase">รอรับเพิ่ม (ลูกค้ามัดจำ)</p>
+            <p id="total-pending-client" class="text-sm font-bold text-teal-700 mt-0.5">฿0.00</p>
           </div>
         </div>
 
@@ -417,9 +473,9 @@
         <div class="bg-gray-50 p-3 rounded-2xl border border-gray-200 space-y-1.5">
           <label class="flex items-center space-x-2 cursor-pointer">
             <input type="checkbox" id="setting-enable-advanced" onchange="toggleAdvancedFeaturesSetting()" class="rounded text-emerald-600 focus:ring-emerald-500 w-4 h-4">
-            <span class="text-xs font-bold text-gray-700">เปิดใช้งานโหมด Settle & Split</span>
+            <span class="text-xs font-bold text-gray-700">เปิดใช้งานโหมดขั้นสูง (Settle, Split, Collect)</span>
           </label>
-          <p class="text-[10px] text-gray-400">เมื่อเปิด จะแสดงปุ่มรับเงินคืน (Settle) และรับเงินแทนทีมงาน (Split) พร้อมการ์ดสรุปยอด</p>
+          <p class="text-[10px] text-gray-400">เมื่อเปิด จะแสดงปุ่มรับเงินคืน, แบ่งเงินทีมงาน และระบบบันทึกรับมัดจำลูกค้า พร้อมการ์ดสรุปยอด</p>
         </div>
 
         <div class="space-y-2 border-t pt-3">
@@ -465,7 +521,7 @@
     </footer>
   </div>
 
-  <!-- CUSTOM ON-SCREEN NUMERIC KEYPAD POP-UP (WITH LIVE DISPLAY BAR & REARRANGED OPERATORS/COLUMNS) -->
+  <!-- CUSTOM ON-SCREEN NUMERIC KEYPAD POP-UP -->
   <div id="custom-keypad-overlay" class="hidden fixed inset-0 bg-black/40 flex items-end justify-center z-50 transition-opacity">
     <div class="bg-white w-full max-w-md rounded-t-3xl p-4 shadow-2xl border-t border-gray-200 space-y-3 animate-slide-up">
       <div class="flex justify-between items-center border-b pb-2">
@@ -473,43 +529,37 @@
         <button type="button" onclick="closeCustomKeypad()" class="text-gray-400 hover:text-gray-600 font-bold px-2 py-0.5 rounded-lg text-sm">✕ ปิด</button>
       </div>
 
-      <!-- Live Display Bar (Shows currently typing number/expression) -->
+      <!-- Live Display Bar -->
       <div id="keypad-live-display" class="bg-gray-100 border border-gray-200 rounded-2xl px-3 py-2 text-right text-xl font-bold text-gray-800 tracking-wider overflow-x-auto min-h-[44px] flex items-center justify-end">
         0
       </div>
 
-      <!-- Keypad Grid (Operators on top row, specials on right column) -->
+      <!-- Keypad Grid -->
       <div class="grid grid-cols-4 gap-2 font-bold">
-        <!-- Top Row: Operators (+, -, *, /) -->
         <button type="button" onclick="keypadPress('+')" class="bg-indigo-50 text-indigo-700 hover:bg-indigo-100 py-2.5 rounded-2xl active:bg-indigo-200 transition text-3xl">+</button>
         <button type="button" onclick="keypadPress('-')" class="bg-indigo-50 text-indigo-700 hover:bg-indigo-100 py-2.5 rounded-2xl active:bg-indigo-200 transition text-3xl">-</button>
         <button type="button" onclick="keypadPress('*')" class="bg-indigo-50 text-indigo-700 hover:bg-indigo-100 py-2.5 rounded-2xl active:bg-indigo-200 transition text-3xl">×</button>
         <button type="button" onclick="keypadPress('/')" class="bg-indigo-50 text-indigo-700 hover:bg-indigo-100 py-2.5 rounded-2xl active:bg-indigo-200 transition text-3xl">÷</button>
 
-        <!-- Row 2: 7, 8, 9, ( -->
         <button type="button" onclick="keypadPress('7')" class="bg-gray-100 hover:bg-gray-200 py-2.5 rounded-2xl active:bg-gray-300 transition text-3xl">7</button>
         <button type="button" onclick="keypadPress('8')" class="bg-gray-100 hover:bg-gray-200 py-2.5 rounded-2xl active:bg-gray-300 transition text-3xl">8</button>
         <button type="button" onclick="keypadPress('9')" class="bg-gray-100 hover:bg-gray-200 py-2.5 rounded-2xl active:bg-gray-300 transition text-3xl">9</button>
         <button type="button" onclick="keypadPress('(')" class="bg-gray-200 hover:bg-gray-300 py-2.5 rounded-2xl active:bg-gray-400 transition text-2xl text-gray-700">(</button>
 
-        <!-- Row 3: 4, 5, 6, ) -->
         <button type="button" onclick="keypadPress('4')" class="bg-gray-100 hover:bg-gray-200 py-2.5 rounded-2xl active:bg-gray-300 transition text-3xl">4</button>
         <button type="button" onclick="keypadPress('5')" class="bg-gray-100 hover:bg-gray-200 py-2.5 rounded-2xl active:bg-gray-300 transition text-3xl">5</button>
         <button type="button" onclick="keypadPress('6')" class="bg-gray-100 hover:bg-gray-200 py-2.5 rounded-2xl active:bg-gray-300 transition text-3xl">6</button>
         <button type="button" onclick="keypadPress(')')" class="bg-gray-200 hover:bg-gray-300 py-2.5 rounded-2xl active:bg-gray-400 transition text-2xl text-gray-700">)</button>
 
-        <!-- Row 4: 1, 2, 3, Backspace -->
         <button type="button" onclick="keypadPress('1')" class="bg-gray-100 hover:bg-gray-200 py-2.5 rounded-2xl active:bg-gray-300 transition text-3xl">1</button>
         <button type="button" onclick="keypadPress('2')" class="bg-gray-100 hover:bg-gray-200 py-2.5 rounded-2xl active:bg-gray-300 transition text-3xl">2</button>
         <button type="button" onclick="keypadPress('3')" class="bg-gray-100 hover:bg-gray-200 py-2.5 rounded-2xl active:bg-gray-300 transition text-3xl">3</button>
         <button type="button" onclick="keypadBackspace()" class="bg-gray-200 hover:bg-gray-300 py-2.5 rounded-2xl active:bg-gray-400 transition flex items-center justify-center text-xl text-gray-700">⌫</button>
 
-        <!-- Row 5: 0, ., C, Done (✓) -->
         <button type="button" onclick="keypadPress('0')" class="bg-gray-100 hover:bg-gray-200 py-2.5 rounded-2xl active:bg-gray-300 transition text-3xl col-span-2">0</button>
         <button type="button" onclick="keypadPress('.')" class="bg-gray-100 hover:bg-gray-200 py-2.5 rounded-2xl active:bg-gray-300 transition text-3xl">.</button>
         <button type="button" onclick="keypadClear()" class="bg-rose-50 text-rose-600 hover:bg-rose-100 py-2.5 rounded-2xl active:bg-rose-200 transition text-xl">C</button>
 
-        <!-- Final Done Button -->
         <button type="button" onclick="keypadDone()" class="bg-emerald-600 hover:bg-emerald-700 text-white py-2.5 rounded-2xl col-span-4 active:bg-emerald-800 transition text-xl shadow-sm">เสร็จสิ้น (✓)</button>
       </div>
     </div>
@@ -601,6 +651,7 @@
     let selectedSettleAccountId = null;
     let selectedSplitAccountId = null;
     let selectedSplitCategoryId = null;
+    let selectedCollectAccountId = null;
     let transferFromId = null;
     let transferToId = null;
     let currentTxType = 'expense';
@@ -609,7 +660,6 @@
     let popupYear = new Date().getFullYear();
     let popupMonth = new Date().getMonth() + 1;
 
-    // Custom Keypad Active Target State
     let activeKeypadFieldId = null;
 
     // DOM References
@@ -625,7 +675,7 @@
     const openSettingsBtn = document.getElementById('open-settings-btn');
     const authStatusBar = document.getElementById('auth-status-bar');
 
-    // CUSTOM KEYPAD CONTROLLERS (WITH LIVE DISPLAY BAR SYNC)
+    // CUSTOM KEYPAD CONTROLLERS
     function openCustomKeypad(fieldId) {
       activeKeypadFieldId = fieldId;
       const el = document.getElementById(fieldId);
@@ -672,7 +722,6 @@
       const el = document.getElementById(activeKeypadFieldId);
       let valStr = el.value.trim();
       if (!valStr) return;
-
       try {
         if (/^[0-9+\-*/().\s]+$/.test(valStr)) {
           let result = Function('"use strict";return (' + valStr + ')')();
@@ -682,9 +731,7 @@
             triggerFieldInputEvent(el);
           }
         }
-      } catch (e) {
-        // If expression is invalid or incomplete, leave as is
-      }
+      } catch (e) {}
     }
 
     function triggerFieldInputEvent(el) {
@@ -736,7 +783,7 @@
     function goToHistoryView() { showView('history'); }
     function goToSettingView() { showView('setting'); }
 
-    // AUTH LISTENERS & HANDLERS
+    // AUTH LISTENERS
     document.getElementById('go-to-register-btn').addEventListener('click', () => {
       document.getElementById('reg-email').value = document.getElementById('login-email').value;
       document.getElementById('reg-password').value = document.getElementById('login-password').value;
@@ -815,10 +862,7 @@
     async function initUserData(userId) {
       const todayDate = new Date();
       const todayStr = todayDate.toISOString().split('T')[0];
-      document.getElementById('tx-date').value = todayStr;
-      document.getElementById('tr-date').value = todayStr;
-      document.getElementById('settle-date').value = todayStr;
-      document.getElementById('split-date').value = todayStr;
+      ['tx-date', 'tr-date', 'settle-date', 'split-date', 'collect-date'].forEach(id => document.getElementById(id).value = todayStr);
       document.getElementById('inst-pay-day').value = todayDate.getDate();
 
       const settingsDoc = await db.collection('users').doc(userId).collection('settings').doc('config').get();
@@ -843,6 +887,7 @@
           if (!selectedAccountId || !accountsList.some(a => a.id === selectedAccountId)) selectedAccountId = accountsList[0].id;
           if (!selectedSettleAccountId || !accountsList.some(a => a.id === selectedSettleAccountId)) selectedSettleAccountId = accountsList[0].id;
           if (!selectedSplitAccountId || !accountsList.some(a => a.id === selectedSplitAccountId)) selectedSplitAccountId = accountsList[0].id;
+          if (!selectedCollectAccountId || !accountsList.some(a => a.id === selectedCollectAccountId)) selectedCollectAccountId = accountsList[0].id;
           if (!transferFromId || !accountsList.some(a => a.id === transferFromId)) transferFromId = accountsList[0].id;
           if (!transferToId || !accountsList.some(a => a.id === transferToId)) transferToId = accountsList.length > 1 ? accountsList[1].id : accountsList[0].id;
 
@@ -850,6 +895,7 @@
           renderTransferButtons();
           renderSettleAccountButtons();
           renderSplitAccountButtons();
+          renderCollectAccountButtons();
           renderSettingsAccounts();
         });
 
@@ -875,31 +921,49 @@
     // STRICT VISIBILITY CONTROLLER
     function applyAdvancedFeaturesVisibility() {
       const enable = userSettings.enableAdvanced === true;
+      
       const bSt = document.getElementById('btn-mode-settle');
       const bSp = document.getElementById('btn-mode-split');
+      const bCl = document.getElementById('btn-mode-collect');
+      
       const cFr = document.getElementById('card-pending-friend');
       const cTm = document.getElementById('card-pending-team');
+      const cCl = document.getElementById('card-pending-client');
+      
       const reimburseSec = document.getElementById('reimburse-section');
+      const depositSec = document.getElementById('deposit-section');
       const container = document.getElementById('mode-buttons-container');
 
       if (enable) {
         bSt.classList.remove('hidden');
         bSp.classList.remove('hidden');
+        bCl.classList.remove('hidden');
         cFr.classList.remove('hidden');
         cTm.classList.remove('hidden');
+        cCl.classList.remove('hidden');
+        
         if (currentEntryMode === 'expense') reimburseSec.classList.remove('hidden');
-        container.className = "grid grid-cols-5 gap-1 bg-gray-200 p-1 rounded-xl text-center";
+        if (currentEntryMode === 'income') depositSec.classList.remove('hidden');
+        
+        container.className = "grid grid-cols-3 gap-1 bg-gray-200 p-1 rounded-xl text-center";
       } else {
         bSt.classList.add('hidden');
         bSp.classList.add('hidden');
+        bCl.classList.add('hidden');
         cFr.classList.add('hidden');
         cTm.classList.add('hidden');
+        cCl.classList.add('hidden');
         reimburseSec.classList.add('hidden');
+        depositSec.classList.add('hidden');
+        
         document.getElementById('is-reimburse').checked = false;
+        document.getElementById('is-deposit').checked = false;
         toggleReimburseFields();
+        toggleDepositFields();
+        
         container.className = "grid grid-cols-3 gap-1 bg-gray-200 p-1 rounded-xl text-center";
         
-        if (currentEntryMode === 'settle' || currentEntryMode === 'split') {
+        if (currentEntryMode === 'settle' || currentEntryMode === 'split' || currentEntryMode === 'collect') {
           switchEntryMode('expense');
         }
       }
@@ -908,87 +972,80 @@
     // ENTRY MODES SWITCHING
     function switchEntryMode(mode) {
       const enable = userSettings.enableAdvanced === true;
-      if (!enable && (mode === 'settle' || mode === 'split')) return;
+      if (!enable && (mode === 'settle' || mode === 'split' || mode === 'collect')) return;
 
       currentEntryMode = mode;
-      const bExp = document.getElementById('btn-mode-expense');
-      const bInc = document.getElementById('btn-mode-income');
-      const bTr = document.getElementById('btn-mode-transfer');
-      const bSt = document.getElementById('btn-mode-settle');
-      const bSp = document.getElementById('btn-mode-split');
+      
+      const buttons = {
+        expense: 'btn-mode-expense', income: 'btn-mode-income', transfer: 'btn-mode-transfer',
+        settle: 'btn-mode-settle', split: 'btn-mode-split', collect: 'btn-mode-collect'
+      };
+      
+      const forms = {
+        expense: 'tx-form', income: 'tx-form', transfer: 'transfer-form',
+        settle: 'settle-form', split: 'split-form', collect: 'collect-form'
+      };
+      
+      Object.values(buttons).forEach(id => document.getElementById(id).className = "py-1.5 text-[10px] sm:text-[11px] font-semibold rounded-lg transition text-gray-700");
+      ['tx-form', 'transfer-form', 'settle-form', 'split-form', 'collect-form'].forEach(id => document.getElementById(id).classList.add('hidden'));
 
-      const txForm = document.getElementById('tx-form');
-      const trForm = document.getElementById('transfer-form');
-      const stForm = document.getElementById('settle-form');
-      const spForm = document.getElementById('split-form');
+      const activeBtnColors = { expense: 'bg-rose-600', income: 'bg-emerald-600', transfer: 'bg-blue-600', settle: 'bg-amber-600', split: 'bg-purple-600', collect: 'bg-teal-600' };
+      document.getElementById(buttons[mode]).className = `py-1.5 text-[10px] sm:text-[11px] font-semibold rounded-lg transition text-white shadow-xs ${activeBtnColors[mode]}`;
+      document.getElementById(forms[mode]).classList.remove('hidden');
+
       const reimburseSec = document.getElementById('reimburse-section');
+      const depositSec = document.getElementById('deposit-section');
       const instSec = document.getElementById('installment-section');
       const lblAmount = document.getElementById('lbl-tx-amount');
 
-      [bExp, bInc, bTr, bSt, bSp].forEach(b => b.className = "py-1.5 text-[10px] sm:text-[11px] font-semibold rounded-lg transition text-gray-700");
-      [txForm, trForm, stForm, spForm].forEach(f => f.classList.add('hidden'));
-
       if (mode === 'expense') {
-        bExp.className = "py-1.5 text-[10px] sm:text-[11px] font-semibold rounded-lg transition bg-rose-600 text-white shadow-xs";
-        txForm.classList.remove('hidden');
-        if (enable) {
-          reimburseSec.classList.remove('hidden');
-        } else {
-          reimburseSec.classList.add('hidden');
-        }
-        instSec.classList.remove('hidden');
-        lblAmount.innerHTML = `จำนวนเงิน (<span class="currency-symbol">${userSettings.currency}</span>)`;
         currentTxType = 'expense';
         renderCategoryButtons();
-      } else if (mode === 'income') {
-        bInc.className = "py-1.5 text-[10px] sm:text-[11px] font-semibold rounded-lg transition bg-emerald-600 text-white shadow-xs";
-        txForm.classList.remove('hidden');
-        reimburseSec.classList.add('hidden'); // Ensure reimburse is strictly hidden for Income
-        instSec.classList.add('hidden');
+        instSec.classList.remove('hidden');
+        if (enable) reimburseSec.classList.remove('hidden'); else reimburseSec.classList.add('hidden');
+        depositSec.classList.add('hidden');
+        document.getElementById('is-deposit').checked = false;
+        toggleDepositFields();
         lblAmount.innerHTML = `จำนวนเงิน (<span class="currency-symbol">${userSettings.currency}</span>)`;
+      } else if (mode === 'income') {
+        currentTxType = 'income';
+        renderCategoryButtons();
+        instSec.classList.add('hidden');
+        reimburseSec.classList.add('hidden');
         document.getElementById('is-reimburse').checked = false;
         document.getElementById('is-installment').checked = false;
         toggleReimburseFields();
         toggleInstallmentFields();
-        currentTxType = 'income';
-        renderCategoryButtons();
+        if (enable) depositSec.classList.remove('hidden'); else depositSec.classList.add('hidden');
+        lblAmount.innerHTML = document.getElementById('is-deposit').checked ? `ยอดรับมัดจำรอบนี้ (<span class="currency-symbol">${userSettings.currency}</span>)` : `จำนวนเงิน (<span class="currency-symbol">${userSettings.currency}</span>)`;
       } else if (mode === 'transfer') {
-        bTr.className = "py-1.5 text-[10px] sm:text-[11px] font-semibold rounded-lg transition bg-blue-600 text-white shadow-xs";
-        trForm.classList.remove('hidden');
         renderTransferButtons();
       } else if (mode === 'settle' && enable) {
-        bSt.className = "py-1.5 text-[10px] sm:text-[11px] font-semibold rounded-lg transition bg-amber-600 text-white shadow-xs";
-        stForm.classList.remove('hidden');
         renderSettleAccountButtons();
-        renderPendingItemsList();
+        renderPendingFriendList();
       } else if (mode === 'split' && enable) {
-        bSp.className = "py-1.5 text-[10px] sm:text-[11px] font-semibold rounded-lg transition bg-purple-600 text-white shadow-xs";
-        spForm.classList.remove('hidden');
         renderSplitAccountButtons();
         renderSplitCategoryButtons();
+      } else if (mode === 'collect' && enable) {
+        renderCollectAccountButtons();
+        renderPendingClientList();
       }
-
-      applyAdvancedFeaturesVisibility();
     }
 
-    // INSTALLMENT CALCULATION (METHOD 1: ADJUST AT LAST INSTALLMENT)
+    // INSTALLMENT MATH
     function calculateInstallmentBreakdown(totalAmount, totalCount) {
       if (!totalAmount || !totalCount || totalCount <= 1) return { normalAmt: 0, finalAmt: 0 };
-      
       const normalAmt = Math.floor((totalAmount / totalCount) * 100) / 100;
       const paidNormalTotal = normalAmt * (totalCount - 1);
       const finalAmt = Math.round((totalAmount - paidNormalTotal) * 100) / 100;
-      
       return { normalAmt, finalAmt };
     }
 
     function updateInstallmentMath() {
       const isInst = document.getElementById('is-installment').checked;
       if (!isInst) return;
-
       const totalAmt = parseFloat(document.getElementById('tx-amount').value) || 0;
       const totalCnt = parseInt(document.getElementById('inst-total-count').value) || 1;
-
       const { normalAmt, finalAmt } = calculateInstallmentBreakdown(totalAmt, totalCnt);
 
       document.getElementById('lbl-preview-normal-cnt').innerText = totalCnt > 1 ? (totalCnt - 1) : 1;
@@ -1016,6 +1073,7 @@
       }
     }
 
+    // REIMBURSE MATH
     function toggleReimburseFields() {
       const isChecked = document.getElementById('is-reimburse').checked;
       const fields = document.getElementById('reimburse-fields');
@@ -1027,14 +1085,6 @@
       }
     }
 
-    document.getElementById('tx-amount').addEventListener('input', updateReimburseMath);
-    document.getElementById('my-share-amount').addEventListener('input', () => {
-      const total = parseFloat(document.getElementById('tx-amount').value) || 0;
-      const myShare = parseFloat(document.getElementById('my-share-amount').value) || 0;
-      if (myShare > total) document.getElementById('my-share-amount').value = total;
-      updateReimburseMath();
-    });
-
     function updateReimburseMath() {
       const total = parseFloat(document.getElementById('tx-amount').value) || 0;
       const myShareVal = document.getElementById('my-share-amount').value;
@@ -1045,6 +1095,46 @@
       document.getElementById('lbl-friend-pay').innerText = `${userSettings.currency}${friendShare.toLocaleString()}`;
     }
 
+    // DEPOSIT MATH
+    function toggleDepositFields() {
+      const isChecked = document.getElementById('is-deposit').checked;
+      const fields = document.getElementById('deposit-fields');
+      if (isChecked) {
+        fields.classList.remove('hidden');
+        updateDepositMath();
+        document.getElementById('lbl-tx-amount').innerHTML = `รับแล้วรอบนี้ (<span class="currency-symbol">${userSettings.currency}</span>)`;
+      } else {
+        fields.classList.add('hidden');
+        document.getElementById('lbl-tx-amount').innerHTML = `จำนวนเงิน (<span class="currency-symbol">${userSettings.currency}</span>)`;
+      }
+    }
+
+    function updateDepositMath() {
+      const received = parseFloat(document.getElementById('tx-amount').value) || 0;
+      const totalVal = document.getElementById('deposit-total-amount').value;
+      const total = totalVal === '' ? 0 : parseFloat(totalVal) || 0;
+      const pendingClient = Math.max(0, total - received);
+
+      document.getElementById('lbl-deposit-paid').innerText = `${userSettings.currency}${received.toLocaleString()}`;
+      document.getElementById('lbl-deposit-pending').innerText = `${userSettings.currency}${pendingClient.toLocaleString()}`;
+    }
+
+    document.getElementById('tx-amount').addEventListener('input', () => {
+      updateReimburseMath();
+      updateDepositMath();
+      updateInstallmentMath();
+    });
+
+    document.getElementById('my-share-amount').addEventListener('input', () => {
+      const total = parseFloat(document.getElementById('tx-amount').value) || 0;
+      const myShare = parseFloat(document.getElementById('my-share-amount').value) || 0;
+      if (myShare > total) document.getElementById('my-share-amount').value = total;
+      updateReimburseMath();
+    });
+
+    document.getElementById('deposit-total-amount').addEventListener('input', updateDepositMath);
+
+    // SPLIT MATH
     function updateSplitMath() {
       const total = parseFloat(document.getElementById('split-total-amount').value) || 0;
       const myShare = parseFloat(document.getElementById('split-my-share').value) || 0;
@@ -1052,7 +1142,7 @@
       document.getElementById('split-team-share-lbl').innerText = `${userSettings.currency}${teamShare.toLocaleString()}`;
     }
 
-    // BUTTON RENDERERS FOR FORMS
+    // BUTTON RENDERERS
     function renderAccountButtons() {
       const container = document.getElementById('account-buttons-container');
       container.innerHTML = '';
@@ -1118,6 +1208,20 @@
       });
     }
 
+    function renderCollectAccountButtons() {
+      const container = document.getElementById('collect-account-buttons');
+      container.innerHTML = '';
+      accountsList.forEach(acc => {
+        const isSelected = acc.id === selectedCollectAccountId;
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.onclick = () => { selectedCollectAccountId = acc.id; renderCollectAccountButtons(); };
+        btn.className = `px-2 py-1 rounded-lg text-xs font-medium transition border ${isSelected ? 'bg-teal-600 text-white border-teal-600 shadow-xs' : 'bg-white text-gray-700 border-gray-200'}`;
+        btn.innerText = acc.name;
+        container.appendChild(btn);
+      });
+    }
+
     function renderCategoryButtons() {
       const container = document.getElementById('category-buttons-container');
       container.innerHTML = '';
@@ -1158,7 +1262,6 @@
       });
     }
 
-    // HELPER: CALCULATE NEXT DUE DATE FOR INSTALLMENT
     function getNextDueDateString(currentDateStr, payDay) {
       const curDate = new Date(currentDateStr);
       let targetYear = curDate.getFullYear();
@@ -1176,7 +1279,7 @@
       return nextDate.toISOString().split('T')[0];
     }
 
-    // SUBMIT 1: EXPENSE & INCOME (WITH INSTALLMENT PLAN CREATION)
+    // SUBMIT 1: EXPENSE & INCOME
     document.getElementById('tx-form').addEventListener('submit', async (e) => {
       e.preventDefault();
       if (!currentUser || !selectedAccountId || !selectedCategoryId) return alert("กรุณาเลือกบัญชีและหมวดหมู่");
@@ -1190,6 +1293,7 @@
 
       const isInstallment = currentTxType === 'expense' && document.getElementById('is-installment').checked;
 
+      // Handle Installment Creation
       if (isInstallment) {
         const totalCount = parseInt(document.getElementById('inst-total-count').value) || 2;
         const payDay = parseInt(document.getElementById('inst-pay-day').value) || 1;
@@ -1202,7 +1306,6 @@
         try {
           const batch = db.batch();
 
-          // 1. Add Installment Plan Header
           const planRef = db.collection('users').doc(currentUser.uid).collection('installment_plans').doc();
           const nextDueDateStr = getNextDueDateString(date, payDay);
 
@@ -1223,7 +1326,6 @@
             createdAt: firebase.firestore.FieldValue.serverTimestamp()
           });
 
-          // 2. Add Transaction for 1st Installment
           const txRef = db.collection('users').doc(currentUser.uid).collection('transactions').doc();
           batch.set(txRef, {
             kind: 'transaction',
@@ -1245,7 +1347,6 @@
             createdAt: firebase.firestore.FieldValue.serverTimestamp()
           });
 
-          // 3. Deduct 1st installment from Account Balance
           const accRef = db.collection('users').doc(currentUser.uid).collection('accounts').doc(selectedAccountId);
           const accDoc = await accRef.get();
           if (accDoc.exists) {
@@ -1264,17 +1365,28 @@
         return;
       }
 
-      // Normal Expense / Income Logic
+      // Handle Normal Expense/Income with Advanced Modes
       const isReimburse = userSettings.enableAdvanced && currentTxType === 'expense' && document.getElementById('is-reimburse').checked;
+      const isDeposit = userSettings.enableAdvanced && currentTxType === 'income' && document.getElementById('is-deposit').checked;
+      
       let myShare = rawAmount;
       let friendShare = 0;
       let remainingPending = 0;
+
+      let totalProjectAmount = rawAmount;
+      let pendingClient = 0;
 
       if (isReimburse) {
         const myShareVal = document.getElementById('my-share-amount').value;
         myShare = myShareVal === '' ? 0 : parseFloat(myShareVal) || 0;
         friendShare = Math.max(0, rawAmount - myShare);
         remainingPending = friendShare;
+      }
+
+      if (isDeposit) {
+        const totalVal = document.getElementById('deposit-total-amount').value;
+        totalProjectAmount = totalVal === '' ? 0 : parseFloat(totalVal) || 0;
+        pendingClient = Math.max(0, totalProjectAmount - rawAmount);
       }
 
       try {
@@ -1286,6 +1398,9 @@
           friendShare: friendShare,
           remainingPending: remainingPending,
           isReimburse: isReimburse,
+          isDeposit: isDeposit,
+          totalProjectAmount: totalProjectAmount,
+          pendingClient: pendingClient,
           note: note,
           date: date,
           accountId: selectedAccountId,
@@ -1305,9 +1420,19 @@
 
         document.getElementById('tx-amount').value = '';
         document.getElementById('tx-note').value = '';
-        document.getElementById('my-share-amount').value = '';
-        document.getElementById('is-reimburse').checked = false;
-        toggleReimburseFields();
+        
+        if (isReimburse) {
+          document.getElementById('my-share-amount').value = '';
+          document.getElementById('is-reimburse').checked = false;
+          toggleReimburseFields();
+        }
+
+        if (isDeposit) {
+          document.getElementById('deposit-total-amount').value = '';
+          document.getElementById('is-deposit').checked = false;
+          toggleDepositFields();
+        }
+
       } catch (err) { alert("บันทึกไม่สำเร็จ: " + err.message); }
     });
 
@@ -1355,8 +1480,8 @@
       } catch (err) { alert("โอนเงินไม่สำเร็จ: " + err.message); }
     });
 
-    // PENDING ITEMS LIST FOR SETTLE
-    function renderPendingItemsList() {
+    // LIST RENDERERS FOR SETTLE & COLLECT
+    function renderPendingFriendList() {
       const container = document.getElementById('pending-items-container');
       const pendingTxs = allTransactions.filter(t => t.kind === 'transaction' && t.isReimburse && t.remainingPending > 0);
 
@@ -1382,20 +1507,34 @@
       });
     }
 
-    // SUBMIT 3: SETTLE
-    document.getElementById('settle-form').addEventListener('submit', async (e) => {
-      e.preventDefault();
-      if (!currentUser || !selectedSettleAccountId) return alert("กรุณาเลือกบัญชีที่เงินเข้า");
+    function renderPendingClientList() {
+      const container = document.getElementById('pending-client-items-container');
+      const pendingTxs = allTransactions.filter(t => t.kind === 'transaction' && t.isDeposit && t.pendingClient > 0);
 
-      const receivedAmount = parseFloat(document.getElementById('settle-received-amount').value);
-      const note = document.getElementById('settle-note').value.trim();
-      const date = document.getElementById('settle-date').value;
+      if (pendingTxs.length === 0) {
+        container.innerHTML = '<p class="text-center text-xs text-gray-400 py-3">ไม่มีรายการรอลูกค้าจ่ายเพิ่ม</p>';
+        return;
+      }
 
-      if (isNaN(receivedAmount) || receivedAmount <= 0) return alert("กรุณากรอกจำนวนเงินให้ถูกต้อง");
+      container.innerHTML = '';
+      pendingTxs.forEach(t => {
+        const div = document.createElement('div');
+        div.className = "flex items-center justify-between p-1.5 border-b text-xs hover:bg-gray-50";
+        div.innerHTML = `
+          <label class="flex items-center space-x-2 cursor-pointer flex-1">
+            <input type="checkbox" name="collect-item" value="${t.id}" data-max="${t.pendingClient}" class="rounded text-teal-600 focus:ring-teal-500 w-4 h-4">
+            <div class="flex flex-col">
+              <span class="font-medium text-gray-700">${escapeHtml(t.note || 'ไม่มีบันทึกช่วยจำ')}</span>
+              <span class="text-[10px] text-gray-400">รอเก็บ: ${userSettings.currency}${t.pendingClient.toLocaleString()} • ${t.date}</span>
+            </div>
+          </label>
+        `;
+        container.appendChild(div);
+      });
+    }
 
-      const checkboxes = document.querySelectorAll('input[name="settle-item"]:checked');
-      if (checkboxes.length === 0) return alert("กรุณาเลือกอย่างน้อย 1 รายการที่ต้องการเคลียร์ยอด");
-
+    // HELPER FUNCTION: ALLOCATE PENDING PAYMENTS
+    async function processAllocation(formPrefix, dataKey, accId, checkboxes, receivedAmount, note, date, successMsg) {
       try {
         let remainingToAllocate = receivedAmount;
         const batch = db.batch();
@@ -1409,39 +1548,81 @@
 
           const txRef = db.collection('users').doc(currentUser.uid).collection('transactions').doc(txId);
           const txDoc = allTransactions.find(t => t.id === txId);
-          const newRemaining = txDoc.remainingPending - deduct;
+          const newRemaining = txDoc[dataKey] - deduct;
 
-          batch.update(txRef, { remainingPending: newRemaining });
+          batch.update(txRef, { [dataKey]: newRemaining });
           allocatedMap[txId] = deduct;
           remainingToAllocate -= deduct;
         }
 
-        const settleRef = db.collection('users').doc(currentUser.uid).collection('transactions').doc();
-        batch.set(settleRef, {
-          kind: 'settlement',
+        const allocateRef = db.collection('users').doc(currentUser.uid).collection('transactions').doc();
+        batch.set(allocateRef, {
+          kind: formPrefix,
           amount: receivedAmount,
-          accountId: selectedSettleAccountId,
+          accountId: accId,
           allocatedMap: allocatedMap,
           note: note,
           date: date,
           createdAt: firebase.firestore.FieldValue.serverTimestamp()
         });
 
-        const accRef = db.collection('users').doc(currentUser.uid).collection('accounts').doc(selectedSettleAccountId);
+        const accRef = db.collection('users').doc(currentUser.uid).collection('accounts').doc(accId);
         const accDoc = await accRef.get();
         if (accDoc.exists) {
           batch.update(accRef, { balance: accDoc.data().balance + receivedAmount });
         }
 
         await batch.commit();
-        alert("บันทึกรับเงินคืน (Settle) เรียบร้อย!");
-        document.getElementById('settle-received-amount').value = '';
-        document.getElementById('settle-note').value = '';
-        switchEntryMode('expense');
-      } catch (err) { alert("รับเงินคืนไม่สำเร็จ: " + err.message); }
+        alert(successMsg);
+        document.getElementById(`${formPrefix === 'settlement' ? 'settle' : 'collect'}-received-amount`).value = '';
+        document.getElementById(`${formPrefix === 'settlement' ? 'settle' : 'collect'}-note`).value = '';
+        switchEntryMode('income'); 
+      } catch (err) { alert("ดำเนินการไม่สำเร็จ: " + err.message); }
+    }
+
+    // SUBMIT 3: SETTLE (รับเงินคืนจากเพื่อน)
+    document.getElementById('settle-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      if (!currentUser || !selectedSettleAccountId) return alert("กรุณาเลือกบัญชีที่เงินเข้า");
+      const receivedAmount = parseFloat(document.getElementById('settle-received-amount').value);
+      if (isNaN(receivedAmount) || receivedAmount <= 0) return alert("กรุณากรอกจำนวนเงินให้ถูกต้อง");
+      const checkboxes = document.querySelectorAll('input[name="settle-item"]:checked');
+      if (checkboxes.length === 0) return alert("กรุณาเลือกอย่างน้อย 1 รายการที่ต้องการเคลียร์ยอด");
+
+      await processAllocation(
+        'settlement', 
+        'remainingPending', 
+        selectedSettleAccountId, 
+        checkboxes, 
+        receivedAmount, 
+        document.getElementById('settle-note').value.trim(), 
+        document.getElementById('settle-date').value, 
+        "บันทึกรับเงินคืน (Settle) เรียบร้อย!"
+      );
     });
 
-    // SUBMIT 4: SPLIT
+    // SUBMIT 4: COLLECT (รับเงินค้างจากลูกค้า)
+    document.getElementById('collect-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      if (!currentUser || !selectedCollectAccountId) return alert("กรุณาเลือกบัญชีที่เงินเข้า");
+      const receivedAmount = parseFloat(document.getElementById('collect-received-amount').value);
+      if (isNaN(receivedAmount) || receivedAmount <= 0) return alert("กรุณากรอกจำนวนเงินให้ถูกต้อง");
+      const checkboxes = document.querySelectorAll('input[name="collect-item"]:checked');
+      if (checkboxes.length === 0) return alert("กรุณาเลือกอย่างน้อย 1 โปรเจกต์ที่ต้องการรับเงินเพิ่ม");
+
+      await processAllocation(
+        'collection', 
+        'pendingClient', 
+        selectedCollectAccountId, 
+        checkboxes, 
+        receivedAmount, 
+        document.getElementById('collect-note').value.trim(), 
+        document.getElementById('collect-date').value, 
+        "บันทึกรับเงินลูกค้าเพิ่มเติม (Collect) เรียบร้อย!"
+      );
+    });
+
+    // SUBMIT 5: SPLIT (รับเงินแทนทีมงาน)
     document.getElementById('split-form').addEventListener('submit', async (e) => {
       e.preventDefault();
       if (!currentUser || !selectedSplitAccountId || !selectedSplitCategoryId) return alert("กรุณาเลือกบัญชีและหมวดหมู่");
@@ -1485,7 +1666,7 @@
         document.getElementById('split-note').value = '';
         updateSplitMath();
         alert("บันทึกรับเงินแทน (Split) เรียบร้อย!");
-        switchEntryMode('expense');
+        switchEntryMode('income');
       } catch (err) { alert("บันทึกไม่สำเร็จ: " + err.message); }
     });
 
@@ -1552,7 +1733,6 @@
       }
     }
 
-    // REALTIME INSTALLMENT TRACKER LISTENER & RENDERER
     function loadInstallmentPlansRealtime(userId) {
       if (unsubscribeInst) unsubscribeInst();
 
@@ -1649,7 +1829,7 @@
       } catch (err) { alert("ยกเลิกไม่สำเร็จ: " + err.message); }
     }
 
-    // CASHFLOW LOGIC & BOUNDARY CONTROLS
+    // CASHFLOW LOGIC
     function getMinAccountCreationDate() {
       if (accountsList.length === 0) return new Date();
       let minDate = new Date();
@@ -1718,19 +1898,17 @@
           }
         } else if (item.kind === 'split') {
           incSum += (item.myShare || 0);
+        } else if (item.kind === 'collection') {
+          incSum += item.amount;
         }
       });
 
       return { incSum, expSum, netFlow: incSum - expSum };
     }
 
-    function updateEntryCurrentMonthCashFlowUI() {
-      const now = new Date();
-      const { netFlow, incSum, expSum } = calculateCashflowForMonth(now.getFullYear(), now.getMonth() + 1);
-
-      const maxVal = Math.max(incSum, expSum, 1);
-      const fillEl = document.getElementById('entry-cashflow-bar-fill');
-      const textEl = document.getElementById('entry-cashflow-net-text');
+    function renderCashflowBar(netFlow, maxVal, fillElId, textElId) {
+      const fillEl = document.getElementById(fillElId);
+      const textEl = document.getElementById(textElId);
 
       if (netFlow >= 0) {
         const pct = Math.min(50, (netFlow / maxVal) * 50);
@@ -1747,6 +1925,12 @@
         textEl.innerText = `-${userSettings.currency}${Math.abs(netFlow).toLocaleString(undefined, {minimumFractionDigits: 2})}`;
         textEl.className = "font-bold text-rose-600";
       }
+    }
+
+    function updateEntryCurrentMonthCashFlowUI() {
+      const now = new Date();
+      const { netFlow, incSum, expSum } = calculateCashflowForMonth(now.getFullYear(), now.getMonth() + 1);
+      renderCashflowBar(netFlow, Math.max(incSum, expSum, 1), 'entry-cashflow-bar-fill', 'entry-cashflow-net-text');
     }
 
     function updatePopupCashflowUI() {
@@ -1777,25 +1961,7 @@
       }
 
       const { netFlow, incSum, expSum } = calculateCashflowForMonth(popupYear, popupMonth);
-      const maxVal = Math.max(incSum, expSum, 1);
-      const fillEl = document.getElementById('popup-cashflow-bar-fill');
-      const textEl = document.getElementById('popup-cashflow-net-text');
-
-      if (netFlow >= 0) {
-        const pct = Math.min(50, (netFlow / maxVal) * 50);
-        fillEl.style.marginLeft = '50%';
-        fillEl.style.width = `${pct}%`;
-        fillEl.className = "h-full bg-emerald-500 transition-all duration-500 ease-out rounded-r-full";
-        textEl.innerText = `+${userSettings.currency}${netFlow.toLocaleString(undefined, {minimumFractionDigits: 2})}`;
-        textEl.className = "font-bold text-emerald-600";
-      } else {
-        const pct = Math.min(50, (Math.abs(netFlow) / maxVal) * 50);
-        fillEl.style.marginLeft = `${50 - pct}%`;
-        fillEl.style.width = `${pct}%`;
-        fillEl.className = "h-full bg-rose-500 transition-all duration-500 ease-out rounded-l-full";
-        textEl.innerText = `-${userSettings.currency}${Math.abs(netFlow).toLocaleString(undefined, {minimumFractionDigits: 2})}`;
-        textEl.className = "font-bold text-rose-600";
-      }
+      renderCashflowBar(netFlow, Math.max(incSum, expSum, 1), 'popup-cashflow-bar-fill', 'popup-cashflow-net-text');
     }
 
     // REALTIME TRANSACTIONS LISTENER
@@ -1811,6 +1977,7 @@
           let totalExpense = 0;
           let totalPendingFriend = 0;
           let totalPendingTeam = 0;
+          let totalPendingClient = 0;
 
           allTransactions = [];
           snapshot.forEach((doc) => {
@@ -1822,7 +1989,9 @@
               else totalExpense += (item.isReimburse ? (item.myShare || 0) : item.amount);
 
               if (item.isReimburse && item.remainingPending > 0) totalPendingFriend += item.remainingPending;
-            } else if (item.kind === 'settlement') {
+              if (item.isDeposit && item.pendingClient > 0) totalPendingClient += item.pendingClient;
+
+            } else if (item.kind === 'settlement' || item.kind === 'collection') {
               totalIncome += item.amount;
             } else if (item.kind === 'split') {
               totalIncome += item.myShare;
@@ -1862,6 +2031,10 @@
                     : `<span class="text-[9px] bg-emerald-100 text-emerald-800 px-1 py-0.5 rounded ml-1">คืนครบ</span>`;
                 } else if (item.isInstallment) {
                   badge = `<span class="text-[9px] bg-indigo-100 text-indigo-800 px-1 py-0.5 rounded ml-1">ผ่อนชำระ</span>`;
+                } else if (item.isDeposit) {
+                  badge = item.pendingClient > 0
+                    ? `<span class="text-[9px] bg-teal-100 text-teal-800 px-1 py-0.5 rounded ml-1">มัดจำ (รอ ฿${item.pendingClient.toLocaleString()})</span>`
+                    : `<span class="text-[9px] bg-emerald-100 text-emerald-800 px-1 py-0.5 rounded ml-1">มัดจำครบแล้ว</span>`;
                 }
 
                 fullHtml += `
@@ -1915,6 +2088,19 @@
                       <button onclick="deleteTransaction('${item.id}')" class="text-gray-300 hover:text-rose-500 font-bold px-1 text-sm">×</button>
                     </div>
                   </div>`;
+              } else if (item.kind === 'collection') {
+                const acc = accountsList.find(a => a.id === item.accountId);
+                fullHtml += `
+                  <div class="flex justify-between items-center p-2.5 bg-teal-50/50 border border-teal-100 rounded-xl text-xs">
+                    <div class="flex flex-col">
+                      <span class="font-medium text-teal-700">รับยอดค้างจากลูกค้า (${acc ? acc.name : 'บัญชี'})</span>
+                      <span class="text-[10px] text-gray-400">${escapeHtml(item.note || 'Collect ยอดมัดจำ')}</span>
+                    </div>
+                    <div class="flex items-center space-x-2">
+                      <span class="font-bold text-emerald-600">+${userSettings.currency}${item.amount.toLocaleString(undefined, {minimumFractionDigits: 2})}</span>
+                      <button onclick="deleteTransaction('${item.id}')" class="text-gray-300 hover:text-rose-500 font-bold px-1 text-sm">×</button>
+                    </div>
+                  </div>`;
               }
             });
           });
@@ -1928,8 +2114,10 @@
           document.getElementById('total-income').innerText = `${userSettings.currency}${totalIncome.toLocaleString(undefined, {minimumFractionDigits: 2})}`;
           document.getElementById('total-expense').innerText = `${userSettings.currency}${totalExpense.toLocaleString(undefined, {minimumFractionDigits: 2})}`;
           document.getElementById('total-balance').innerText = `${userSettings.currency}${totalAccountBalance.toLocaleString(undefined, {minimumFractionDigits: 2})}`;
+          
           document.getElementById('total-pending-friend').innerText = `${userSettings.currency}${totalPendingFriend.toLocaleString(undefined, {minimumFractionDigits: 2})}`;
           document.getElementById('total-pending-team').innerText = `${userSettings.currency}${totalPendingTeam.toLocaleString(undefined, {minimumFractionDigits: 2})}`;
+          document.getElementById('total-pending-client').innerText = `${userSettings.currency}${totalPendingClient.toLocaleString(undefined, {minimumFractionDigits: 2})}`;
         });
     }
 
@@ -2003,7 +2191,7 @@
             if (fDoc.exists) transaction.update(fromRef, { balance: fDoc.data().balance + tx.amount });
             if (tDoc.exists) transaction.update(toRef, { balance: tDoc.data().balance - tx.amount });
           });
-        } else if (tx.kind === 'settlement') {
+        } else if (tx.kind === 'settlement' || tx.kind === 'collection') {
           const accRef = db.collection('users').doc(currentUser.uid).collection('accounts').doc(tx.accountId);
           await db.runTransaction(async (transaction) => {
             const accDoc = await transaction.get(accRef);
