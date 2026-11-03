@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>YUET (v1.14) - Unbound Settings Height</title>
+  <title>YUET (v1.15) - State Persistence & Fast Toast Feedback</title>
   
   <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
@@ -18,6 +18,16 @@
   
   <style>
     body { font-family: 'Kanit', sans-serif; }
+    
+    @keyframes toastFade {
+      0% { opacity: 0; transform: scale(0.7); }
+      30% { opacity: 1; transform: scale(1.05); }
+      70% { opacity: 1; transform: scale(1); }
+      100% { opacity: 0; transform: scale(0.95); }
+    }
+    .animate-toast-check {
+      animation: toastFade 0.5s ease-in-out forwards;
+    }
   </style>
 
   <!-- Firebase Compatibility SDKs -->
@@ -41,7 +51,7 @@
       <div class="flex flex-col items-center">
         <div class="flex items-baseline space-x-1">
           <h1 class="text-xl font-black tracking-wider uppercase drop-shadow-sm">YUET</h1>
-          <span class="text-[9px] font-medium text-emerald-200 tracking-tight">(v1.14)</span>
+          <span class="text-[9px] font-medium text-emerald-200 tracking-tight">(v1.15)</span>
         </div>
         <p class="text-[8px] text-emerald-100/80 tracking-tight font-light">by Phuthai Mananararuk & Gemini</p>
       </div>
@@ -318,7 +328,7 @@
         <div id="full-tx-list" class="space-y-2 overflow-y-auto pr-1 flex-1"><p class="text-center text-xs text-gray-400 py-6">กำลังโหลดประวัติ...</p></div>
       </section>
 
-      <!-- ==================== 4. SETTING VIEW (v1.14 Full Height Display) ==================== -->
+      <!-- ==================== 4. SETTING VIEW ==================== -->
       <section id="setting-view" class="hidden space-y-4 max-h-[620px] overflow-y-auto pr-1">
         <div class="border-b pb-2"><h2 class="text-xs font-bold text-gray-700 uppercase">Setting - ตั้งค่าระบบ</h2></div>
         <div class="space-y-1"><label class="block text-xs font-bold text-gray-700">สกุลเงินทั่วแอป</label><select id="setting-currency" onchange="autoSaveSettings()" class="w-full px-3 py-2 text-xs border rounded-xl bg-white"><option value="฿">บาท (฿)</option><option value="$">ดอลลาร์ ($)</option><option value="€">ยูโร (€)</option><option value="¥">เยน (¥)</option></select></div>
@@ -365,6 +375,15 @@
     </main>
 
     <footer id="auth-status-bar" class="bg-gray-100 p-2 text-center text-[10px] text-gray-400 border-t border-gray-100">สถานะ: ยังไม่ได้เข้าสู่ระบบ</footer>
+  </div>
+
+  <!-- FAST CHECKMARK TOAST OVERLAY (v1.15) -->
+  <div id="toast-check-overlay" class="hidden fixed inset-0 bg-black/30 flex items-center justify-center z-50 pointer-events-none">
+    <div class="bg-emerald-600 text-white p-4 rounded-full shadow-2xl flex items-center justify-center animate-toast-check">
+      <svg class="w-12 h-12 stroke-current" fill="none" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3.5" d="M5 13l4 4L19 7" />
+      </svg>
+    </div>
   </div>
 
   <!-- POP-UP SELECTOR MODAL -->
@@ -547,6 +566,15 @@
 
     const [loginView, registerView, entryView, summaryView, historyView, settingView] = ['login-view','register-view','entry-view','summary-view','history-view','setting-view'].map(id => document.getElementById(id));
     const topNavTabs = document.getElementById('top-nav-tabs'), logoutBtn = document.getElementById('logout-btn'), openSettingsBtn = document.getElementById('open-settings-btn'), authStatusBar = document.getElementById('auth-status-bar');
+
+    // FAST TOAST FEEDBACK FUNCTION (v1.15)
+    function triggerSuccessToast() {
+      const toast = document.getElementById('toast-check-overlay');
+      toast.classList.remove('hidden');
+      setTimeout(() => {
+        toast.classList.add('hidden');
+      }, 500);
+    }
 
     // KEYPAD CONTROLLERS
     function openCustomKeypad(id) { activeKeypadFieldId = id; const el = document.getElementById(id); document.getElementById('keypad-live-display').innerText = el.value || '0'; document.getElementById('custom-keypad-overlay').classList.remove('hidden'); }
@@ -758,7 +786,7 @@
       }
     }
 
-    // ACCOUNT PINNED SELECTOR
+    // ACCOUNT PINNED SELECTOR (v1.15 Compact Inline "อื่น ๆ" Button)
     function renderAccountPinnedSelector(selectedId, setGlobalVarFnName, rerenderFnName, activeClass) {
       let pinned = accountsList.filter(i => i.isPinned);
       if (!pinned.length && accountsList.length) pinned = [accountsList[0]];
@@ -766,20 +794,20 @@
       const isSelectedInPinned = pinned.some(i => i.id === selectedId);
       const selectedItem = accountsList.find(i => i.id === selectedId);
 
-      let html = `<div class="flex flex-wrap gap-1">`;
+      let html = `<div class="flex flex-wrap gap-1 items-center">`;
       pinned.forEach(i => {
         const isSel = i.id === selectedId;
         html += `<button type="button" onclick="${setGlobalVarFnName}='${i.id}'; ${rerenderFnName}();" class="px-2.5 py-1 rounded-xl text-xs font-semibold transition border ${isSel ? activeClass : 'bg-white text-gray-700 border-gray-200'}">${escapeHtml(i.name)}</button>`;
       });
-      html += `</div>`;
 
       const unpinnedCount = accountsList.length - pinned.length;
       if (unpinnedCount > 0) {
-        const extraLabel = (!isSelectedInPinned && selectedItem) ? `เลือกอยู่: ${selectedItem.name}` : `เลือกบัญชีอื่น (${unpinnedCount})...`;
+        const extraLabel = (!isSelectedInPinned && selectedItem) ? selectedItem.name : `อื่น ๆ`;
         const extraClass = (!isSelectedInPinned && selectedItem) ? activeClass : 'bg-gray-100 text-gray-700 border-gray-300 hover:bg-gray-200';
         
-        html += `<div class="mt-1"><button type="button" onclick="openAccountSelectorModal('${setGlobalVarFnName}', '${rerenderFnName}', '${activeClass}')" class="w-full text-left px-3 py-1.5 rounded-xl text-xs font-medium transition border ${extraClass}">${escapeHtml(extraLabel)}</button></div>`;
+        html += `<button type="button" onclick="openAccountSelectorModal('${setGlobalVarFnName}', '${rerenderFnName}', '${activeClass}')" class="px-2.5 py-1 rounded-xl text-xs font-medium transition border ${extraClass}">${escapeHtml(extraLabel)}</button>`;
       }
+      html += `</div>`;
       return html;
     }
 
@@ -807,7 +835,7 @@
     function renderReimbAccountButtons() { document.getElementById('reimb-account-buttons').innerHTML = renderAccountPinnedSelector(selectedReimbAccountId, 'selectedReimbAccountId', 'renderReimbAccountButtons', 'bg-amber-600 text-white border-amber-600 shadow-xs'); }
     function renderTeamPayAccountButtons() { document.getElementById('team-pay-account-buttons').innerHTML = renderAccountPinnedSelector(selectedTeamPayAccountId, 'selectedTeamPayAccountId', 'renderTeamPayAccountButtons', 'bg-teal-600 text-white border-teal-600 shadow-xs'); }
 
-    // CATEGORY MOST RECENT SELECTOR
+    // CATEGORY MOST RECENT SELECTOR (v1.15 Compact Inline "อื่น ๆ" Button)
     function getMostRecentCategories(type) {
       const filteredCats = categoriesList.filter(c => c.type === type);
       const recentIds = [];
@@ -843,38 +871,38 @@
         }
 
         const recentList = getMostRecentCategories('expense');
-        let html = `<div class="flex flex-wrap gap-1">`;
+        let html = `<div class="flex flex-wrap gap-1 items-center">`;
         
         recentList.forEach(i => {
           const isSelected = selectedCategoryIds.includes(i.id);
           html += `<button type="button" onclick="handleExpenseCategoryTap('${i.id}')" class="px-2.5 py-1 rounded-xl text-xs font-semibold transition border ${isSelected ? 'bg-rose-600 text-white border-rose-600 shadow-xs' : 'bg-white text-gray-700 border-gray-200'}">${escapeHtml(i.name)}${isSelected && selectedCategoryIds.length > 1 ? ' ✓' : ''}</button>`;
         });
-        html += `</div>`;
 
         const nonRecentSelected = c.filter(i => !recentList.some(r => r.id === i.id) && selectedCategoryIds.includes(i.id));
-        const extraLabel = nonRecentSelected.length > 0 ? `เลือกอยู่: ${nonRecentSelected.map(x=>x.name).join(', ')}` : `เลือกหมวดหมู่อื่นๆ (${c.length})...`;
+        const extraLabel = nonRecentSelected.length > 0 ? nonRecentSelected.map(x=>x.name).join(', ') : `อื่น ๆ`;
         const extraClass = nonRecentSelected.length > 0 ? 'bg-rose-600 text-white border-rose-600 shadow-xs' : 'bg-gray-100 text-gray-700 border-gray-300 hover:bg-gray-200';
         
-        html += `<div class="mt-1"><button type="button" onclick="openCategorySelectorModal('expense')" class="w-full text-left px-3 py-1.5 rounded-xl text-xs font-medium transition border ${extraClass}">${escapeHtml(extraLabel)}</button></div>`;
+        html += `<button type="button" onclick="openCategorySelectorModal('expense')" class="px-2.5 py-1 rounded-xl text-xs font-medium transition border ${extraClass}">${escapeHtml(extraLabel)}</button>`;
+        html += `</div>`;
         document.getElementById('category-buttons-container').innerHTML = html;
       } else {
         document.getElementById('lbl-multi-cat-hint').classList.add('hidden');
         if (!selectedCategoryId || !c.some(x => x.id === selectedCategoryId)) if (c.length) selectedCategoryId = c[0].id;
         
         const recentList = getMostRecentCategories('income');
-        let html = `<div class="flex flex-wrap gap-1">`;
+        let html = `<div class="flex flex-wrap gap-1 items-center">`;
         recentList.forEach(i => {
           const isSel = i.id === selectedCategoryId;
           html += `<button type="button" onclick="selectedCategoryId='${i.id}'; renderCategoryButtons();" class="px-2.5 py-1 rounded-xl text-xs font-semibold transition border ${isSel ? 'bg-emerald-600 text-white border-emerald-600 shadow-xs' : 'bg-white text-gray-700 border-gray-200'}">${escapeHtml(i.name)}</button>`;
         });
-        html += `</div>`;
 
         const isNonRecentSelected = !recentList.some(r => r.id === selectedCategoryId);
         const selectedObj = c.find(x => x.id === selectedCategoryId);
-        const extraLabel = (isNonRecentSelected && selectedObj) ? `เลือกอยู่: ${selectedObj.name}` : `เลือกหมวดหมู่อื่นๆ (${c.length})...`;
+        const extraLabel = (isNonRecentSelected && selectedObj) ? selectedObj.name : `อื่น ๆ`;
         const extraClass = (isNonRecentSelected && selectedObj) ? 'bg-emerald-600 text-white border-emerald-600 shadow-xs' : 'bg-gray-100 text-gray-700 border-gray-300 hover:bg-gray-200';
         
-        html += `<div class="mt-1"><button type="button" onclick="openCategorySelectorModal('income')" class="w-full text-left px-3 py-1.5 rounded-xl text-xs font-medium transition border ${extraClass}">${escapeHtml(extraLabel)}</button></div>`;
+        html += `<button type="button" onclick="openCategorySelectorModal('income')" class="px-2.5 py-1 rounded-xl text-xs font-medium transition border ${extraClass}">${escapeHtml(extraLabel)}</button>`;
+        html += `</div>`;
         document.getElementById('category-buttons-container').innerHTML = html;
       }
     }
@@ -1011,12 +1039,10 @@
       try {
         await saveTransactionToDB(pendingMultiCatTxPayload);
         closeMultiCatModal();
+        triggerSuccessToast(); // Fast Toast Feedback (v1.15)
         document.getElementById('tx-amount').value = '';
         document.getElementById('tx-note').value = '';
-        
-        const expCats = categoriesList.filter(c => c.type === 'expense');
-        if (expCats.length) selectedCategoryIds = [expCats[0].id];
-        renderCategoryButtons();
+        renderCategoryButtons(); // Retain persistent state
       } catch (err) {
         alert(err.message);
       }
@@ -1034,7 +1060,7 @@
       });
     }
 
-    // SUBMIT FORM 1: Normal Expense / Income
+    // SUBMIT FORM 1: Normal Expense / Income (v1.15 State Persistence & Toast)
     document.getElementById('tx-form').addEventListener('submit', async (e) => {
       e.preventDefault(); 
       if (!currentUser || !selectedAccountId) return alert("เลือกบัญชี");
@@ -1075,7 +1101,9 @@
               categoryId: cat.id, categoryName: cat.name,
               categoriesBreakdown: [{ categoryId: cat.id, categoryName: cat.name, amount: amt }]
             });
+            triggerSuccessToast(); // Fast Toast Feedback (v1.15)
             document.getElementById('tx-amount').value = ''; document.getElementById('tx-note').value = '';
+            renderCategoryButtons(); // Retain persistent state
           } catch(err){ alert(err.message); }
         }
       } else {
@@ -1088,7 +1116,9 @@
             categoryId: cat.id, categoryName: cat.name,
             categoriesBreakdown: [{ categoryId: cat.id, categoryName: cat.name, amount: amt }]
           });
+          triggerSuccessToast(); // Fast Toast Feedback (v1.15)
           document.getElementById('tx-amount').value = ''; document.getElementById('tx-note').value = '';
+          renderCategoryButtons(); // Retain persistent state
         } catch(err){ alert(err.message); }
       }
     });
@@ -1107,7 +1137,7 @@
         b.set(ref, {title:n||cat?.name||'ผ่อนชำระ',totalAmount:amt,totalCount:c,currentCount:1,normalAmount:nAmt,finalAmount:(Math.round((amt-(nAmt*(c-1)))*100)/100),payDay:p,status:'active',accountId:selectedInstAccountId,categoryId:selectedInstCategoryId,categoryName:cat?.name||'',startDate:d,nextDueDate:new Date(ty,tm,Math.min(p,new Date(ty,tm+1,0).getDate())).toISOString().split('T')[0],createdAt:firebase.firestore.FieldValue.serverTimestamp()});
         b.set(db.collection('users').doc(currentUser.uid).collection('transactions').doc(), {kind:'transaction',type:'expense',amount:fAmt,myShare:fAmt,friendShare:0,remainingPending:0,isReimburse:false,isInstallment:true,installmentPlanId:ref.id,installmentCurrentCount:1,installmentTotalCount:c,note:`${n||'ผ่อนชำระ'} (1/${c})`,date:d,accountId:selectedInstAccountId,categoryId:selectedInstCategoryId,categoryName:cat?.name||'',categoriesBreakdown:[{categoryId:cat?.id||'',categoryName:cat?.name||'',amount:fAmt}],createdAt:firebase.firestore.FieldValue.serverTimestamp()});
         const a=await db.collection('users').doc(currentUser.uid).collection('accounts').doc(selectedInstAccountId).get(); if(a.exists) b.update(a.ref,{balance:a.data().balance-fAmt});
-        await b.commit(); alert("สร้างสัญญาผ่อนชำระเรียบร้อย!"); document.getElementById('inst-total-amount').value=''; document.getElementById('inst-note').value=''; switchEntryMode('expense');
+        await b.commit(); triggerSuccessToast(); document.getElementById('inst-total-amount').value=''; document.getElementById('inst-note').value=''; switchEntryMode('expense');
       } catch(err){alert(err.message);}
     });
 
@@ -1122,7 +1152,7 @@
         await db.collection('users').doc(currentUser.uid).collection('transactions').add({kind:'transaction',type:'expense',amount:tot,myShare:myS,friendShare:frS,remainingPending:frS,isReimburse:true,isDeposit:false,note:n,date:d,accountId:selectedReimbAccountId,categoryId:selectedReimbCategoryId,categoryName:cat?.name||'',categoriesBreakdown:[{categoryId:cat?.id||'',categoryName:cat?.name||'',amount:myS}],createdAt:firebase.firestore.FieldValue.serverTimestamp()});
         const ar=db.collection('users').doc(currentUser.uid).collection('accounts').doc(selectedReimbAccountId);
         await db.runTransaction(async t=>{const a=await t.get(ar);if(a.exists)t.update(ar,{balance:a.data().balance-tot});});
-        document.getElementById('reimb-total-amount').value=''; document.getElementById('reimb-my-share').value=''; document.getElementById('reimb-note').value=''; alert("บันทึกสำรองจ่ายเรียบร้อย!"); switchEntryMode('expense');
+        triggerSuccessToast(); document.getElementById('reimb-total-amount').value=''; document.getElementById('reimb-my-share').value=''; document.getElementById('reimb-note').value=''; switchEntryMode('expense');
       } catch(err){alert(err.message);}
     });
 
@@ -1132,7 +1162,7 @@
         const fr=db.collection('users').doc(currentUser.uid).collection('accounts').doc(transferFromId), tr=db.collection('users').doc(currentUser.uid).collection('accounts').doc(transferToId);
         await db.runTransaction(async t=>{const f=await t.get(fr), to=await t.get(tr); t.update(fr,{balance:f.data().balance-amt}); t.update(tr,{balance:to.data().balance+amt});});
         await db.collection('users').doc(currentUser.uid).collection('transactions').add({kind:'transfer',amount:amt,fromAccountId:transferFromId,fromAccountName:accountsList.find(a=>a.id===transferFromId)?.name||'',toAccountId:transferToId,toAccountName:accountsList.find(a=>a.id===transferToId)?.name||'',note:document.getElementById('tr-note').value,date:document.getElementById('tr-date').value,createdAt:firebase.firestore.FieldValue.serverTimestamp()});
-        document.getElementById('tr-amount').value=''; document.getElementById('tr-note').value=''; switchEntryMode('expense');
+        triggerSuccessToast(); document.getElementById('tr-amount').value=''; document.getElementById('tr-note').value=''; switchEntryMode('expense');
       }catch(err){alert(err.message);}
     });
 
@@ -1175,7 +1205,7 @@
         for(const cb of cbs){ if(r<=0)break; const d=Math.min(r,parseFloat(cb.getAttribute('data-max'))); b.update(db.collection('users').doc(currentUser.uid).collection('transactions').doc(cb.value),{remainingPending:allTransactions.find(t=>t.id===cb.value).remainingPending-d}); r-=d; }
         b.set(db.collection('users').doc(currentUser.uid).collection('transactions').doc(), {kind:'settlement',amount:amt,accountId:selectedSettleAccountId,note:document.getElementById('settle-note').value,date:document.getElementById('settle-date').value,createdAt:firebase.firestore.FieldValue.serverTimestamp()});
         const a=await db.collection('users').doc(currentUser.uid).collection('accounts').doc(selectedSettleAccountId).get(); if(a.exists)b.update(a.ref,{balance:a.data().balance+amt});
-        await b.commit(); alert("รับคืนเรียบร้อย!"); switchEntryMode('income');
+        await b.commit(); triggerSuccessToast(); switchEntryMode('income');
       }catch(err){alert(err.message);}
     });
 
@@ -1185,7 +1215,7 @@
       try{
         await db.collection('users').doc(currentUser.uid).collection('transactions').add({kind:'split',totalAmount:tot,myShare:my,teamShare:tot-my,remainingTeamPending:tot-my,accountId:selectedSplitAccountId,categoryId:selectedSplitCategoryId,categoryName:categoriesList.find(c=>c.id===selectedSplitCategoryId)?.name||'',note:document.getElementById('split-note').value,date:document.getElementById('split-date').value,createdAt:firebase.firestore.FieldValue.serverTimestamp()});
         const a=await db.collection('users').doc(currentUser.uid).collection('accounts').doc(selectedSplitAccountId).get(); if(a.exists)await a.ref.update({balance:a.data().balance+tot});
-        document.getElementById('split-total-amount').value=''; document.getElementById('split-my-share').value=''; updateSplitMath(); alert("บันทึกรับแทน!"); switchEntryMode('income');
+        triggerSuccessToast(); document.getElementById('split-total-amount').value=''; document.getElementById('split-my-share').value=''; updateSplitMath(); switchEntryMode('income');
       }catch(err){alert(err.message);}
     });
 
@@ -1207,7 +1237,7 @@
         }
         b.set(db.collection('users').doc(currentUser.uid).collection('transactions').doc(), {kind:'team-pay',amount:amt,accountId:selectedTeamPayAccountId,linkedSplitItems:linkedSplitItems,note:document.getElementById('team-pay-note').value,date:document.getElementById('team-pay-date').value,createdAt:firebase.firestore.FieldValue.serverTimestamp()});
         const a=await db.collection('users').doc(currentUser.uid).collection('accounts').doc(selectedTeamPayAccountId).get(); if(a.exists)b.update(a.ref,{balance:a.data().balance-amt});
-        await b.commit(); document.getElementById('team-pay-note').value=''; alert("บันทึกการโอนให้ทีมเรียบร้อย!"); switchEntryMode('transfer');
+        await b.commit(); triggerSuccessToast(); document.getElementById('team-pay-note').value=''; switchEntryMode('transfer');
       }catch(err){alert(err.message);}
     });
 
@@ -1541,6 +1571,7 @@
           });
         }
         closeEditModal(); 
+        triggerSuccessToast();
       } catch (err) { alert(err.message); } 
     }
     
@@ -1579,7 +1610,7 @@
       } catch (err) { alert(err.message); } 
     }
 
-    // SETTINGS (v1.14 Render full height for lists)
+    // SETTINGS
     function renderSettingsAccounts() { 
       document.getElementById('accounts-settings-list').innerHTML = accountsList.map(a=>`
         <div class="flex justify-between items-center p-2 bg-gray-50 border rounded-xl text-xs">
