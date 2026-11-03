@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>YUET (v1.12) - Single Screen Experience & Pinned Selector</title>
+  <title>YUET (v1.13) - Most Recent Categories & Seamless Multi-tap</title>
   
   <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
@@ -41,7 +41,7 @@
       <div class="flex flex-col items-center">
         <div class="flex items-baseline space-x-1">
           <h1 class="text-xl font-black tracking-wider uppercase drop-shadow-sm">YUET</h1>
-          <span class="text-[9px] font-medium text-emerald-200 tracking-tight">(v1.12)</span>
+          <span class="text-[9px] font-medium text-emerald-200 tracking-tight">(v1.13)</span>
         </div>
         <p class="text-[8px] text-emerald-100/80 tracking-tight font-light">by Phuthai Mananararuk & Gemini</p>
       </div>
@@ -324,9 +324,9 @@
         <div class="space-y-1"><label class="block text-xs font-bold text-gray-700">สกุลเงินทั่วแอป</label><select id="setting-currency" onchange="autoSaveSettings()" class="w-full px-3 py-2 text-xs border rounded-xl bg-white"><option value="฿">บาท (฿)</option><option value="$">ดอลลาร์ ($)</option><option value="€">ยูโร (€)</option><option value="¥">เยน (¥)</option></select></div>
         <div class="bg-indigo-50 p-3 rounded-2xl border border-indigo-100 space-y-1.5"><label class="flex items-center space-x-2 cursor-pointer"><input type="checkbox" id="setting-enable-advanced" onchange="toggleAdvancedFeaturesSetting()" class="rounded text-indigo-600 focus:ring-indigo-500 w-4 h-4"><span class="text-xs font-bold text-indigo-900">เปิดใช้งานฟังก์ชันพิเศษ </span></label><p class="text-[10px] text-indigo-600/80 leading-relaxed">กดปุ่มโหมด (Expense / Income / Transfer) ซ้ำอีกครั้งเพื่อเปิดเมนูซ่อน: <u>ผ่อนชำระ, หารค่าใช้จ่าย, รับเงินคืน, รับเงินแทน, โอนให้ทีม</u></p></div>
         
-        <!-- Account Settings with Pin Feature (v1.12) -->
+        <!-- Account Settings with Pin Feature (v1.13 Clean No Emoticon) -->
         <div class="space-y-2 border-t pt-3">
-          <h3 class="text-xs font-bold text-gray-700 uppercase">จัดการบัญชีเงิน (📌 ปักหมุดให้โชว์หน้า Entry)</h3>
+          <h3 class="text-xs font-bold text-gray-700 uppercase">จัดการบัญชีเงิน (📌 ปักหมุดให้อยู่บรรทัดแรกหน้า Entry)</h3>
           <div id="accounts-settings-list" class="space-y-1 max-h-32 overflow-y-auto pr-1"></div>
           <div class="bg-gray-50 p-2 rounded-xl border space-y-1.5">
             <p class="text-[11px] font-semibold text-gray-600">เพิ่มบัญชีใหม่</p>
@@ -338,9 +338,9 @@
           </div>
         </div>
 
-        <!-- Category Settings with Pin Feature (v1.12) -->
+        <!-- Category Settings -->
         <div class="space-y-2 border-t pt-3">
-          <h3 class="text-xs font-bold text-gray-700 uppercase">จัดการหมวดหมู่ (📌 ปักหมุดให้โชว์หน้า Entry)</h3>
+          <h3 class="text-xs font-bold text-gray-700 uppercase">จัดการหมวดหมู่</h3>
           <div class="grid grid-cols-2 gap-2">
             <div class="space-y-1.5">
               <p class="text-[11px] font-semibold text-rose-600">รายจ่าย</p>
@@ -367,7 +367,7 @@
     <footer id="auth-status-bar" class="bg-gray-100 p-2 text-center text-[10px] text-gray-400 border-t border-gray-100">สถานะ: ยังไม่ได้เข้าสู่ระบบ</footer>
   </div>
 
-  <!-- POP-UP SELECTOR MODAL (v1.12 Grid selector for non-pinned items) -->
+  <!-- POP-UP SELECTOR MODAL (v1.13 Supporting Accounts & Categories Grid) -->
   <div id="selector-modal" class="hidden fixed inset-0 bg-black/60 flex items-end sm:items-center justify-center p-0 sm:p-4 z-50 transition-opacity">
     <div class="bg-white rounded-t-3xl sm:rounded-3xl w-full max-w-sm p-4 space-y-3 shadow-2xl relative animate-slide-up max-h-[75vh] flex flex-col">
       <div class="flex justify-between items-center border-b pb-2 flex-shrink-0">
@@ -581,7 +581,7 @@
     document.getElementById('back-to-login-btn').addEventListener('click', () => showView('login'));
     document.getElementById('login-btn').addEventListener('click', async () => { const e = document.getElementById('login-email').value.trim(), p = document.getElementById('login-password').value; if (!e || !p) return alert("กรุณากรอกให้ครบ"); try { const res = await auth.signInWithEmailAndPassword(e, p); if (!res.user.emailVerified) { alert("กรุณายืนยันอีเมล"); await auth.signOut(); } } catch (err) { alert(err.message); } });
     document.getElementById('google-login-btn').addEventListener('click', async () => { try { await auth.signInWithPopup(new firebase.auth.GoogleAuthProvider()); } catch (err) { alert(err.message); } });
-    document.getElementById('register-btn').addEventListener('click', async () => { const e = document.getElementById('reg-email').value.trim(), p = document.getElementById('reg-password').value; if (p !== document.getElementById('reg-confirm-password').value) return alert("รหัสไม่ตรงกัน"); try { const res = await auth.createUserWithEmailAndPassword(e, p); await res.user.sendEmailVerification(); const batch = db.batch(); batch.set(db.collection('users').doc(res.user.uid).collection('accounts').doc(), { name: 'เงินสด', balance: 0, isDefault: true, isPinned: true, createdAt: firebase.firestore.FieldValue.serverTimestamp() }); batch.set(db.collection('users').doc(res.user.uid).collection('categories').doc(), { name: 'ทั่วไป', type: 'expense', isPinned: true, createdAt: firebase.firestore.FieldValue.serverTimestamp() }); batch.set(db.collection('users').doc(res.user.uid).collection('categories').doc(), { name: 'ทั่วไป', type: 'income', isPinned: true, createdAt: firebase.firestore.FieldValue.serverTimestamp() }); await batch.commit(); alert(`ส่งลิงก์ไปที่ ${e} แล้ว`); await auth.signOut(); showView('login'); } catch (err) { alert(err.message); } });
+    document.getElementById('register-btn').addEventListener('click', async () => { const e = document.getElementById('reg-email').value.trim(), p = document.getElementById('reg-password').value; if (p !== document.getElementById('reg-confirm-password').value) return alert("รหัสไม่ตรงกัน"); try { const res = await auth.createUserWithEmailAndPassword(e, p); await res.user.sendEmailVerification(); const batch = db.batch(); batch.set(db.collection('users').doc(res.user.uid).collection('accounts').doc(), { name: 'เงินสด', balance: 0, isDefault: true, isPinned: true, createdAt: firebase.firestore.FieldValue.serverTimestamp() }); batch.set(db.collection('users').doc(res.user.uid).collection('categories').doc(), { name: 'ทั่วไป', type: 'expense', createdAt: firebase.firestore.FieldValue.serverTimestamp() }); batch.set(db.collection('users').doc(res.user.uid).collection('categories').doc(), { name: 'ทั่วไป', type: 'income', createdAt: firebase.firestore.FieldValue.serverTimestamp() }); await batch.commit(); alert(`ส่งลิงก์ไปที่ ${e} แล้ว`); await auth.signOut(); showView('login'); } catch (err) { alert(err.message); } });
     logoutBtn.addEventListener('click', async () => { if (unsubscribeTx) unsubscribeTx(); if (unsubscribeAcc) unsubscribeAcc(); if (unsubscribeCat) unsubscribeCat(); if (unsubscribeInst) unsubscribeInst(); await auth.signOut(); });
     openSettingsBtn.addEventListener('click', goToSettingView);
     auth.onAuthStateChanged((user) => { if (user && (user.providerData.some(p => p.providerId !== 'password') || user.emailVerified)) { currentUser = user; initUserData(user.uid); } else { currentUser = null; showView('login'); } });
@@ -730,7 +730,7 @@
     }
 
     // GESTURE HANDLER: EXPENSE CATEGORY SINGLE-TAP VS DOUBLE-TAP
-    function handleExpenseCategoryTap(catId) {
+    function handleExpenseCategoryTap(catId, rerenderModal = false) {
       if (categoryTapTracker.timer && categoryTapTracker.catId === catId) {
         clearTimeout(categoryTapTracker.timer);
         categoryTapTracker.timer = null;
@@ -744,6 +744,7 @@
           selectedCategoryIds.push(catId);
         }
         renderCategoryButtons();
+        if (rerenderModal) renderModalCategoryList();
       } else {
         if (categoryTapTracker.timer) clearTimeout(categoryTapTracker.timer);
         categoryTapTracker.catId = catId;
@@ -752,70 +753,176 @@
           categoryTapTracker.timer = null;
           categoryTapTracker.catId = null;
           renderCategoryButtons();
+          if (rerenderModal) renderModalCategoryList();
         }, 300);
       }
     }
 
-    // PINNED + MORE BUTTONS GENERATOR (v1.12 Single Screen Experience)
-    function renderPinnedSelector(list, selectedId, setGlobalVarFnName, rerenderFnName, activeClass, typeLabel) {
-      let pinned = list.filter(i => i.isPinned);
-      if (!pinned.length && list.length) pinned = [list[0]]; // Fallback if no pinned items
+    // ACCOUNT PINNED SELECTOR (v1.13 Clean No Emoticons & Non-pinned in Pop-up)
+    function renderAccountPinnedSelector(selectedId, setGlobalVarFnName, rerenderFnName, activeClass) {
+      let pinned = accountsList.filter(i => i.isPinned);
+      if (!pinned.length && accountsList.length) pinned = [accountsList[0]];
 
       const isSelectedInPinned = pinned.some(i => i.id === selectedId);
-      const selectedItem = list.find(i => i.id === selectedId);
+      const selectedItem = accountsList.find(i => i.id === selectedId);
 
       let html = `<div class="flex flex-wrap gap-1">`;
-      
-      // Line 1: Pinned Buttons
       pinned.forEach(i => {
         const isSel = i.id === selectedId;
-        html += `<button type="button" onclick="${setGlobalVarFnName}='${i.id}'; ${rerenderFnName}();" class="px-2.5 py-1 rounded-xl text-xs font-semibold transition border ${isSel ? activeClass : 'bg-white text-gray-700 border-gray-200'}">📌 ${escapeHtml(i.name)}</button>`;
+        html += `<button type="button" onclick="${setGlobalVarFnName}='${i.id}'; ${rerenderFnName}();" class="px-2.5 py-1 rounded-xl text-xs font-semibold transition border ${isSel ? activeClass : 'bg-white text-gray-700 border-gray-200'}">${escapeHtml(i.name)}</button>`;
       });
-
       html += `</div>`;
 
-      // Line 2: More Button (Shows current selection if it's from non-pinned list)
-      const unpinnedCount = list.length - pinned.length;
+      const unpinnedCount = accountsList.length - pinned.length;
       if (unpinnedCount > 0) {
-        const extraLabel = (!isSelectedInPinned && selectedItem) ? `เลือกอยู่: ${selectedItem.name}` : `📂 เลือก${typeLabel}อื่นๆ (${unpinnedCount})...`;
+        const extraLabel = (!isSelectedInPinned && selectedItem) ? `เลือกอยู่: ${selectedItem.name}` : `เลือกบัญชีอื่น (${unpinnedCount})...`;
         const extraClass = (!isSelectedInPinned && selectedItem) ? activeClass : 'bg-gray-100 text-gray-700 border-gray-300 hover:bg-gray-200';
         
-        html += `<div class="mt-1"><button type="button" onclick="openSelectorModal('${typeLabel}', '${setGlobalVarFnName}', '${rerenderFnName}', '${activeClass}')" class="w-full text-left px-3 py-1.5 rounded-xl text-xs font-medium transition border ${extraClass}">${escapeHtml(extraLabel)}</button></div>`;
+        html += `<div class="mt-1"><button type="button" onclick="openAccountSelectorModal('${setGlobalVarFnName}', '${rerenderFnName}', '${activeClass}')" class="w-full text-left px-3 py-1.5 rounded-xl text-xs font-medium transition border ${extraClass}">${escapeHtml(extraLabel)}</button></div>`;
       }
-
       return html;
     }
 
-    function openSelectorModal(typeLabel, setGlobalVarFnName, rerenderFnName, activeClass) {
-      document.getElementById('selector-modal-title').innerText = `เลือก ${typeLabel}`;
+    function openAccountSelectorModal(setGlobalVarFnName, rerenderFnName, activeClass) {
+      document.getElementById('selector-modal-title').innerText = 'เลือกบัญชี';
       const container = document.getElementById('selector-grid-container');
       
-      let list = [];
-      let currentSelectedId = null;
+      let pinned = accountsList.filter(i => i.isPinned);
+      let unpinnedList = accountsList.filter(i => !i.isPinned);
+      if (!pinned.length && accountsList.length > 1) unpinnedList = accountsList.slice(1);
 
-      if (typeLabel === 'บัญชี') {
-        list = accountsList;
-        currentSelectedId = selectedAccountId;
-      } else {
-        list = categoriesList.filter(x => x.type === currentTxType);
-        currentSelectedId = currentTxType === 'expense' ? (selectedCategoryIds[0] || null) : selectedCategoryId;
-      }
-
-      container.innerHTML = list.map(item => `
-        <button type="button" onclick="${setGlobalVarFnName}='${item.id}'; ${rerenderFnName}(); closeSelectorModal();" class="p-2.5 rounded-2xl text-xs font-semibold border text-center transition flex items-center justify-between ${item.id === currentSelectedId ? activeClass : 'bg-gray-50 text-gray-700 border-gray-200 hover:bg-gray-100'}">
+      container.innerHTML = unpinnedList.map(item => `
+        <button type="button" onclick="${setGlobalVarFnName}='${item.id}'; ${rerenderFnName}(); closeSelectorModal();" class="p-2.5 rounded-2xl text-xs font-semibold border text-center transition flex items-center justify-between bg-gray-50 text-gray-700 border-gray-200 hover:bg-gray-100">
           <span class="truncate">${escapeHtml(item.name)}</span>
-          ${item.isPinned ? '<span class="text-[10px]">📌</span>' : ''}
         </button>
       `).join('');
 
       document.getElementById('selector-modal').classList.remove('hidden');
     }
 
-    function closeSelectorModal() { document.getElementById('selector-modal').classList.add('hidden'); }
+    function renderAccountButtons() { document.getElementById('account-buttons-container').innerHTML = renderAccountPinnedSelector(selectedAccountId, 'selectedAccountId', 'renderAccountButtons', 'bg-emerald-600 text-white border-emerald-600 shadow-xs'); }
+    function renderSettleAccountButtons() { document.getElementById('settle-account-buttons').innerHTML = renderAccountPinnedSelector(selectedSettleAccountId, 'selectedSettleAccountId', 'renderSettleAccountButtons', 'bg-amber-600 text-white border-amber-600 shadow-xs'); }
+    function renderSplitAccountButtons() { document.getElementById('split-account-buttons').innerHTML = renderAccountPinnedSelector(selectedSplitAccountId, 'selectedSplitAccountId', 'renderSplitAccountButtons', 'bg-purple-600 text-white border-purple-600 shadow-xs'); }
+    function renderInstAccountButtons() { document.getElementById('inst-account-buttons').innerHTML = renderAccountPinnedSelector(selectedInstAccountId, 'selectedInstAccountId', 'renderInstAccountButtons', 'bg-indigo-600 text-white border-indigo-600 shadow-xs'); }
+    function renderReimbAccountButtons() { document.getElementById('reimb-account-buttons').innerHTML = renderAccountPinnedSelector(selectedReimbAccountId, 'selectedReimbAccountId', 'renderReimbAccountButtons', 'bg-amber-600 text-white border-amber-600 shadow-xs'); }
+    function renderTeamPayAccountButtons() { document.getElementById('team-pay-account-buttons').innerHTML = renderAccountPinnedSelector(selectedTeamPayAccountId, 'selectedTeamPayAccountId', 'renderTeamPayAccountButtons', 'bg-teal-600 text-white border-teal-600 shadow-xs'); }
 
-    function renderAccountButtons() { 
-      document.getElementById('account-buttons-container').innerHTML = renderPinnedSelector(accountsList, selectedAccountId, 'selectedAccountId', 'renderAccountButtons', 'bg-emerald-600 text-white border-emerald-600 shadow-xs', 'บัญชี'); 
+    // CATEGORY MOST RECENT SELECTOR (v1.13 Auto Most Recent + All in Pop-up)
+    function getMostRecentCategories(type) {
+      const filteredCats = categoriesList.filter(c => c.type === type);
+      const recentIds = [];
+      
+      allTransactions.forEach(t => {
+        if (t.kind === 'transaction' && t.type === type) {
+          if (t.categoriesBreakdown && t.categoriesBreakdown.length > 0) {
+            t.categoriesBreakdown.forEach(b => {
+              if (b.categoryId && !recentIds.includes(b.categoryId) && filteredCats.some(c => c.id === b.categoryId)) {
+                recentIds.push(b.categoryId);
+              }
+            });
+          } else if (t.categoryId && !recentIds.includes(t.categoryId) && filteredCats.some(c => c.id === t.categoryId)) {
+            recentIds.push(t.categoryId);
+          }
+        }
+      });
+
+      filteredCats.forEach(c => {
+        if (!recentIds.includes(c.id)) recentIds.push(c.id);
+      });
+
+      return recentIds.map(id => filteredCats.find(c => c.id === id)).filter(Boolean).slice(0, 4);
     }
+
+    function renderCategoryButtons() {
+      const c = categoriesList.filter(x => x.type === currentTxType);
+      
+      if (currentTxType === 'expense') {
+        document.getElementById('lbl-multi-cat-hint').classList.remove('hidden');
+        if (!selectedCategoryIds.length || !selectedCategoryIds.some(id => c.some(cat => cat.id === id))) {
+          if (c.length) selectedCategoryIds = [c[0].id];
+        }
+
+        const recentList = getMostRecentCategories('expense');
+        let html = `<div class="flex flex-wrap gap-1">`;
+        
+        recentList.forEach(i => {
+          const isSelected = selectedCategoryIds.includes(i.id);
+          html += `<button type="button" onclick="handleExpenseCategoryTap('${i.id}')" class="px-2.5 py-1 rounded-xl text-xs font-semibold transition border ${isSelected ? 'bg-rose-600 text-white border-rose-600 shadow-xs' : 'bg-white text-gray-700 border-gray-200'}">${escapeHtml(i.name)}${isSelected && selectedCategoryIds.length > 1 ? ' ✓' : ''}</button>`;
+        });
+        html += `</div>`;
+
+        const nonRecentSelected = c.filter(i => !recentList.some(r => r.id === i.id) && selectedCategoryIds.includes(i.id));
+        const extraLabel = nonRecentSelected.length > 0 ? `เลือกอยู่: ${nonRecentSelected.map(x=>x.name).join(', ')}` : `เลือกหมวดหมู่อื่นๆ (${c.length})...`;
+        const extraClass = nonRecentSelected.length > 0 ? 'bg-rose-600 text-white border-rose-600 shadow-xs' : 'bg-gray-100 text-gray-700 border-gray-300 hover:bg-gray-200';
+        
+        html += `<div class="mt-1"><button type="button" onclick="openCategorySelectorModal('expense')" class="w-full text-left px-3 py-1.5 rounded-xl text-xs font-medium transition border ${extraClass}">${escapeHtml(extraLabel)}</button></div>`;
+        document.getElementById('category-buttons-container').innerHTML = html;
+      } else {
+        document.getElementById('lbl-multi-cat-hint').classList.add('hidden');
+        if (!selectedCategoryId || !c.some(x => x.id === selectedCategoryId)) if (c.length) selectedCategoryId = c[0].id;
+        
+        const recentList = getMostRecentCategories('income');
+        let html = `<div class="flex flex-wrap gap-1">`;
+        recentList.forEach(i => {
+          const isSel = i.id === selectedCategoryId;
+          html += `<button type="button" onclick="selectedCategoryId='${i.id}'; renderCategoryButtons();" class="px-2.5 py-1 rounded-xl text-xs font-semibold transition border ${isSel ? 'bg-emerald-600 text-white border-emerald-600 shadow-xs' : 'bg-white text-gray-700 border-gray-200'}">${escapeHtml(i.name)}</button>`;
+        });
+        html += `</div>`;
+
+        const isNonRecentSelected = !recentList.some(r => r.id === selectedCategoryId);
+        const selectedObj = c.find(x => x.id === selectedCategoryId);
+        const extraLabel = (isNonRecentSelected && selectedObj) ? `เลือกอยู่: ${selectedObj.name}` : `เลือกหมวดหมู่อื่นๆ (${c.length})...`;
+        const extraClass = (isNonRecentSelected && selectedObj) ? 'bg-emerald-600 text-white border-emerald-600 shadow-xs' : 'bg-gray-100 text-gray-700 border-gray-300 hover:bg-gray-200';
+        
+        html += `<div class="mt-1"><button type="button" onclick="openCategorySelectorModal('income')" class="w-full text-left px-3 py-1.5 rounded-xl text-xs font-medium transition border ${extraClass}">${escapeHtml(extraLabel)}</button></div>`;
+        document.getElementById('category-buttons-container').innerHTML = html;
+      }
+    }
+
+    function openCategorySelectorModal(type) {
+      document.getElementById('selector-modal-title').innerText = `เลือกหมวดหมู่${type==='expense'?'รายจ่าย':'รายรับ'}`;
+      renderModalCategoryList();
+      document.getElementById('selector-modal').classList.remove('hidden');
+    }
+
+    function renderModalCategoryList() {
+      const container = document.getElementById('selector-grid-container');
+      const c = categoriesList.filter(x => x.type === currentTxType);
+
+      if (currentTxType === 'expense') {
+        container.innerHTML = c.map(item => {
+          const isSelected = selectedCategoryIds.includes(item.id);
+          return `
+            <button type="button" onclick="handleExpenseCategoryTap('${item.id}', true)" class="p-2.5 rounded-2xl text-xs font-semibold border text-center transition flex items-center justify-between ${isSelected ? 'bg-rose-600 text-white border-rose-600 shadow-xs' : 'bg-gray-50 text-gray-700 border-gray-200 hover:bg-gray-100'}">
+              <span class="truncate">${escapeHtml(item.name)}</span>
+              ${isSelected ? '<span>✓</span>' : ''}
+            </button>
+          `;
+        }).join('');
+      } else {
+        container.innerHTML = c.map(item => {
+          const isSelected = item.id === selectedCategoryId;
+          return `
+            <button type="button" onclick="selectedCategoryId='${item.id}'; renderCategoryButtons(); closeSelectorModal();" class="p-2.5 rounded-2xl text-xs font-semibold border text-center transition flex items-center justify-between ${isSelected ? 'bg-emerald-600 text-white border-emerald-600 shadow-xs' : 'bg-gray-50 text-gray-700 border-gray-200 hover:bg-gray-100'}">
+              <span class="truncate">${escapeHtml(item.name)}</span>
+            </button>
+          `;
+        }).join('');
+      }
+    }
+
+    function renderSplitCategoryButtons() { const c=categoriesList.filter(x=>x.type==='income'); if(!selectedSplitCategoryId||!c.some(x=>x.id===selectedSplitCategoryId))if(c.length)selectedSplitCategoryId=c[0].id; document.getElementById('split-category-buttons').innerHTML=genBtns(c,selectedSplitCategoryId,'selectedSplitCategoryId','bg-purple-600 text-white border-purple-600 shadow-xs','bg-white text-gray-700 border-gray-200'); }
+    function renderInstCategoryButtons() { const c=categoriesList.filter(x=>x.type==='expense'); if(!selectedInstCategoryId||!c.some(x=>x.id===selectedInstCategoryId))if(c.length)selectedInstCategoryId=c[0].id; document.getElementById('inst-category-buttons').innerHTML=genBtns(c,selectedInstCategoryId,'selectedInstCategoryId','bg-indigo-600 text-white border-indigo-600 shadow-xs','bg-white text-gray-700 border-gray-200'); }
+    function renderReimbCategoryButtons() { const c=categoriesList.filter(x=>x.type==='expense'); if(!selectedReimbCategoryId||!c.some(x=>x.id===selectedReimbCategoryId))if(c.length)selectedReimbCategoryId=c[0].id; document.getElementById('reimb-category-buttons').innerHTML=genBtns(c,selectedReimbCategoryId,'selectedReimbCategoryId','bg-amber-600 text-white border-amber-600 shadow-xs','bg-white text-gray-700 border-gray-200'); }
+
+    function genBtns(list, selId, cb, act, nor) { 
+      return list.map(i=>`<button type="button" onclick="${cb}='${i.id}'; ${
+        cb.includes('InstCat')?'renderInstCategoryButtons()':cb.includes('ReimbCat')?'renderReimbCategoryButtons()':cb.includes('SplitCat')?'renderSplitCategoryButtons()':cb.includes('Cat')?'renderCategoryButtons()':
+        cb.includes('InstAcc')?'renderInstAccountButtons()':cb.includes('ReimbAcc')?'renderReimbAccountButtons()':cb.includes('SplitAcc')?'renderSplitAccountButtons()':cb.includes('SettleAcc')?'renderSettleAccountButtons()':cb.includes('TeamPayAcc')?'renderTeamPayAccountButtons()':'renderAccountButtons()'
+      }" class="px-2.5 py-1 rounded-xl text-xs font-semibold transition border ${i.id===selId?act:nor}">${escapeHtml(i.name)}</button>`).join(''); 
+    }
+
+    function closeSelectorModal() { document.getElementById('selector-modal').classList.add('hidden'); }
 
     function renderTransferButtons() { 
       document.getElementById('transfer-from-container').innerHTML = accountsList.map(a => `
@@ -843,52 +950,6 @@
         `;
       }).join(''); 
     }
-
-    function renderSettleAccountButtons() { document.getElementById('settle-account-buttons').innerHTML = renderPinnedSelector(accountsList, selectedSettleAccountId, 'selectedSettleAccountId', 'renderSettleAccountButtons', 'bg-amber-600 text-white border-amber-600 shadow-xs', 'บัญชี'); }
-    function renderSplitAccountButtons() { document.getElementById('split-account-buttons').innerHTML = renderPinnedSelector(accountsList, selectedSplitAccountId, 'selectedSplitAccountId', 'renderSplitAccountButtons', 'bg-purple-600 text-white border-purple-600 shadow-xs', 'บัญชี'); }
-    function renderInstAccountButtons() { document.getElementById('inst-account-buttons').innerHTML = renderPinnedSelector(accountsList, selectedInstAccountId, 'selectedInstAccountId', 'renderInstAccountButtons', 'bg-indigo-600 text-white border-indigo-600 shadow-xs', 'บัญชี'); }
-    function renderReimbAccountButtons() { document.getElementById('reimb-account-buttons').innerHTML = renderPinnedSelector(accountsList, selectedReimbAccountId, 'selectedReimbAccountId', 'renderReimbAccountButtons', 'bg-amber-600 text-white border-amber-600 shadow-xs', 'บัญชี'); }
-    function renderTeamPayAccountButtons() { document.getElementById('team-pay-account-buttons').innerHTML = renderPinnedSelector(accountsList, selectedTeamPayAccountId, 'selectedTeamPayAccountId', 'renderTeamPayAccountButtons', 'bg-teal-600 text-white border-teal-600 shadow-xs', 'บัญชี'); }
-
-    function renderCategoryButtons() {
-      const c = categoriesList.filter(x => x.type === currentTxType);
-      
-      if (currentTxType === 'expense') {
-        document.getElementById('lbl-multi-cat-hint').classList.remove('hidden');
-        if (!selectedCategoryIds.length || !selectedCategoryIds.some(id => c.some(cat => cat.id === id))) {
-          if (c.length) selectedCategoryIds = [c[0].id];
-        }
-
-        let pinned = c.filter(i => i.isPinned);
-        if (!pinned.length && c.length) pinned = [c[0]];
-
-        let html = `<div class="flex flex-wrap gap-1">`;
-        pinned.forEach(i => {
-          const isSelected = selectedCategoryIds.includes(i.id);
-          html += `<button type="button" onclick="handleExpenseCategoryTap('${i.id}')" class="px-2.5 py-1 rounded-xl text-xs font-semibold transition border ${isSelected ? 'bg-rose-600 text-white border-rose-600 shadow-xs' : 'bg-white text-gray-700 border-gray-200'}">📌 ${escapeHtml(i.name)}${isSelected && selectedCategoryIds.length > 1 ? ' ✓' : ''}</button>`;
-        });
-        html += `</div>`;
-
-        const unpinnedCount = c.length - pinned.length;
-        if (unpinnedCount > 0) {
-          const selectedNonPinned = c.filter(i => !i.isPinned && selectedCategoryIds.includes(i.id));
-          const extraLabel = selectedNonPinned.length > 0 ? `เลือกอยู่: ${selectedNonPinned.map(x=>x.name).join(', ')}` : `📂 เลือกหมวดหมู่อื่นๆ (${unpinnedCount})...`;
-          const extraClass = selectedNonPinned.length > 0 ? 'bg-rose-600 text-white border-rose-600 shadow-xs' : 'bg-gray-100 text-gray-700 border-gray-300 hover:bg-gray-200';
-          
-          html += `<div class="mt-1"><button type="button" onclick="openSelectorModal('หมวดหมู่รายจ่าย', 'selectedCategoryId', 'renderCategoryButtons', 'bg-rose-600 text-white border-rose-600 shadow-xs')" class="w-full text-left px-3 py-1.5 rounded-xl text-xs font-medium transition border ${extraClass}">${escapeHtml(extraLabel)}</button></div>`;
-        }
-
-        document.getElementById('category-buttons-container').innerHTML = html;
-      } else {
-        document.getElementById('lbl-multi-cat-hint').classList.add('hidden');
-        if (!selectedCategoryId || !c.some(x => x.id === selectedCategoryId)) if (c.length) selectedCategoryId = c[0].id;
-        document.getElementById('category-buttons-container').innerHTML = renderPinnedSelector(c, selectedCategoryId, 'selectedCategoryId', 'renderCategoryButtons', 'bg-emerald-600 text-white border-emerald-600 shadow-xs', 'หมวดหมู่รายรับ');
-      }
-    }
-
-    function renderSplitCategoryButtons() { const c=categoriesList.filter(x=>x.type==='income'); if(!selectedSplitCategoryId||!c.some(x=>x.id===selectedSplitCategoryId))if(c.length)selectedSplitCategoryId=c[0].id; document.getElementById('split-category-buttons').innerHTML=renderPinnedSelector(c,selectedSplitCategoryId,'selectedSplitCategoryId','renderSplitCategoryButtons','bg-purple-600 text-white border-purple-600 shadow-xs','หมวดหมู่รายรับ'); }
-    function renderInstCategoryButtons() { const c=categoriesList.filter(x=>x.type==='expense'); if(!selectedInstCategoryId||!c.some(x=>x.id===selectedInstCategoryId))if(c.length)selectedInstCategoryId=c[0].id; document.getElementById('inst-category-buttons').innerHTML=renderPinnedSelector(c,selectedInstCategoryId,'selectedInstCategoryId','renderInstCategoryButtons','bg-indigo-600 text-white border-indigo-600 shadow-xs','หมวดหมู่รายจ่าย'); }
-    function renderReimbCategoryButtons() { const c=categoriesList.filter(x=>x.type==='expense'); if(!selectedReimbCategoryId||!c.some(x=>x.id===selectedReimbCategoryId))if(c.length)selectedReimbCategoryId=c[0].id; document.getElementById('reimb-category-buttons').innerHTML=renderPinnedSelector(c,selectedReimbCategoryId,'selectedReimbCategoryId','renderReimbCategoryButtons','bg-amber-600 text-white border-amber-600 shadow-xs','หมวดหมู่รายจ่าย'); }
 
     // MULTI-CATEGORY ALLOCATION MODAL LOGIC
     function openMultiCatModal(payload) {
@@ -1367,6 +1428,7 @@
         updateEntryCurrentMonthCashFlowUI(); if(!document.getElementById('cashflow-modal').classList.contains('hidden')) updatePopupCashflowUI();
         if (!summaryView.classList.contains('hidden')) renderSummaryAnalyticsUI();
 
+        renderCategoryButtons();
         if (currentEntryMode === 'team-pay') renderPendingTeamList();
         if (currentEntryMode === 'settle') renderPendingFriendList();
 
@@ -1517,12 +1579,12 @@
       } catch (err) { alert(err.message); } 
     }
 
-    // SETTINGS (v1.12 Supports Pin Toggling)
+    // SETTINGS (v1.13 Clean Account Pin Toggling & Category Management)
     function renderSettingsAccounts() { 
       document.getElementById('accounts-settings-list').innerHTML = accountsList.map(a=>`
         <div class="flex justify-between items-center p-2 bg-gray-50 border rounded-xl text-xs">
           <div class="flex items-center space-x-1.5">
-            <button onclick="togglePin('account', '${a.id}', ${!a.isPinned})" class="p-1 hover:bg-gray-200 rounded text-sm">${a.isPinned ? '📌' : '📍'}</button>
+            <button onclick="toggleAccountPin('${a.id}', ${!a.isPinned})" class="px-2 py-0.5 rounded text-[10px] font-bold ${a.isPinned ? 'bg-amber-100 text-amber-800 border border-amber-200' : 'bg-gray-200 text-gray-600'}">${a.isPinned ? 'ปักหมุดอยู่' : 'ปักหมุด'}</button>
             <span class="font-semibold">${escapeHtml(a.name)}</span> 
             <span class="text-gray-500">(${a.balance.toLocaleString()})</span>
           </div>
@@ -1538,8 +1600,7 @@
     function renderSettingsCategories() { 
       document.getElementById('expense-cats-list').innerHTML = categoriesList.filter(c=>c.type==='expense').map(c=>`
         <div class="flex justify-between items-center p-1 border rounded text-xs bg-gray-50">
-          <button onclick="togglePin('category', '${c.id}', ${!c.isPinned})" class="px-1 text-xs">${c.isPinned ? '📌' : '📍'}</button>
-          <input id="edit-cat-${c.id}" value="${escapeHtml(c.name)}" class="w-14 px-1 border rounded bg-white text-xs">
+          <input id="edit-cat-${c.id}" value="${escapeHtml(c.name)}" class="w-20 px-1 border rounded bg-white text-xs">
           <div class="flex">
             <button onclick="updateCategoryName('${c.id}')" class="text-blue-600 px-1">✓</button>
             <button onclick="deleteCategory('${c.id}')" class="text-rose-500 px-1">✕</button>
@@ -1549,8 +1610,7 @@
 
       document.getElementById('income-cats-list').innerHTML = categoriesList.filter(c=>c.type==='income').map(c=>`
         <div class="flex justify-between items-center p-1 border rounded text-xs bg-gray-50">
-          <button onclick="togglePin('category', '${c.id}', ${!c.isPinned})" class="px-1 text-xs">${c.isPinned ? '📌' : '📍'}</button>
-          <input id="edit-cat-${c.id}" value="${escapeHtml(c.name)}" class="w-14 px-1 border rounded bg-white text-xs">
+          <input id="edit-cat-${c.id}" value="${escapeHtml(c.name)}" class="w-20 px-1 border rounded bg-white text-xs">
           <div class="flex">
             <button onclick="updateCategoryName('${c.id}')" class="text-blue-600 px-1">✓</button>
             <button onclick="deleteCategory('${c.id}')" class="text-rose-500 px-1">✕</button>
@@ -1559,17 +1619,16 @@
       `).join(''); 
     }
 
-    async function togglePin(type, id, isPinned) {
+    async function toggleAccountPin(id, isPinned) {
       try {
-        const col = type === 'account' ? 'accounts' : 'categories';
-        await db.collection('users').doc(currentUser.uid).collection(col).doc(id).update({ isPinned: isPinned });
+        await db.collection('users').doc(currentUser.uid).collection('accounts').doc(id).update({ isPinned: isPinned });
       } catch (err) { alert(err.message); }
     }
 
     async function addNewAccount() { const n=document.getElementById('new-acc-name').value, b=parseFloat(document.getElementById('new-acc-balance').value)||0; if(!n)return; await db.collection('users').doc(currentUser.uid).collection('accounts').add({name:n, balance:b, isDefault:false, isPinned: false, createdAt: firebase.firestore.FieldValue.serverTimestamp()}); document.getElementById('new-acc-name').value=''; document.getElementById('new-acc-balance').value=''; }
     async function updateAccountBalance(id) { await db.collection('users').doc(currentUser.uid).collection('accounts').doc(id).update({balance: parseFloat(document.getElementById(`edit-acc-${id}`).value)||0}); }
     async function deleteAccount(id) { if(confirm('ลบ?')) await db.collection('users').doc(currentUser.uid).collection('accounts').doc(id).delete(); }
-    async function addNewCategory(t) { const i=t==='expense'?'new-exp-cat-name':'new-inc-cat-name', n=document.getElementById(i).value; if(!n)return; await db.collection('users').doc(currentUser.uid).collection('categories').add({name:n, type:t, isPinned: false, createdAt: firebase.firestore.FieldValue.serverTimestamp()}); document.getElementById(i).value=''; }
+    async function addNewCategory(t) { const i=t==='expense'?'new-exp-cat-name':'new-inc-cat-name', n=document.getElementById(i).value; if(!n)return; await db.collection('users').doc(currentUser.uid).collection('categories').add({name:n, type:t, createdAt: firebase.firestore.FieldValue.serverTimestamp()}); document.getElementById(i).value=''; }
     async function updateCategoryName(id) { await db.collection('users').doc(currentUser.uid).collection('categories').doc(id).update({name: document.getElementById(`edit-cat-${id}`).value}); }
     async function deleteCategory(id) { if(confirm('ลบ?')) await db.collection('users').doc(currentUser.uid).collection('categories').doc(id).delete(); }
     async function toggleAdvancedFeaturesSetting() { userSettings.enableAdvanced = document.getElementById('setting-enable-advanced').checked; applyAdvancedFeaturesVisibility(); await autoSaveSettings(); }
