@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>YUET (v1.9) - State Persistence & Clean Pie Charts</title>
+  <title>YUET (v1.10) - Transfer Protection & Double-Tap Multi-Cat</title>
   
   <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
@@ -41,7 +41,7 @@
       <div class="flex flex-col items-center">
         <div class="flex items-baseline space-x-1">
           <h1 class="text-xl font-black tracking-wider uppercase drop-shadow-sm">YUET</h1>
-          <span class="text-[9px] font-medium text-emerald-200 tracking-tight">(v1.9)</span>
+          <span class="text-[9px] font-medium text-emerald-200 tracking-tight">(v1.10)</span>
         </div>
         <p class="text-[8px] text-emerald-100/80 tracking-tight font-light">by Phuthai Mananararuk & Gemini</p>
       </div>
@@ -96,7 +96,7 @@
             <div><label class="block text-[11px] text-gray-500 mb-1">เลือกบัญชี</label><div id="account-buttons-container" class="flex flex-wrap gap-1"></div></div>
             <div>
               <div class="flex justify-between items-center mb-1">
-                <label class="block text-[11px] text-gray-500">เลือกหมวดหมู่ <span id="lbl-multi-cat-hint" class="text-[9px] text-rose-500 font-semibold hidden">(เลือกได้หลายหมวด)</span></label>
+                <label class="block text-[11px] text-gray-500">เลือกหมวดหมู่ <span id="lbl-multi-cat-hint" class="text-[9px] text-rose-500 font-semibold hidden">(Double-tap เพื่อเลือกเพิ่ม)</span></label>
               </div>
               <div id="category-buttons-container" class="flex flex-wrap gap-1"></div>
             </div>
@@ -117,7 +117,7 @@
             <button type="submit" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-medium py-2 rounded-xl text-xs shadow-xs transition mt-1">+ บันทึกรายการ</button>
           </form>
 
-          <!-- DEDICATED FORM 2: Transfer Form (โอนเงินระหว่างบัญชี) -->
+          <!-- DEDICATED FORM 2: Transfer Form (โอนเงินระหว่างบัญชี - v1.10 Disable Duplicate) -->
           <form id="transfer-form" class="hidden bg-gray-50 p-3 rounded-2xl border border-gray-200 space-y-2.5">
             <div class="grid grid-cols-2 gap-2">
               <div><label class="block text-[11px] text-gray-500 mb-1">ต้นทาง</label><div id="transfer-from-container" class="flex flex-col gap-1"></div></div>
@@ -278,7 +278,7 @@
           </div>
         </div>
 
-        <!-- 3. Dual Pie Charts (Larger & No Legend v1.9) -->
+        <!-- 3. Dual Pie Charts -->
         <div class="grid grid-cols-2 gap-2">
           <!-- Income Pie Chart -->
           <div class="bg-gray-50 p-3 rounded-2xl border border-gray-200 shadow-xs space-y-1 flex flex-col items-center">
@@ -444,7 +444,7 @@
     let userSettings = { currency: '฿', enableAdvanced: false };
     let accountsList = [], categoriesList = [], allTransactions = [], activeInstallmentPlans = [];
     
-    // Dedicated Account & Category Selected IDs (State Persistence)
+    // State Persistence Variables
     let selectedAccountId = null;
     let selectedCategoryIds = []; 
     let selectedCategoryId = null;  
@@ -458,6 +458,9 @@
     let popupYear = new Date().getFullYear(), popupMonth = new Date().getMonth() + 1;
     let activeKeypadFieldId = null;
     let pendingMultiCatTxPayload = null;
+
+    // Double-tap Gesture Tracker for Expense Category Buttons (v1.10)
+    let categoryTapTracker = { catId: null, timer: null };
 
     // Chart.js Instances
     let balanceChartInstance = null;
@@ -643,16 +646,34 @@
 
     function updateSplitMath() { const t=parseFloat(document.getElementById('split-total-amount').value)||0, m=parseFloat(document.getElementById('split-my-share').value)||0; document.getElementById('split-team-share-lbl').innerText=`${userSettings.currency}${Math.max(0,t-m).toLocaleString()}`; }
 
-    // RENDER BUTTONS & MULTI-SELECT CATEGORY LOGIC
-    function toggleExpenseCategorySelection(catId) {
-      if (selectedCategoryIds.includes(catId)) {
-        if (selectedCategoryIds.length > 1) {
-          selectedCategoryIds = selectedCategoryIds.filter(id => id !== catId);
+    // GESTURE HANDLER: EXPENSE CATEGORY SINGLE-TAP VS DOUBLE-TAP (v1.10)
+    function handleExpenseCategoryTap(catId) {
+      if (categoryTapTracker.timer && categoryTapTracker.catId === catId) {
+        // DOUBLE-TAP DETECTED: Toggle / Add into multi-selection list
+        clearTimeout(categoryTapTracker.timer);
+        categoryTapTracker.timer = null;
+        categoryTapTracker.catId = null;
+
+        if (selectedCategoryIds.includes(catId)) {
+          if (selectedCategoryIds.length > 1) {
+            selectedCategoryIds = selectedCategoryIds.filter(id => id !== catId);
+          }
+        } else {
+          selectedCategoryIds.push(catId);
         }
+        renderCategoryButtons();
       } else {
-        selectedCategoryIds.push(catId);
+        // SINGLE-TAP INITIATED: Wait 300ms for potential second tap
+        if (categoryTapTracker.timer) clearTimeout(categoryTapTracker.timer);
+        categoryTapTracker.catId = catId;
+        categoryTapTracker.timer = setTimeout(() => {
+          // SINGLE-TAP EXECUTION: Switch selection strictly to this single category
+          selectedCategoryIds = [catId];
+          categoryTapTracker.timer = null;
+          categoryTapTracker.catId = null;
+          renderCategoryButtons();
+        }, 300);
       }
-      renderCategoryButtons();
     }
 
     function genBtns(list, selId, cb, act, nor) { 
@@ -663,7 +684,35 @@
     }
 
     function renderAccountButtons() { document.getElementById('account-buttons-container').innerHTML=genBtns(accountsList,selectedAccountId,'selectedAccountId','bg-emerald-600 text-white border-emerald-600 shadow-xs','bg-white text-gray-700 border-gray-200'); }
-    function renderTransferButtons() { document.getElementById('transfer-from-container').innerHTML=accountsList.map(a=>`<button type="button" onclick="transferFromId='${a.id}';renderTransferButtons()" class="px-2 py-1 rounded-lg text-xs font-medium transition border text-left ${a.id===transferFromId?'bg-blue-600 text-white border-blue-600':'bg-white text-gray-700'}">${a.name}</button>`).join(''); document.getElementById('transfer-to-container').innerHTML=accountsList.map(a=>`<button type="button" onclick="transferToId='${a.id}';renderTransferButtons()" class="px-2 py-1 rounded-lg text-xs font-medium transition border text-left ${a.id===transferToId?'bg-blue-600 text-white border-blue-600':'bg-white text-gray-700'}">${a.name}</button>`).join(''); }
+    
+    // TRANSFER BUTTONS RENDERER (v1.10 LOCK DUPLICATE ON DESTINATION)
+    function renderTransferButtons() { 
+      document.getElementById('transfer-from-container').innerHTML = accountsList.map(a => `
+        <button type="button" onclick="transferFromId='${a.id}'; if(transferToId==='${a.id}') { const alt=accountsList.find(x=>x.id!=='${a.id}'); if(alt) transferToId=alt.id; } renderTransferButtons()" 
+          class="px-2 py-1 rounded-lg text-xs font-medium transition border text-left ${a.id === transferFromId ? 'bg-blue-600 text-white border-blue-600' : 'bg-white text-gray-700'}">
+          ${a.name}
+        </button>
+      `).join(''); 
+      
+      document.getElementById('transfer-to-container').innerHTML = accountsList.map(a => {
+        const isFromAccount = (a.id === transferFromId);
+        if (isFromAccount) {
+          return `
+            <button type="button" disabled 
+              class="px-2 py-1 rounded-lg text-xs font-medium transition border text-left bg-gray-200 text-gray-400 border-gray-200 opacity-40 cursor-not-allowed" title="ไม่สามารถเลือกบัญชีเดียวกับต้นทางได้">
+              ${a.name} (ต้นทาง)
+            </button>
+          `;
+        }
+        return `
+          <button type="button" onclick="transferToId='${a.id}'; renderTransferButtons()" 
+            class="px-2 py-1 rounded-lg text-xs font-medium transition border text-left ${a.id === transferToId ? 'bg-blue-600 text-white border-blue-600' : 'bg-white text-gray-700'}">
+            ${a.name}
+          </button>
+        `;
+      }).join(''); 
+    }
+
     function renderSettleAccountButtons() { document.getElementById('settle-account-buttons').innerHTML=genBtns(accountsList,selectedSettleAccountId,'selectedSettleAccountId','bg-amber-600 text-white border-amber-600 shadow-xs','bg-white text-gray-700 border-gray-200'); }
     function renderSplitAccountButtons() { document.getElementById('split-account-buttons').innerHTML=genBtns(accountsList,selectedSplitAccountId,'selectedSplitAccountId','bg-purple-600 text-white border-purple-600 shadow-xs','bg-white text-gray-700 border-gray-200'); }
     function renderInstAccountButtons() { document.getElementById('inst-account-buttons').innerHTML=genBtns(accountsList,selectedInstAccountId,'selectedInstAccountId','bg-indigo-600 text-white border-indigo-600 shadow-xs','bg-white text-gray-700 border-gray-200'); }
@@ -680,7 +729,7 @@
         }
         document.getElementById('category-buttons-container').innerHTML = c.map(i => {
           const isSelected = selectedCategoryIds.includes(i.id);
-          return `<button type="button" onclick="toggleExpenseCategorySelection('${i.id}')" class="px-2 py-1 rounded-lg text-xs font-medium transition border ${isSelected ? 'bg-rose-600 text-white border-rose-600 shadow-xs' : 'bg-white text-gray-700 border-gray-200'}">${i.name}${isSelected && selectedCategoryIds.length > 1 ? ' ✓' : ''}</button>`;
+          return `<button type="button" onclick="handleExpenseCategoryTap('${i.id}')" class="px-2 py-1 rounded-lg text-xs font-medium transition border ${isSelected ? 'bg-rose-600 text-white border-rose-600 shadow-xs' : 'bg-white text-gray-700 border-gray-200'}">${i.name}${isSelected && selectedCategoryIds.length > 1 ? ' ✓' : ''}</button>`;
         }).join('');
       } else {
         document.getElementById('lbl-multi-cat-hint').classList.add('hidden');
@@ -870,7 +919,7 @@
     });
 
     document.getElementById('transfer-form').addEventListener('submit', async (e) => {
-      e.preventDefault(); if(transferFromId===transferToId)return alert("บัญชีซ้ำ"); const amt=parseFloat(document.getElementById('tr-amount').value); if(isNaN(amt)||amt<=0)return alert("เลขผิด");
+      e.preventDefault(); if(transferFromId===transferToId)return alert("ไม่สามารถเลือกบัญชีต้นทางและปลายทางเป็นบัญชีเดียวกันได้"); const amt=parseFloat(document.getElementById('tr-amount').value); if(isNaN(amt)||amt<=0)return alert("จำนวนเงินไม่ถูกต้อง");
       try{
         const fr=db.collection('users').doc(currentUser.uid).collection('accounts').doc(transferFromId), tr=db.collection('users').doc(currentUser.uid).collection('accounts').doc(transferToId);
         await db.runTransaction(async t=>{const f=await t.get(fr), to=await t.get(tr); t.update(fr,{balance:f.data().balance-amt}); t.update(tr,{balance:to.data().balance+amt});});
@@ -885,6 +934,7 @@
       c.innerHTML=lst.map(t=>`<div class="flex justify-between p-1.5 border-b text-xs hover:bg-gray-50"><label class="flex items-center space-x-2 cursor-pointer flex-1"><input type="checkbox" name="settle-item" value="${t.id}" data-max="${t.remainingPending}" class="rounded w-4 h-4"><div class="flex flex-col"><span class="font-medium">${escapeHtml(t.note||'-')}</span><span class="text-[10px] text-gray-400">ค้าง: ${userSettings.currency}${t.remainingPending.toLocaleString()} • ${t.date}</span></div></label></div>`).join('');
     }
 
+    // PENDING TEAM LIST RENDERER (v1.10 Shows items with remainingTeamPending > 0)
     function renderPendingTeamList() {
       const c=document.getElementById('pending-team-items-container'), lst=allTransactions.filter(t=>t.kind==='split'&&t.remainingTeamPending>0);
       if(!lst.length)return c.innerHTML=`<p class="text-center text-xs text-gray-400 py-3">ไม่มีรายการค้างจ่ายทีมงาน</p>`;
@@ -913,15 +963,23 @@
       }catch(err){alert(err.message);}
     });
 
-    // SUBMIT DEDICATED FORM: Team Pay
+    // SUBMIT DEDICATED FORM: Team Pay (v1.10 Stores linkedSplitItems for restoration on delete)
     document.getElementById('team-pay-form').addEventListener('submit', async (e) => {
       e.preventDefault(); const amt=parseFloat(document.getElementById('team-pay-amount').value), cbs=document.querySelectorAll('input[name="team-pay-item"]:checked');
       if(isNaN(amt)||amt<=0)return alert("กรอกจำนวนเงินให้ถูกต้อง"); if(!cbs.length)return alert("เลือกรายการค้างจ่ายทีมงานอย่างน้อย 1 รายการ"); 
       document.getElementById('team-pay-amount').value='';
       try{
-        let r=amt; const b=db.batch();
-        for(const cb of cbs){ if(r<=0)break; const d=Math.min(r,parseFloat(cb.getAttribute('data-max'))); b.update(db.collection('users').doc(currentUser.uid).collection('transactions').doc(cb.value),{remainingTeamPending:allTransactions.find(t=>t.id===cb.value).remainingTeamPending-d}); r-=d; }
-        b.set(db.collection('users').doc(currentUser.uid).collection('transactions').doc(), {kind:'team-pay',amount:amt,accountId:selectedTeamPayAccountId,note:document.getElementById('team-pay-note').value,date:document.getElementById('team-pay-date').value,createdAt:firebase.firestore.FieldValue.serverTimestamp()});
+        let r=amt; const b=db.batch(); const linkedSplitItems = [];
+        for(const cb of cbs){ 
+          if(r<=0)break; 
+          const d=Math.min(r,parseFloat(cb.getAttribute('data-max'))); 
+          const splitDocRef = db.collection('users').doc(currentUser.uid).collection('transactions').doc(cb.value);
+          const currentTx = allTransactions.find(t=>t.id===cb.value);
+          b.update(splitDocRef,{remainingTeamPending: currentTx.remainingTeamPending - d}); 
+          linkedSplitItems.push({ splitId: cb.value, deductedAmount: d });
+          r-=d; 
+        }
+        b.set(db.collection('users').doc(currentUser.uid).collection('transactions').doc(), {kind:'team-pay',amount:amt,accountId:selectedTeamPayAccountId,linkedSplitItems:linkedSplitItems,note:document.getElementById('team-pay-note').value,date:document.getElementById('team-pay-date').value,createdAt:firebase.firestore.FieldValue.serverTimestamp()});
         const a=await db.collection('users').doc(currentUser.uid).collection('accounts').doc(selectedTeamPayAccountId).get(); if(a.exists)b.update(a.ref,{balance:a.data().balance-amt});
         await b.commit(); alert("บันทึกการโอนให้ทีมเรียบร้อย!"); switchEntryMode('transfer');
       }catch(err){alert(err.message);}
@@ -941,7 +999,7 @@
       });
     }
 
-    // SUMMARY ANALYTICS RENDERER (v1.9 LARGER PIE & NO LEGEND)
+    // SUMMARY ANALYTICS RENDERER
     function renderSummaryAnalyticsUI() {
       const totBal = accountsList.reduce((s, a) => s + a.balance, 0);
       document.getElementById('summary-current-balance').innerText = `คงเหลือรวม: ${userSettings.currency}${totBal.toLocaleString()}`;
@@ -996,7 +1054,7 @@
       // 2. Render Daily Balance Line Chart
       renderDailyBalanceLineChart(totBal);
 
-      // 3. Render Dual Pie Charts (No Legend & Full Size v1.9)
+      // 3. Render Dual Pie Charts
       renderCategoryPieChart('incomePieChart', catIncMap, 'รายรับ', incomePieInstance, inst => incomePieInstance = inst);
       renderCategoryPieChart('expensePieChart', catExpMap, 'รายจ่าย', expensePieInstance, inst => expensePieInstance = inst);
     }
@@ -1096,9 +1154,7 @@
           responsive: true,
           maintainAspectRatio: false,
           plugins: {
-            legend: {
-              display: false // Hide legend completely in v1.9
-            },
+            legend: { display: false },
             tooltip: {
               enabled: true,
               callbacks: {
@@ -1146,6 +1202,10 @@
         updateEntryCurrentMonthCashFlowUI(); if(!document.getElementById('cashflow-modal').classList.contains('hidden')) updatePopupCashflowUI();
         if (!summaryView.classList.contains('hidden')) renderSummaryAnalyticsUI();
 
+        // Refresh dynamic lists if active
+        if (currentEntryMode === 'team-pay') renderPendingTeamList();
+        if (currentEntryMode === 'settle') renderPendingFriendList();
+
         let grp={}; allTransactions.forEach(t => { if(!grp[t.date])grp[t.date]=[]; grp[t.date].push(t); });
         document.getElementById('full-tx-list').innerHTML = Object.keys(grp).sort((a,b)=>b.localeCompare(a)).map(d => `<div class="sticky top-0 bg-gray-100/95 px-3 py-1 text-[11px] font-bold text-gray-600 rounded-lg my-1.5 shadow-2xs">${d}</div>` + grp[d].map(t => {
           if(t.kind==='transaction'){
@@ -1167,11 +1227,46 @@
       });
     }
 
-    // EDIT / DELETE
+    // EDIT / DELETE (v1.10 Restores remainingTeamPending when deleting Team-Pay transactions)
     function openEditModal(id) { const t=allTransactions.find(x=>x.id===id); if(t.kind!=='transaction')return; document.getElementById('edit-tx-id').value=t.id; document.getElementById('edit-amount').value=t.amount; document.getElementById('edit-date').value=t.date; document.getElementById('edit-note').value=t.note||''; document.getElementById('edit-modal').classList.remove('hidden'); }
     function closeEditModal() { document.getElementById('edit-modal').classList.add('hidden'); }
     async function saveEditedTransaction() { const id=document.getElementById('edit-tx-id').value, amt=parseFloat(document.getElementById('edit-amount').value), d=document.getElementById('edit-date').value, n=document.getElementById('edit-note').value, t=allTransactions.find(x=>x.id===id); if(isNaN(amt)||amt<=0)return; try { const r=db.collection('users').doc(currentUser.uid).collection('accounts').doc(t.accountId); await db.runTransaction(async tr=>{ const a=await tr.get(r); if(a.exists) tr.update(r, {balance: a.data().balance + (t.type==='income'?(amt-t.amount):-(amt-t.amount))}); tr.update(db.collection('users').doc(currentUser.uid).collection('transactions').doc(id), {amount:amt, date:d, note:n}); }); closeEditModal(); } catch (err) { alert(err.message); } }
-    async function deleteTx(id) { if(!confirm("ลบรายการ?")) return; const t=allTransactions.find(x=>x.id===id); try { if(t.kind==='transaction'||t.kind==='settlement'||t.kind==='split'||t.kind==='team-pay') { const r=db.collection('users').doc(currentUser.uid).collection('accounts').doc(t.accountId); await db.runTransaction(async tr=>{ const a=await tr.get(r); if(a.exists) tr.update(r,{balance: a.data().balance + (t.type==='income'||t.kind==='settlement'||t.kind==='split'?- (t.totalAmount||t.amount):t.amount)}); }); } else if(t.kind==='transfer') { const f=db.collection('users').doc(currentUser.uid).collection('accounts').doc(t.fromAccountId), to=db.collection('users').doc(currentUser.uid).collection('accounts').doc(t.toAccountId); await db.runTransaction(async tr=>{ const aF=await tr.get(f), aT=await tr.get(to); if(aF.exists)tr.update(f,{balance:aF.data().balance+t.amount}); if(aT.exists)tr.update(to,{balance:aT.data().balance-t.amount}); }); } await db.collection('users').doc(currentUser.uid).collection('transactions').doc(id).delete(); } catch (err) { alert(err.message); } }
+    
+    async function deleteTx(id) { 
+      if(!confirm("ลบรายการ?")) return; 
+      const t=allTransactions.find(x=>x.id===id); 
+      try { 
+        if(t.kind==='transaction'||t.kind==='settlement'||t.kind==='split') { 
+          const r=db.collection('users').doc(currentUser.uid).collection('accounts').doc(t.accountId); 
+          await db.runTransaction(async tr=>{ 
+            const a=await tr.get(r); 
+            if(a.exists) tr.update(r,{balance: a.data().balance + (t.type==='income'||t.kind==='settlement'||t.kind==='split'?- (t.totalAmount||t.amount):t.amount)}); 
+          }); 
+        } else if(t.kind==='team-pay') {
+          // Restore Team-Pay Deductions to original Split transactions (v1.10)
+          const b = db.batch();
+          const r = db.collection('users').doc(currentUser.uid).collection('accounts').doc(t.accountId);
+          const a = await r.get();
+          if(a.exists) b.update(r, { balance: a.data().balance + t.amount });
+
+          if (t.linkedSplitItems && t.linkedSplitItems.length > 0) {
+            for (const item of t.linkedSplitItems) {
+              const splitRef = db.collection('users').doc(currentUser.uid).collection('transactions').doc(item.splitId);
+              const splitDoc = await splitRef.get();
+              if (splitDoc.exists) {
+                b.update(splitRef, { remainingTeamPending: (splitDoc.data().remainingTeamPending || 0) + item.deductedAmount });
+              }
+            }
+          }
+          await b.commit();
+        } else if(t.kind==='transfer') { 
+          const f=db.collection('users').doc(currentUser.uid).collection('accounts').doc(t.fromAccountId), to=db.collection('users').doc(currentUser.uid).collection('accounts').doc(t.toAccountId); 
+          await db.runTransaction(async tr=>{ const aF=await tr.get(f), aT=await tr.get(to); if(aF.exists)tr.update(f,{balance:aF.data().balance+t.amount}); if(aT.exists)tr.update(to,{balance:aT.data().balance-t.amount}); }); 
+        } 
+        
+        await db.collection('users').doc(currentUser.uid).collection('transactions').doc(id).delete(); 
+      } catch (err) { alert(err.message); } 
+    }
 
     // SETTINGS
     function renderSettingsAccounts() { document.getElementById('accounts-settings-list').innerHTML = accountsList.map(a=>`<div class="flex justify-between p-2 bg-gray-50 border rounded-xl text-xs"><div><span class="font-semibold">${escapeHtml(a.name)}</span> <span class="text-gray-500">(${a.balance.toLocaleString()})</span></div><div class="flex"><input type="text" id="edit-acc-${a.id}" readonly onclick="openCustomKeypad('edit-acc-${a.id}')" value="${a.balance}" class="w-14 px-1 py-1 border rounded bg-white cursor-pointer"><button onclick="updateAccountBalance('${a.id}')" class="bg-blue-50 text-blue-600 px-1 mx-1 rounded">แก้</button>${!a.isDefault?`<button onclick="deleteAccount('${a.id}')" class="text-rose-500 font-bold px-1">×</button>`:''}</div></div>`).join(''); }
