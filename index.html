@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>YUET (v1.12) - Pinned Shortcuts & Compact Selection Modal</title>
+  <title>YUET (v1.12) - Single Screen Experience & Pinned Selector</title>
   
   <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
@@ -324,23 +324,40 @@
         <div class="space-y-1"><label class="block text-xs font-bold text-gray-700">สกุลเงินทั่วแอป</label><select id="setting-currency" onchange="autoSaveSettings()" class="w-full px-3 py-2 text-xs border rounded-xl bg-white"><option value="฿">บาท (฿)</option><option value="$">ดอลลาร์ ($)</option><option value="€">ยูโร (€)</option><option value="¥">เยน (¥)</option></select></div>
         <div class="bg-indigo-50 p-3 rounded-2xl border border-indigo-100 space-y-1.5"><label class="flex items-center space-x-2 cursor-pointer"><input type="checkbox" id="setting-enable-advanced" onchange="toggleAdvancedFeaturesSetting()" class="rounded text-indigo-600 focus:ring-indigo-500 w-4 h-4"><span class="text-xs font-bold text-indigo-900">เปิดใช้งานฟังก์ชันพิเศษ </span></label><p class="text-[10px] text-indigo-600/80 leading-relaxed">กดปุ่มโหมด (Expense / Income / Transfer) ซ้ำอีกครั้งเพื่อเปิดเมนูซ่อน: <u>ผ่อนชำระ, หารค่าใช้จ่าย, รับเงินคืน, รับเงินแทน, โอนให้ทีม</u></p></div>
         
-        <!-- Manage Accounts with Pin Support (v1.12) -->
+        <!-- Account Settings with Pin Feature (v1.12) -->
         <div class="space-y-2 border-t pt-3">
-          <div class="flex justify-between items-center"><h3 class="text-xs font-bold text-gray-700 uppercase">จัดการบัญชีเงิน</h3><span class="text-[9px] text-gray-400">(แตะ 📌 เพื่อปักหมุด)</span></div>
-          <div id="accounts-settings-list" class="space-y-1 max-h-24 overflow-y-auto pr-1"></div>
+          <h3 class="text-xs font-bold text-gray-700 uppercase">จัดการบัญชีเงิน (📌 ปักหมุดให้โชว์หน้า Entry)</h3>
+          <div id="accounts-settings-list" class="space-y-1 max-h-32 overflow-y-auto pr-1"></div>
           <div class="bg-gray-50 p-2 rounded-xl border space-y-1.5">
             <p class="text-[11px] font-semibold text-gray-600">เพิ่มบัญชีใหม่</p>
-            <div class="grid grid-cols-2 gap-2"><input type="text" id="new-acc-name" placeholder="ชื่อบัญชี" class="px-2 py-1 text-xs border rounded-lg bg-white"><input type="text" id="new-acc-balance" readonly onclick="openCustomKeypad('new-acc-balance')" placeholder="ยอดเริ่มต้น" class="px-2 py-1 text-xs border rounded-lg bg-white cursor-pointer"></div>
+            <div class="grid grid-cols-2 gap-2">
+              <input type="text" id="new-acc-name" placeholder="ชื่อบัญชี" class="px-2 py-1 text-xs border rounded-lg bg-white">
+              <input type="text" id="new-acc-balance" readonly onclick="openCustomKeypad('new-acc-balance')" placeholder="ยอดเริ่มต้น" class="px-2 py-1 text-xs border rounded-lg bg-white cursor-pointer">
+            </div>
             <button type="button" onclick="addNewAccount()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-1 rounded-lg text-xs transition">+ เพิ่มบัญชี</button>
           </div>
         </div>
 
-        <!-- Manage Categories with Pin Support (v1.12) -->
+        <!-- Category Settings with Pin Feature (v1.12) -->
         <div class="space-y-2 border-t pt-3">
-          <div class="flex justify-between items-center"><h3 class="text-xs font-bold text-gray-700 uppercase">จัดการหมวดหมู่</h3><span class="text-[9px] text-gray-400">(แตะ 📌 เพื่อปักหมุด)</span></div>
+          <h3 class="text-xs font-bold text-gray-700 uppercase">จัดการหมวดหมู่ (📌 ปักหมุดให้โชว์หน้า Entry)</h3>
           <div class="grid grid-cols-2 gap-2">
-            <div class="space-y-1.5"><p class="text-[11px] font-semibold text-rose-600">รายจ่าย</p><div id="expense-cats-list" class="space-y-1 max-h-24 overflow-y-auto pr-1"></div><div class="flex space-x-1"><input type="text" id="new-exp-cat-name" class="w-full px-1.5 py-1 text-xs border rounded bg-white"><button onclick="addNewCategory('expense')" class="bg-rose-600 text-white px-2 py-1 rounded text-xs">+</button></div></div>
-            <div class="space-y-1.5"><p class="text-[11px] font-semibold text-emerald-600">รายรับ</p><div id="income-cats-list" class="space-y-1 max-h-24 overflow-y-auto pr-1"></div><div class="flex space-x-1"><input type="text" id="new-inc-cat-name" class="w-full px-1.5 py-1 text-xs border rounded bg-white"><button onclick="addNewCategory('income')" class="bg-emerald-600 text-white px-2 py-1 rounded text-xs">+</button></div></div>
+            <div class="space-y-1.5">
+              <p class="text-[11px] font-semibold text-rose-600">รายจ่าย</p>
+              <div id="expense-cats-list" class="space-y-1 max-h-36 overflow-y-auto pr-1"></div>
+              <div class="flex space-x-1">
+                <input type="text" id="new-exp-cat-name" class="w-full px-1.5 py-1 text-xs border rounded bg-white">
+                <button onclick="addNewCategory('expense')" class="bg-rose-600 text-white px-2 py-1 rounded text-xs">+</button>
+              </div>
+            </div>
+            <div class="space-y-1.5">
+              <p class="text-[11px] font-semibold text-emerald-600">รายรับ</p>
+              <div id="income-cats-list" class="space-y-1 max-h-36 overflow-y-auto pr-1"></div>
+              <div class="flex space-x-1">
+                <input type="text" id="new-inc-cat-name" class="w-full px-1.5 py-1 text-xs border rounded bg-white">
+                <button onclick="addNewCategory('income')" class="bg-emerald-600 text-white px-2 py-1 rounded text-xs">+</button>
+              </div>
+            </div>
           </div>
         </div>
       </section>
@@ -350,18 +367,18 @@
     <footer id="auth-status-bar" class="bg-gray-100 p-2 text-center text-[10px] text-gray-400 border-t border-gray-100">สถานะ: ยังไม่ได้เข้าสู่ระบบ</footer>
   </div>
 
-  <!-- SELECTION MODAL FOR UNPINNED ITEMS (v1.12) -->
-  <div id="selection-modal" class="hidden fixed inset-0 bg-black/60 flex items-end sm:items-center justify-center p-0 sm:p-4 z-40 transition-opacity">
-    <div class="bg-white rounded-t-3xl sm:rounded-3xl w-full max-w-sm p-5 space-y-4 shadow-2xl relative animate-slide-up max-h-[75vh] flex flex-col">
-      <div class="flex justify-between items-center border-b pb-2">
-        <h3 id="selection-modal-title" class="text-xs font-bold text-gray-700 uppercase">เลือกรายการ</h3>
-        <button type="button" onclick="closeSelectionModal()" class="text-gray-400 hover:text-gray-600 font-bold text-lg">✕</button>
+  <!-- POP-UP SELECTOR MODAL (v1.12 Grid selector for non-pinned items) -->
+  <div id="selector-modal" class="hidden fixed inset-0 bg-black/60 flex items-end sm:items-center justify-center p-0 sm:p-4 z-50 transition-opacity">
+    <div class="bg-white rounded-t-3xl sm:rounded-3xl w-full max-w-sm p-4 space-y-3 shadow-2xl relative animate-slide-up max-h-[75vh] flex flex-col">
+      <div class="flex justify-between items-center border-b pb-2 flex-shrink-0">
+        <h3 id="selector-modal-title" class="text-xs font-bold text-gray-700 uppercase">เลือกรายการ</h3>
+        <button type="button" onclick="closeSelectorModal()" class="text-gray-400 hover:text-gray-600 font-bold text-lg px-2">✕</button>
       </div>
 
-      <div id="selection-modal-grid" class="grid grid-cols-2 gap-2 overflow-y-auto pr-1 flex-1 py-1"></div>
+      <div id="selector-grid-container" class="grid grid-cols-2 gap-2 overflow-y-auto p-1 flex-1"></div>
 
-      <div class="pt-1">
-        <button type="button" onclick="closeSelectionModal()" class="w-full bg-gray-100 hover:bg-gray-200 text-gray-700 py-2 rounded-xl text-xs font-medium">ยกเลิก</button>
+      <div class="pt-1 flex-shrink-0">
+        <button type="button" onclick="closeSelectorModal()" class="w-full bg-gray-100 hover:bg-gray-200 text-gray-700 py-2 rounded-xl text-xs font-medium">ปิด</button>
       </div>
     </div>
   </div>
@@ -371,21 +388,36 @@
     <div class="bg-white rounded-3xl w-full max-w-sm p-5 space-y-4 shadow-2xl relative animate-slide-up">
       <button type="button" onclick="closeSpecialModal()" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600 font-bold text-lg">✕</button>
       
+      <!-- Special Options for Expense -->
       <div id="special-expense-content" class="space-y-2.5 hidden pt-2">
-        <button type="button" onclick="activateSubMode('installment')" class="w-full flex items-center justify-center bg-white hover:bg-indigo-50 text-indigo-900 border border-indigo-200 py-3 rounded-2xl text-xs font-bold transition px-3 shadow-xs">ผ่อนชำระ</button>
-        <button type="button" onclick="activateSubMode('reimburse')" class="w-full flex items-center justify-center bg-white hover:bg-amber-50 text-amber-900 border border-amber-200 py-3 rounded-2xl text-xs font-bold transition px-3 shadow-xs">หารค่าใช้จ่าย</button>
+        <button type="button" onclick="activateSubMode('installment')" class="w-full flex items-center justify-center bg-white hover:bg-indigo-50 text-indigo-900 border border-indigo-200 py-3 rounded-2xl text-xs font-bold transition px-3 shadow-xs">
+          ผ่อนชำระ
+        </button>
+        <button type="button" onclick="activateSubMode('reimburse')" class="w-full flex items-center justify-center bg-white hover:bg-amber-50 text-amber-900 border border-amber-200 py-3 rounded-2xl text-xs font-bold transition px-3 shadow-xs">
+          หารค่าใช้จ่าย
+        </button>
       </div>
 
+      <!-- Special Options for Income -->
       <div id="special-income-content" class="space-y-2.5 hidden pt-2">
-        <button type="button" onclick="activateSubMode('settle')" class="w-full flex items-center justify-center bg-white hover:bg-amber-50 text-amber-900 border border-amber-200 py-3 rounded-2xl text-xs font-bold transition px-3 shadow-xs">รับเงินคืน</button>
-        <button type="button" onclick="activateSubMode('split')" class="w-full flex items-center justify-center bg-white hover:bg-purple-50 text-purple-900 border border-purple-200 py-3 rounded-2xl text-xs font-bold transition px-3 shadow-xs">รับเงินแทน</button>
+        <button type="button" onclick="activateSubMode('settle')" class="w-full flex items-center justify-center bg-white hover:bg-amber-50 text-amber-900 border border-amber-200 py-3 rounded-2xl text-xs font-bold transition px-3 shadow-xs">
+          รับเงินคืน
+        </button>
+        <button type="button" onclick="activateSubMode('split')" class="w-full flex items-center justify-center bg-white hover:bg-purple-50 text-purple-900 border border-purple-200 py-3 rounded-2xl text-xs font-bold transition px-3 shadow-xs">
+          รับเงินแทน
+        </button>
       </div>
 
+      <!-- Special Options for Transfer -->
       <div id="special-transfer-content" class="space-y-2.5 hidden pt-2">
-        <button type="button" onclick="activateSubMode('team-pay')" class="w-full flex items-center justify-center bg-white hover:bg-teal-50 text-teal-900 border border-teal-200 py-3 rounded-2xl text-xs font-bold transition px-3 shadow-xs">โอนให้ทีม</button>
+        <button type="button" onclick="activateSubMode('team-pay')" class="w-full flex items-center justify-center bg-white hover:bg-teal-50 text-teal-900 border border-teal-200 py-3 rounded-2xl text-xs font-bold transition px-3 shadow-xs">
+          โอนให้ทีม
+        </button>
       </div>
 
-      <div class="pt-1"><button type="button" onclick="closeSpecialModal()" class="w-full bg-gray-100 hover:bg-gray-200 text-gray-700 py-2 rounded-xl text-xs font-medium">ยกเลิก</button></div>
+      <div class="pt-1">
+        <button type="button" onclick="closeSpecialModal()" class="w-full bg-gray-100 hover:bg-gray-200 text-gray-700 py-2 rounded-xl text-xs font-medium">ยกเลิก</button>
+      </div>
     </div>
   </div>
 
@@ -393,10 +425,29 @@
   <div id="multi-cat-modal" class="hidden fixed inset-0 bg-black/60 flex items-center justify-center p-4 z-40 transition-opacity">
     <div class="bg-white rounded-3xl w-full max-w-sm p-5 space-y-4 shadow-2xl relative animate-slide-up">
       <button type="button" onclick="closeMultiCatModal()" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600 font-bold text-lg">✕</button>
-      <div class="border-b pb-2"><h3 class="text-xs font-bold text-gray-700 uppercase">จัดสรรยอดเงินตามหมวดหมู่</h3><p class="text-[10px] text-gray-400 mt-0.5">ยอดรวมสลิปทั้งหมด: <b id="lbl-multi-modal-total" class="text-rose-600 font-bold">฿0.00</b></p></div>
+      
+      <div class="border-b pb-2">
+        <h3 class="text-xs font-bold text-gray-700 uppercase">จัดสรรยอดเงินตามหมวดหมู่</h3>
+        <p class="text-[10px] text-gray-400 mt-0.5">ยอดรวมสลิปทั้งหมด: <b id="lbl-multi-modal-total" class="text-rose-600 font-bold">฿0.00</b></p>
+      </div>
+
       <div id="multi-cat-inputs-container" class="space-y-2.5 max-h-60 overflow-y-auto pr-1"></div>
-      <div class="bg-gray-50 p-2.5 rounded-2xl border text-xs space-y-1"><div class="flex justify-between items-center text-gray-600"><span>รวมที่จัดสรรแล้ว:</span><b id="lbl-multi-modal-allocated" class="font-bold">฿0.00</b></div><div class="flex justify-between items-center"><span>คงเหลือที่ต้องระบุ:</span><b id="lbl-multi-modal-remaining" class="font-bold text-rose-500">฿0.00</b></div></div>
-      <div class="pt-1 flex space-x-2"><button type="button" onclick="closeMultiCatModal()" class="w-1/3 bg-gray-200 text-gray-700 py-2.5 rounded-xl text-xs font-medium">ยกเลิก</button><button type="button" id="btn-confirm-multi-cat" onclick="submitMultiCatAllocation()" class="w-2/3 bg-rose-600 text-white py-2.5 rounded-xl text-xs font-bold shadow-xs transition disabled:opacity-40 disabled:cursor-not-allowed" disabled>ยืนยันการจัดสรร</button></div>
+
+      <div class="bg-gray-50 p-2.5 rounded-2xl border text-xs space-y-1">
+        <div class="flex justify-between items-center text-gray-600">
+          <span>รวมที่จัดสรรแล้ว:</span>
+          <b id="lbl-multi-modal-allocated" class="font-bold">฿0.00</b>
+        </div>
+        <div class="flex justify-between items-center">
+          <span>คงเหลือที่ต้องระบุ:</span>
+          <b id="lbl-multi-modal-remaining" class="font-bold text-rose-500">฿0.00</b>
+        </div>
+      </div>
+
+      <div class="pt-1 flex space-x-2">
+        <button type="button" onclick="closeMultiCatModal()" class="w-1/3 bg-gray-200 text-gray-700 py-2.5 rounded-xl text-xs font-medium">ยกเลิก</button>
+        <button type="button" id="btn-confirm-multi-cat" onclick="submitMultiCatAllocation()" class="w-2/3 bg-rose-600 text-white py-2.5 rounded-xl text-xs font-bold shadow-xs transition disabled:opacity-40 disabled:cursor-not-allowed" disabled>ยืนยันการจัดสรร</button>
+      </div>
     </div>
   </div>
 
@@ -425,14 +476,19 @@
   <div id="edit-modal" class="hidden fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-40">
     <div class="bg-white rounded-3xl w-full max-w-sm p-4 space-y-3 shadow-2xl">
       <h3 id="edit-modal-title" class="text-xs font-bold text-gray-700 uppercase border-b pb-2">แก้ไขรายการ</h3>
-      <input type="hidden" id="edit-tx-id"><input type="hidden" id="edit-tx-kind">
+      <input type="hidden" id="edit-tx-id">
+      <input type="hidden" id="edit-tx-kind">
 
-      <div id="edit-fields-normal" class="space-y-3"><div><label class="block text-[11px] text-gray-500 mb-1">จำนวนเงิน</label><input type="text" id="edit-amount" readonly onclick="openCustomKeypad('edit-amount')" class="w-full px-2 py-1.5 text-xs border rounded-xl bg-white cursor-pointer"></div></div>
+      <div id="edit-fields-normal" class="space-y-3">
+        <div><label class="block text-[11px] text-gray-500 mb-1">จำนวนเงิน</label><input type="text" id="edit-amount" readonly onclick="openCustomKeypad('edit-amount')" class="w-full px-2 py-1.5 text-xs border rounded-xl bg-white cursor-pointer"></div>
+      </div>
 
       <div id="edit-fields-split" class="space-y-3 hidden">
         <div><label class="block text-[11px] text-purple-900 mb-1">ยอดเต็มลูกค้า (<span class="currency-symbol">฿</span>)</label><input type="text" id="edit-split-total" readonly onclick="openCustomKeypad('edit-split-total')" oninput="updateEditSplitMath()" class="w-full px-2 py-1.5 text-xs border rounded-xl bg-white cursor-pointer font-bold"></div>
         <div><label class="block text-[11px] text-purple-900 mb-1">ส่วนของเรา (<span class="currency-symbol">฿</span>)</label><input type="text" id="edit-split-my" readonly onclick="openCustomKeypad('edit-split-my')" oninput="updateEditSplitMath()" class="w-full px-2 py-1.5 text-xs border rounded-xl bg-white cursor-pointer font-bold"></div>
-        <div class="bg-purple-50 p-2 rounded-xl border border-purple-100 flex justify-between items-center text-xs"><span class="text-purple-700">รอจ่ายทีมงาน:</span><b id="lbl-edit-split-team" class="text-purple-900 font-bold">฿0.00</b></div>
+        <div class="bg-purple-50 p-2 rounded-xl border border-purple-100 flex justify-between items-center text-xs">
+          <span class="text-purple-700">รอจ่ายทีมงาน:</span><b id="lbl-edit-split-team" class="text-purple-900 font-bold">฿0.00</b>
+        </div>
       </div>
 
       <div><label class="block text-[11px] text-gray-500 mb-1">วันที่</label><input type="date" id="edit-date" class="w-full px-2 py-1.5 text-xs border rounded-xl bg-white"></div>
@@ -667,7 +723,11 @@
     }
 
     function updateSplitMath() { const t=parseFloat(document.getElementById('split-total-amount').value)||0, m=parseFloat(document.getElementById('split-my-share').value)||0; document.getElementById('split-team-share-lbl').innerText=`${userSettings.currency}${Math.max(0,t-m).toLocaleString()}`; }
-    function updateEditSplitMath() { const t=parseFloat(document.getElementById('edit-split-total').value)||0, m=parseFloat(document.getElementById('edit-split-my').value)||0; document.getElementById('lbl-edit-split-team').innerText=`${userSettings.currency}${Math.max(0,t-m).toLocaleString()}`; }
+    
+    function updateEditSplitMath() { 
+      const t=parseFloat(document.getElementById('edit-split-total').value)||0, m=parseFloat(document.getElementById('edit-split-my').value)||0; 
+      document.getElementById('lbl-edit-split-team').innerText=`${userSettings.currency}${Math.max(0,t-m).toLocaleString()}`; 
+    }
 
     // GESTURE HANDLER: EXPENSE CATEGORY SINGLE-TAP VS DOUBLE-TAP
     function handleExpenseCategoryTap(catId) {
@@ -696,78 +756,99 @@
       }
     }
 
-    // PINNED SHORTCUTS & COMPACT MODAL RENDERER (v1.12)
-    function renderCompactButtonLayout(list, selectedIdOrArray, selectCbName, activeClass, normalClass, itemType) {
-      const pinnedItems = list.filter(i => i.isPinned === true);
-      const displayPinned = pinnedItems.length > 0 ? pinnedItems : list.slice(0, 3);
-      const unpinnedItems = list.filter(i => !displayPinned.some(p => p.id === i.id));
+    // PINNED + MORE BUTTONS GENERATOR (v1.12 Single Screen Experience)
+    function renderPinnedSelector(list, selectedId, setGlobalVarFnName, rerenderFnName, activeClass, typeLabel) {
+      let pinned = list.filter(i => i.isPinned);
+      if (!pinned.length && list.length) pinned = [list[0]]; // Fallback if no pinned items
 
-      const isArraySelection = Array.isArray(selectedIdOrArray);
-      
+      const isSelectedInPinned = pinned.some(i => i.id === selectedId);
+      const selectedItem = list.find(i => i.id === selectedId);
+
       let html = `<div class="flex flex-wrap gap-1">`;
       
       // Line 1: Pinned Buttons
-      displayPinned.forEach(i => {
-        const isSelected = isArraySelection ? selectedIdOrArray.includes(i.id) : (selectedIdOrArray === i.id);
-        const clickCode = isArraySelection ? `handleExpenseCategoryTap('${i.id}')` : `${selectCbName}='${i.id}'; refreshUIByCb('${selectCbName}')`;
-        html += `<button type="button" onclick="${clickCode}" class="px-2 py-1 rounded-lg text-xs font-medium transition border ${isSelected ? activeClass : normalClass}">${escapeHtml(i.name)}${isSelected && isArraySelection && selectedIdOrArray.length > 1 ? ' ✓' : ''}</button>`;
+      pinned.forEach(i => {
+        const isSel = i.id === selectedId;
+        html += `<button type="button" onclick="${setGlobalVarFnName}='${i.id}'; ${rerenderFnName}();" class="px-2.5 py-1 rounded-xl text-xs font-semibold transition border ${isSel ? activeClass : 'bg-white text-gray-700 border-gray-200'}">📌 ${escapeHtml(i.name)}</button>`;
       });
 
-      // Line 2: More Button (Opens Modal)
-      if (unpinnedItems.length > 0) {
-        const selectedUnpinned = unpinnedItems.filter(i => isArraySelection ? selectedIdOrArray.includes(i.id) : selectedIdOrArray === i.id);
-        let moreLabel = `📂 เลือก${itemType === 'account' ? 'บัญชี' : 'หมวดหมู่'}อื่น (${unpinnedItems.length})`;
-        if (selectedUnpinned.length > 0) {
-          moreLabel = `📂 ${selectedUnpinned.map(x => x.name).join(', ')}`;
-        }
-        html += `<button type="button" onclick="openSelectionModal('${itemType}', '${selectCbName}')" class="px-2 py-1 rounded-lg text-xs font-semibold bg-gray-100 hover:bg-gray-200 text-gray-700 border border-gray-300 transition">${escapeHtml(moreLabel)}</button>`;
+      html += `</div>`;
+
+      // Line 2: More Button (Shows current selection if it's from non-pinned list)
+      const unpinnedCount = list.length - pinned.length;
+      if (unpinnedCount > 0) {
+        const extraLabel = (!isSelectedInPinned && selectedItem) ? `เลือกอยู่: ${selectedItem.name}` : `📂 เลือก${typeLabel}อื่นๆ (${unpinnedCount})...`;
+        const extraClass = (!isSelectedInPinned && selectedItem) ? activeClass : 'bg-gray-100 text-gray-700 border-gray-300 hover:bg-gray-200';
+        
+        html += `<div class="mt-1"><button type="button" onclick="openSelectorModal('${typeLabel}', '${setGlobalVarFnName}', '${rerenderFnName}', '${activeClass}')" class="w-full text-left px-3 py-1.5 rounded-xl text-xs font-medium transition border ${extraClass}">${escapeHtml(extraLabel)}</button></div>`;
       }
 
-      html += `</div>`;
       return html;
     }
 
-    function refreshUIByCb(cbName) {
-      if (cbName.includes('InstCat')) renderInstCategoryButtons();
-      else if (cbName.includes('ReimbCat')) renderReimbCategoryButtons();
-      else if (cbName.includes('SplitCat')) renderSplitCategoryButtons();
-      else if (cbName.includes('Cat')) renderCategoryButtons();
-      else if (cbName.includes('InstAcc')) renderInstAccountButtons();
-      else if (cbName.includes('ReimbAcc')) renderReimbAccountButtons();
-      else if (cbName.includes('SplitAcc')) renderSplitAccountButtons();
-      else if (cbName.includes('SettleAcc')) renderSettleAccountButtons();
-      else if (cbName.includes('TeamPayAcc')) renderTeamPayAccountButtons();
-      else renderAccountButtons();
+    function openSelectorModal(typeLabel, setGlobalVarFnName, rerenderFnName, activeClass) {
+      document.getElementById('selector-modal-title').innerText = `เลือก ${typeLabel}`;
+      const container = document.getElementById('selector-grid-container');
+      
+      let list = [];
+      let currentSelectedId = null;
+
+      if (typeLabel === 'บัญชี') {
+        list = accountsList;
+        currentSelectedId = selectedAccountId;
+      } else {
+        list = categoriesList.filter(x => x.type === currentTxType);
+        currentSelectedId = currentTxType === 'expense' ? (selectedCategoryIds[0] || null) : selectedCategoryId;
+      }
+
+      container.innerHTML = list.map(item => `
+        <button type="button" onclick="${setGlobalVarFnName}='${item.id}'; ${rerenderFnName}(); closeSelectorModal();" class="p-2.5 rounded-2xl text-xs font-semibold border text-center transition flex items-center justify-between ${item.id === currentSelectedId ? activeClass : 'bg-gray-50 text-gray-700 border-gray-200 hover:bg-gray-100'}">
+          <span class="truncate">${escapeHtml(item.name)}</span>
+          ${item.isPinned ? '<span class="text-[10px]">📌</span>' : ''}
+        </button>
+      `).join('');
+
+      document.getElementById('selector-modal').classList.remove('hidden');
     }
 
+    function closeSelectorModal() { document.getElementById('selector-modal').classList.add('hidden'); }
+
     function renderAccountButtons() { 
-      document.getElementById('account-buttons-container').innerHTML = renderCompactButtonLayout(
-        accountsList, selectedAccountId, 'selectedAccountId', 'bg-emerald-600 text-white border-emerald-600 shadow-xs', 'bg-white text-gray-700 border-gray-200', 'account'
-      ); 
+      document.getElementById('account-buttons-container').innerHTML = renderPinnedSelector(accountsList, selectedAccountId, 'selectedAccountId', 'renderAccountButtons', 'bg-emerald-600 text-white border-emerald-600 shadow-xs', 'บัญชี'); 
     }
-    
+
     function renderTransferButtons() { 
       document.getElementById('transfer-from-container').innerHTML = accountsList.map(a => `
         <button type="button" onclick="transferFromId='${a.id}'; if(transferToId==='${a.id}') { const alt=accountsList.find(x=>x.id!=='${a.id}'); if(alt) transferToId=alt.id; } renderTransferButtons()" 
           class="px-2 py-1 rounded-lg text-xs font-medium transition border text-left ${a.id === transferFromId ? 'bg-blue-600 text-white border-blue-600' : 'bg-white text-gray-700'}">
-          ${escapeHtml(a.name)}
+          ${a.name}
         </button>
       `).join(''); 
       
       document.getElementById('transfer-to-container').innerHTML = accountsList.map(a => {
         const isFromAccount = (a.id === transferFromId);
         if (isFromAccount) {
-          return `<button type="button" disabled class="px-2 py-1 rounded-lg text-xs font-medium transition border text-left bg-gray-200 text-gray-400 border-gray-200 opacity-40 cursor-not-allowed">${escapeHtml(a.name)} (ต้นทาง)</button>`;
+          return `
+            <button type="button" disabled 
+              class="px-2 py-1 rounded-lg text-xs font-medium transition border text-left bg-gray-200 text-gray-400 border-gray-200 opacity-40 cursor-not-allowed" title="ไม่สามารถเลือกบัญชีเดียวกับต้นทางได้">
+              ${a.name} (ต้นทาง)
+            </button>
+          `;
         }
-        return `<button type="button" onclick="transferToId='${a.id}'; renderTransferButtons()" class="px-2 py-1 rounded-lg text-xs font-medium transition border text-left ${a.id === transferToId ? 'bg-blue-600 text-white border-blue-600' : 'bg-white text-gray-700'}">${escapeHtml(a.name)}</button>`;
+        return `
+          <button type="button" onclick="transferToId='${a.id}'; renderTransferButtons()" 
+            class="px-2 py-1 rounded-lg text-xs font-medium transition border text-left ${a.id === transferToId ? 'bg-blue-600 text-white border-blue-600' : 'bg-white text-gray-700'}">
+            ${a.name}
+          </button>
+        `;
       }).join(''); 
     }
 
-    function renderSettleAccountButtons() { document.getElementById('settle-account-buttons').innerHTML=renderCompactButtonLayout(accountsList,selectedSettleAccountId,'selectedSettleAccountId','bg-amber-600 text-white border-amber-600 shadow-xs','bg-white text-gray-700 border-gray-200','account'); }
-    function renderSplitAccountButtons() { document.getElementById('split-account-buttons').innerHTML=renderCompactButtonLayout(accountsList,selectedSplitAccountId,'selectedSplitAccountId','bg-purple-600 text-white border-purple-600 shadow-xs','bg-white text-gray-700 border-gray-200','account'); }
-    function renderInstAccountButtons() { document.getElementById('inst-account-buttons').innerHTML=renderCompactButtonLayout(accountsList,selectedInstAccountId,'selectedInstAccountId','bg-indigo-600 text-white border-indigo-600 shadow-xs','bg-white text-gray-700 border-gray-200','account'); }
-    function renderReimbAccountButtons() { document.getElementById('reimb-account-buttons').innerHTML=renderCompactButtonLayout(accountsList,selectedReimbAccountId,'selectedReimbAccountId','bg-amber-600 text-white border-amber-600 shadow-xs','bg-white text-gray-700 border-gray-200','account'); }
-    function renderTeamPayAccountButtons() { document.getElementById('team-pay-account-buttons').innerHTML=renderCompactButtonLayout(accountsList,selectedTeamPayAccountId,'selectedTeamPayAccountId','bg-teal-600 text-white border-teal-600 shadow-xs','bg-white text-gray-700 border-gray-200','account'); }
+    function renderSettleAccountButtons() { document.getElementById('settle-account-buttons').innerHTML = renderPinnedSelector(accountsList, selectedSettleAccountId, 'selectedSettleAccountId', 'renderSettleAccountButtons', 'bg-amber-600 text-white border-amber-600 shadow-xs', 'บัญชี'); }
+    function renderSplitAccountButtons() { document.getElementById('split-account-buttons').innerHTML = renderPinnedSelector(accountsList, selectedSplitAccountId, 'selectedSplitAccountId', 'renderSplitAccountButtons', 'bg-purple-600 text-white border-purple-600 shadow-xs', 'บัญชี'); }
+    function renderInstAccountButtons() { document.getElementById('inst-account-buttons').innerHTML = renderPinnedSelector(accountsList, selectedInstAccountId, 'selectedInstAccountId', 'renderInstAccountButtons', 'bg-indigo-600 text-white border-indigo-600 shadow-xs', 'บัญชี'); }
+    function renderReimbAccountButtons() { document.getElementById('reimb-account-buttons').innerHTML = renderPinnedSelector(accountsList, selectedReimbAccountId, 'selectedReimbAccountId', 'renderReimbAccountButtons', 'bg-amber-600 text-white border-amber-600 shadow-xs', 'บัญชี'); }
+    function renderTeamPayAccountButtons() { document.getElementById('team-pay-account-buttons').innerHTML = renderPinnedSelector(accountsList, selectedTeamPayAccountId, 'selectedTeamPayAccountId', 'renderTeamPayAccountButtons', 'bg-teal-600 text-white border-teal-600 shadow-xs', 'บัญชี'); }
 
     function renderCategoryButtons() {
       const c = categoriesList.filter(x => x.type === currentTxType);
@@ -777,52 +858,37 @@
         if (!selectedCategoryIds.length || !selectedCategoryIds.some(id => c.some(cat => cat.id === id))) {
           if (c.length) selectedCategoryIds = [c[0].id];
         }
-        document.getElementById('category-buttons-container').innerHTML = renderCompactButtonLayout(
-          c, selectedCategoryIds, 'selectedCategoryIds', 'bg-rose-600 text-white border-rose-600 shadow-xs', 'bg-white text-gray-700 border-gray-200', 'category'
-        );
+
+        let pinned = c.filter(i => i.isPinned);
+        if (!pinned.length && c.length) pinned = [c[0]];
+
+        let html = `<div class="flex flex-wrap gap-1">`;
+        pinned.forEach(i => {
+          const isSelected = selectedCategoryIds.includes(i.id);
+          html += `<button type="button" onclick="handleExpenseCategoryTap('${i.id}')" class="px-2.5 py-1 rounded-xl text-xs font-semibold transition border ${isSelected ? 'bg-rose-600 text-white border-rose-600 shadow-xs' : 'bg-white text-gray-700 border-gray-200'}">📌 ${escapeHtml(i.name)}${isSelected && selectedCategoryIds.length > 1 ? ' ✓' : ''}</button>`;
+        });
+        html += `</div>`;
+
+        const unpinnedCount = c.length - pinned.length;
+        if (unpinnedCount > 0) {
+          const selectedNonPinned = c.filter(i => !i.isPinned && selectedCategoryIds.includes(i.id));
+          const extraLabel = selectedNonPinned.length > 0 ? `เลือกอยู่: ${selectedNonPinned.map(x=>x.name).join(', ')}` : `📂 เลือกหมวดหมู่อื่นๆ (${unpinnedCount})...`;
+          const extraClass = selectedNonPinned.length > 0 ? 'bg-rose-600 text-white border-rose-600 shadow-xs' : 'bg-gray-100 text-gray-700 border-gray-300 hover:bg-gray-200';
+          
+          html += `<div class="mt-1"><button type="button" onclick="openSelectorModal('หมวดหมู่รายจ่าย', 'selectedCategoryId', 'renderCategoryButtons', 'bg-rose-600 text-white border-rose-600 shadow-xs')" class="w-full text-left px-3 py-1.5 rounded-xl text-xs font-medium transition border ${extraClass}">${escapeHtml(extraLabel)}</button></div>`;
+        }
+
+        document.getElementById('category-buttons-container').innerHTML = html;
       } else {
         document.getElementById('lbl-multi-cat-hint').classList.add('hidden');
         if (!selectedCategoryId || !c.some(x => x.id === selectedCategoryId)) if (c.length) selectedCategoryId = c[0].id;
-        document.getElementById('category-buttons-container').innerHTML = renderCompactButtonLayout(
-          c, selectedCategoryId, 'selectedCategoryId', 'bg-emerald-600 text-white border-emerald-600 shadow-xs', 'bg-white text-gray-700 border-gray-200', 'category'
-        );
+        document.getElementById('category-buttons-container').innerHTML = renderPinnedSelector(c, selectedCategoryId, 'selectedCategoryId', 'renderCategoryButtons', 'bg-emerald-600 text-white border-emerald-600 shadow-xs', 'หมวดหมู่รายรับ');
       }
     }
 
-    function renderSplitCategoryButtons() { const c=categoriesList.filter(x=>x.type==='income'); if(!selectedSplitCategoryId||!c.some(x=>x.id===selectedSplitCategoryId))if(c.length)selectedSplitCategoryId=c[0].id; document.getElementById('split-category-buttons').innerHTML=renderCompactButtonLayout(c,selectedSplitCategoryId,'selectedSplitCategoryId','bg-purple-600 text-white border-purple-600 shadow-xs','bg-white text-gray-700 border-gray-200','category'); }
-    function renderInstCategoryButtons() { const c=categoriesList.filter(x=>x.type==='expense'); if(!selectedInstCategoryId||!c.some(x=>x.id===selectedInstCategoryId))if(c.length)selectedInstCategoryId=c[0].id; document.getElementById('inst-category-buttons').innerHTML=renderCompactButtonLayout(c,selectedInstCategoryId,'selectedInstCategoryId','bg-indigo-600 text-white border-indigo-600 shadow-xs','bg-white text-gray-700 border-gray-200','category'); }
-    function renderReimbCategoryButtons() { const c=categoriesList.filter(x=>x.type==='expense'); if(!selectedReimbCategoryId||!c.some(x=>x.id===selectedReimbCategoryId))if(c.length)selectedReimbCategoryId=c[0].id; document.getElementById('reimb-category-buttons').innerHTML=renderCompactButtonLayout(c,selectedReimbCategoryId,'selectedReimbCategoryId','bg-amber-600 text-white border-amber-600 shadow-xs','bg-white text-gray-700 border-gray-200','category'); }
-
-    // SELECTION MODAL LOGIC (v1.12)
-    function openSelectionModal(type, cbName) {
-      const modal = document.getElementById('selection-modal');
-      const titleEl = document.getElementById('selection-modal-title');
-      const grid = document.getElementById('selection-modal-grid');
-
-      titleEl.innerText = `เลือก${type === 'account' ? 'บัญชี' : 'หมวดหมู่'}`;
-      let list = (type === 'account') ? accountsList : categoriesList.filter(c => c.type === (currentTxType || 'expense'));
-      
-      grid.innerHTML = list.map(item => `
-        <button type="button" onclick="selectFromModal('${item.id}', '${cbName}')" class="p-3 bg-gray-50 hover:bg-emerald-50 border rounded-2xl text-xs font-semibold text-gray-700 text-center transition flex flex-col items-center justify-center space-y-1">
-          <span>${escapeHtml(item.name)}</span>
-          ${item.isPinned ? '<span class="text-[9px] text-amber-500 font-bold">📌 ปักหมุด</span>' : ''}
-        </button>
-      `).join('');
-
-      modal.classList.remove('hidden');
-    }
-
-    function closeSelectionModal() { document.getElementById('selection-modal').classList.add('hidden'); }
-
-    function selectFromModal(id, cbName) {
-      if (cbName === 'selectedCategoryIds') {
-        selectedCategoryIds = [id];
-      } else {
-        window[cbName] = id;
-      }
-      closeSelectionModal();
-      refreshUIByCb(cbName);
-    }
+    function renderSplitCategoryButtons() { const c=categoriesList.filter(x=>x.type==='income'); if(!selectedSplitCategoryId||!c.some(x=>x.id===selectedSplitCategoryId))if(c.length)selectedSplitCategoryId=c[0].id; document.getElementById('split-category-buttons').innerHTML=renderPinnedSelector(c,selectedSplitCategoryId,'selectedSplitCategoryId','renderSplitCategoryButtons','bg-purple-600 text-white border-purple-600 shadow-xs','หมวดหมู่รายรับ'); }
+    function renderInstCategoryButtons() { const c=categoriesList.filter(x=>x.type==='expense'); if(!selectedInstCategoryId||!c.some(x=>x.id===selectedInstCategoryId))if(c.length)selectedInstCategoryId=c[0].id; document.getElementById('inst-category-buttons').innerHTML=renderPinnedSelector(c,selectedInstCategoryId,'selectedInstCategoryId','renderInstCategoryButtons','bg-indigo-600 text-white border-indigo-600 shadow-xs','หมวดหมู่รายจ่าย'); }
+    function renderReimbCategoryButtons() { const c=categoriesList.filter(x=>x.type==='expense'); if(!selectedReimbCategoryId||!c.some(x=>x.id===selectedReimbCategoryId))if(c.length)selectedReimbCategoryId=c[0].id; document.getElementById('reimb-category-buttons').innerHTML=renderPinnedSelector(c,selectedReimbCategoryId,'selectedReimbCategoryId','renderReimbCategoryButtons','bg-amber-600 text-white border-amber-600 shadow-xs','หมวดหมู่รายจ่าย'); }
 
     // MULTI-CATEGORY ALLOCATION MODAL LOGIC
     function openMultiCatModal(payload) {
@@ -1284,4 +1350,231 @@
       if(net>=0){ f.style.marginLeft='50%'; f.style.width=`${Math.min(50,(net/max)*50)}%`; f.className="h-full bg-emerald-500 rounded-r-full"; t.innerText=`+${userSettings.currency}${net.toLocaleString()}`; t.className="font-bold text-emerald-600"; }
       else { const p=Math.min(50,(Math.abs(net)/max)*50); f.style.marginLeft=`${50-p}%`; f.style.width=`${p}%`; f.className="h-full bg-rose-500 rounded-l-full"; t.innerText=`-${userSettings.currency}${Math.abs(net).toLocaleString()}`; t.className="font-bold text-rose-600"; }
     }
-    function update
+    function updateEntryCurrentMonthCashFlowUI() { const {netFlow, inc, exp} = calculateCashflowForMonth(new Date().getFullYear(), new Date().getMonth()+1); renderCashflowBar(netFlow, Math.max(inc,exp,1), 'entry-cashflow-bar-fill', 'entry-cashflow-net-text'); }
+    function openCashflowPopUpModal() { const d=new Date(); popupYear=d.getFullYear(); popupMonth=d.getMonth()+1; updatePopupCashflowUI(); document.getElementById('cashflow-modal').classList.remove('hidden'); }
+    function closeCashflowPopUpModal() { document.getElementById('cashflow-modal').classList.add('hidden'); }
+    function changePopupCashflowMonth(off) { popupMonth+=off; if(popupMonth>12){popupMonth=1; popupYear++;} else if(popupMonth<1){popupMonth=12; popupYear--;} updatePopupCashflowUI(); }
+    function updatePopupCashflowUI() { document.getElementById('popup-cashflow-month-label').innerText = `${["ม.ค.","ก.พ.","มี.ค.","เม.ย.","พ.ค.","มิ.ย.","ก.ค.","ส.ค.","ก.ย.","ต.ค.","พ.ย.","ธ.ค."][popupMonth-1]} ${popupYear}`; const {netFlow, inc, exp} = calculateCashflowForMonth(popupYear, popupMonth); renderCashflowBar(netFlow, Math.max(inc,exp,1), 'popup-cashflow-bar-fill', 'popup-cashflow-net-text'); }
+
+    function loadTransactionsRealtime(uid) {
+      if(unsubscribeTx) unsubscribeTx();
+      unsubscribeTx = db.collection('users').doc(uid).collection('transactions').orderBy('createdAt', 'desc').onSnapshot(snap => {
+        let tInc=0, tExp=0, pFr=0, pTm=0; allTransactions = [];
+        snap.forEach(d => { const t={id:d.id,...d.data()}; allTransactions.push(t);
+          if(t.kind==='transaction') { if(t.type==='income')tInc+=t.amount; else tExp+=(t.isReimburse?t.myShare:t.amount); if(t.isReimburse&&t.remainingPending>0)pFr+=t.remainingPending; }
+          else if(t.kind==='settlement') tInc+=t.amount; else if(t.kind==='split') { tInc+=t.myShare; if(t.remainingTeamPending>0)pTm+=t.remainingTeamPending; }
+        });
+        updateEntryCurrentMonthCashFlowUI(); if(!document.getElementById('cashflow-modal').classList.contains('hidden')) updatePopupCashflowUI();
+        if (!summaryView.classList.contains('hidden')) renderSummaryAnalyticsUI();
+
+        if (currentEntryMode === 'team-pay') renderPendingTeamList();
+        if (currentEntryMode === 'settle') renderPendingFriendList();
+
+        let grp={}; allTransactions.forEach(t => { if(!grp[t.date])grp[t.date]=[]; grp[t.date].push(t); });
+        document.getElementById('full-tx-list').innerHTML = Object.keys(grp).sort((a,b)=>b.localeCompare(a)).map(d => `<div class="sticky top-0 bg-gray-100/95 px-3 py-1 text-[11px] font-bold text-gray-600 rounded-lg my-1.5 shadow-2xs">${d}</div>` + grp[d].map(t => {
+          if(t.kind==='transaction'){
+            let b=''; 
+            if(t.isReimburse) b=t.remainingPending>0?`<span class="text-[9px] bg-amber-100 text-amber-800 px-1 py-0.5 rounded ml-1">รอ ${t.remainingPending}</span>`:`<span class="text-[9px] bg-emerald-100 text-emerald-800 px-1 py-0.5 rounded ml-1">คืนครบ</span>`; 
+            else if(t.isInstallment) b=`<span class="text-[9px] bg-indigo-100 text-indigo-800 px-1 py-0.5 rounded ml-1">ผ่อน</span>`;
+            
+            let breakdownText = '';
+            if (t.categoriesBreakdown && t.categoriesBreakdown.length > 1) {
+              breakdownText = `<div class="text-[9px] text-gray-400 mt-0.5 font-light">${t.categoriesBreakdown.map(sub => `${sub.categoryName}: ฿${sub.amount.toLocaleString()}`).join(' • ')}</div>`;
+            }
+
+            return `<div onclick="openEditModal('${t.id}')" class="flex justify-between items-center p-2.5 bg-gray-50 border rounded-xl text-xs hover:bg-gray-100 cursor-pointer mb-1"><div class="flex flex-col"><span class="font-medium">${escapeHtml(t.note||'-')} ${b}</span><span class="text-[10px] text-gray-400">${accountsList.find(a=>a.id===t.accountId)?.name||''} • [${t.categoryName}]</span>${breakdownText}</div><div class="flex items-center space-x-2"><span class="font-bold ${t.type==='income'?'text-emerald-600':'text-rose-600'}">${t.type==='income'?'+':'-'}${t.amount.toLocaleString()}</span><button onclick="event.stopPropagation(); deleteTx('${t.id}')" class="text-gray-300 hover:text-rose-500 font-bold px-1">×</button></div></div>`;
+          }
+          
+          if(t.kind==='split') {
+            const pendingText = t.remainingTeamPending > 0 ? `<span class="text-[9px] bg-purple-100 text-purple-800 px-1 py-0.5 rounded ml-1">ค้างทีม ฿${t.remainingTeamPending.toLocaleString()}</span>` : `<span class="text-[9px] bg-emerald-100 text-emerald-800 px-1 py-0.5 rounded ml-1">จ่ายทีมครบ</span>`;
+            return `<div onclick="openEditModal('${t.id}')" class="flex justify-between items-center p-2.5 bg-purple-50/50 border border-purple-100 rounded-xl text-xs hover:bg-purple-100/60 cursor-pointer mb-1"><div class="flex flex-col"><span class="font-medium">รับแทนทีม (${accountsList.find(a=>a.id===t.accountId)?.name}) ${pendingText}</span><span class="text-[10px] text-gray-400">${escapeHtml(t.note||'-')} (ส่วนเรา ฿${t.myShare.toLocaleString()})</span></div><div class="flex items-center space-x-2"><span class="font-bold text-purple-900">+${t.totalAmount.toLocaleString()}</span><button onclick="event.stopPropagation(); deleteTx('${t.id}')" class="text-gray-300 hover:text-rose-500 font-bold px-1">×</button></div></div>`;
+          }
+
+          return `<div class="flex justify-between items-center p-2.5 border rounded-xl text-xs mb-1 ${t.kind==='transfer'?'bg-blue-50/50 border-blue-100':t.kind==='team-pay'?'bg-teal-50/50 border-teal-100':'bg-amber-50/50 border-amber-100'}"><div class="flex flex-col"><span class="font-medium">${t.kind==='transfer'?`โอน: ${t.fromAccountName} ➔ ${t.toAccountName}`:t.kind==='team-pay'?`โอนให้ทีม (${accountsList.find(a=>a.id===t.accountId)?.name})`:'รับเงินคืน'}</span><span class="text-[10px] text-gray-400">${escapeHtml(t.note||'-')}</span></div><div class="flex items-center space-x-2"><span class="font-bold">${t.kind==='transfer'||t.kind==='team-pay'?'-'+t.amount.toLocaleString():'+'+t.amount.toLocaleString()}</span><button onclick="deleteTx('${t.id}')" class="text-gray-300 hover:text-rose-500 font-bold px-1">×</button></div></div>`;
+        }).join('')).join('') || '<p class="text-center text-xs py-6">ไม่มีประวัติ</p>';
+
+        document.getElementById('total-pending-friend').innerText=`${userSettings.currency}${pFr.toLocaleString()}`; document.getElementById('total-pending-team').innerText=`${userSettings.currency}${pTm.toLocaleString()}`;
+      });
+    }
+
+    // EDIT / DELETE
+    function openEditModal(id) { 
+      const t=allTransactions.find(x=>x.id===id); 
+      if(!t || (t.kind !== 'transaction' && t.kind !== 'split')) return; 
+
+      document.getElementById('edit-tx-id').value = t.id; 
+      document.getElementById('edit-tx-kind').value = t.kind;
+      document.getElementById('edit-date').value = t.date; 
+      document.getElementById('edit-note').value = t.note || ''; 
+
+      const titleEl = document.getElementById('edit-modal-title');
+      const normBox = document.getElementById('edit-fields-normal');
+      const splitBox = document.getElementById('edit-fields-split');
+
+      if (t.kind === 'split') {
+        titleEl.innerText = "แก้ไขรายการรับเงินแทน";
+        normBox.classList.add('hidden');
+        splitBox.classList.remove('hidden');
+
+        document.getElementById('edit-split-total').value = t.totalAmount;
+        document.getElementById('edit-split-my').value = t.myShare;
+        updateEditSplitMath();
+      } else {
+        titleEl.innerText = "แก้ไขรายการ";
+        splitBox.classList.add('hidden');
+        normBox.classList.remove('hidden');
+
+        document.getElementById('edit-amount').value = t.amount;
+      }
+
+      document.getElementById('edit-modal').classList.remove('hidden'); 
+    }
+
+    function closeEditModal() { document.getElementById('edit-modal').classList.add('hidden'); }
+
+    async function saveEditedTransaction() { 
+      const id = document.getElementById('edit-tx-id').value;
+      const kind = document.getElementById('edit-tx-kind').value;
+      const d = document.getElementById('edit-date').value;
+      const n = document.getElementById('edit-note').value;
+      const t = allTransactions.find(x => x.id === id); 
+
+      if (!t) return;
+
+      try {
+        const r = db.collection('users').doc(currentUser.uid).collection('accounts').doc(t.accountId);
+        
+        if (kind === 'split') {
+          const newTotal = parseFloat(document.getElementById('edit-split-total').value);
+          const newMy = parseFloat(document.getElementById('edit-split-my').value);
+          if (isNaN(newTotal) || newTotal <= 0 || isNaN(newMy) || newMy < 0 || newMy > newTotal) return alert("กรอกยอดเงินไม่ถูกต้อง");
+
+          const newTeamShare = newTotal - newMy;
+          const paidToTeamAlready = t.teamShare - t.remainingTeamPending;
+          const newRemainingTeam = Math.max(0, newTeamShare - paidToTeamAlready);
+
+          await db.runTransaction(async tr => {
+            const a = await tr.get(r);
+            if (a.exists) {
+              const diffTotal = newTotal - t.totalAmount;
+              tr.update(r, { balance: a.data().balance + diffTotal });
+            }
+            tr.update(db.collection('users').doc(currentUser.uid).collection('transactions').doc(id), {
+              totalAmount: newTotal,
+              myShare: newMy,
+              teamShare: newTeamShare,
+              remainingTeamPending: newRemainingTeam,
+              date: d,
+              note: n
+            });
+          });
+        } else {
+          const amt = parseFloat(document.getElementById('edit-amount').value);
+          if (isNaN(amt) || amt <= 0) return alert("กรอกจำนวนเงินให้ถูกต้อง");
+
+          await db.runTransaction(async tr => { 
+            const a = await tr.get(r); 
+            if (a.exists) tr.update(r, { balance: a.data().balance + (t.type === 'income' ? (amt - t.amount) : -(amt - t.amount)) }); 
+            tr.update(db.collection('users').doc(currentUser.uid).collection('transactions').doc(id), { amount: amt, date: d, note: n }); 
+          });
+        }
+        closeEditModal(); 
+      } catch (err) { alert(err.message); } 
+    }
+    
+    async function deleteTx(id) { 
+      if(!confirm("ลบรายการ?")) return; 
+      const t=allTransactions.find(x=>x.id===id); 
+      try { 
+        if(t.kind==='transaction'||t.kind==='settlement'||t.kind==='split') { 
+          const r=db.collection('users').doc(currentUser.uid).collection('accounts').doc(t.accountId); 
+          await db.runTransaction(async tr=>{ 
+            const a=await tr.get(r); 
+            if(a.exists) tr.update(r,{balance: a.data().balance + (t.type==='income'||t.kind==='settlement'||t.kind==='split'?- (t.totalAmount||t.amount):t.amount)}); 
+          }); 
+        } else if(t.kind==='team-pay') {
+          const b = db.batch();
+          const r = db.collection('users').doc(currentUser.uid).collection('accounts').doc(t.accountId);
+          const a = await r.get();
+          if(a.exists) b.update(r, { balance: a.data().balance + t.amount });
+
+          if (t.linkedSplitItems && t.linkedSplitItems.length > 0) {
+            for (const item of t.linkedSplitItems) {
+              const splitRef = db.collection('users').doc(currentUser.uid).collection('transactions').doc(item.splitId);
+              const splitDoc = await splitRef.get();
+              if (splitDoc.exists) {
+                b.update(splitRef, { remainingTeamPending: (splitDoc.data().remainingTeamPending || 0) + item.deductedAmount });
+              }
+            }
+          }
+          await b.commit();
+        } else if(t.kind==='transfer') { 
+          const f=db.collection('users').doc(currentUser.uid).collection('accounts').doc(t.fromAccountId), to=db.collection('users').doc(currentUser.uid).collection('accounts').doc(t.toAccountId); 
+          await db.runTransaction(async tr=>{ const aF=await tr.get(f), aT=await tr.get(to); if(aF.exists)tr.update(f,{balance:aF.data().balance+t.amount}); if(aT.exists)tr.update(to,{balance:aT.data().balance-t.amount}); }); 
+        } 
+        
+        await db.collection('users').doc(currentUser.uid).collection('transactions').doc(id).delete(); 
+      } catch (err) { alert(err.message); } 
+    }
+
+    // SETTINGS (v1.12 Supports Pin Toggling)
+    function renderSettingsAccounts() { 
+      document.getElementById('accounts-settings-list').innerHTML = accountsList.map(a=>`
+        <div class="flex justify-between items-center p-2 bg-gray-50 border rounded-xl text-xs">
+          <div class="flex items-center space-x-1.5">
+            <button onclick="togglePin('account', '${a.id}', ${!a.isPinned})" class="p-1 hover:bg-gray-200 rounded text-sm">${a.isPinned ? '📌' : '📍'}</button>
+            <span class="font-semibold">${escapeHtml(a.name)}</span> 
+            <span class="text-gray-500">(${a.balance.toLocaleString()})</span>
+          </div>
+          <div class="flex items-center">
+            <input type="text" id="edit-acc-${a.id}" readonly onclick="openCustomKeypad('edit-acc-${a.id}')" value="${a.balance}" class="w-14 px-1 py-1 border rounded bg-white cursor-pointer text-right font-bold">
+            <button onclick="updateAccountBalance('${a.id}')" class="bg-blue-50 text-blue-600 px-1.5 py-0.5 mx-1 rounded font-medium">แก้</button>
+            ${!a.isDefault ? `<button onclick="deleteAccount('${a.id}')" class="text-rose-500 font-bold px-1">✕</button>` : ''}
+          </div>
+        </div>
+      `).join(''); 
+    }
+
+    function renderSettingsCategories() { 
+      document.getElementById('expense-cats-list').innerHTML = categoriesList.filter(c=>c.type==='expense').map(c=>`
+        <div class="flex justify-between items-center p-1 border rounded text-xs bg-gray-50">
+          <button onclick="togglePin('category', '${c.id}', ${!c.isPinned})" class="px-1 text-xs">${c.isPinned ? '📌' : '📍'}</button>
+          <input id="edit-cat-${c.id}" value="${escapeHtml(c.name)}" class="w-14 px-1 border rounded bg-white text-xs">
+          <div class="flex">
+            <button onclick="updateCategoryName('${c.id}')" class="text-blue-600 px-1">✓</button>
+            <button onclick="deleteCategory('${c.id}')" class="text-rose-500 px-1">✕</button>
+          </div>
+        </div>
+      `).join(''); 
+
+      document.getElementById('income-cats-list').innerHTML = categoriesList.filter(c=>c.type==='income').map(c=>`
+        <div class="flex justify-between items-center p-1 border rounded text-xs bg-gray-50">
+          <button onclick="togglePin('category', '${c.id}', ${!c.isPinned})" class="px-1 text-xs">${c.isPinned ? '📌' : '📍'}</button>
+          <input id="edit-cat-${c.id}" value="${escapeHtml(c.name)}" class="w-14 px-1 border rounded bg-white text-xs">
+          <div class="flex">
+            <button onclick="updateCategoryName('${c.id}')" class="text-blue-600 px-1">✓</button>
+            <button onclick="deleteCategory('${c.id}')" class="text-rose-500 px-1">✕</button>
+          </div>
+        </div>
+      `).join(''); 
+    }
+
+    async function togglePin(type, id, isPinned) {
+      try {
+        const col = type === 'account' ? 'accounts' : 'categories';
+        await db.collection('users').doc(currentUser.uid).collection(col).doc(id).update({ isPinned: isPinned });
+      } catch (err) { alert(err.message); }
+    }
+
+    async function addNewAccount() { const n=document.getElementById('new-acc-name').value, b=parseFloat(document.getElementById('new-acc-balance').value)||0; if(!n)return; await db.collection('users').doc(currentUser.uid).collection('accounts').add({name:n, balance:b, isDefault:false, isPinned: false, createdAt: firebase.firestore.FieldValue.serverTimestamp()}); document.getElementById('new-acc-name').value=''; document.getElementById('new-acc-balance').value=''; }
+    async function updateAccountBalance(id) { await db.collection('users').doc(currentUser.uid).collection('accounts').doc(id).update({balance: parseFloat(document.getElementById(`edit-acc-${id}`).value)||0}); }
+    async function deleteAccount(id) { if(confirm('ลบ?')) await db.collection('users').doc(currentUser.uid).collection('accounts').doc(id).delete(); }
+    async function addNewCategory(t) { const i=t==='expense'?'new-exp-cat-name':'new-inc-cat-name', n=document.getElementById(i).value; if(!n)return; await db.collection('users').doc(currentUser.uid).collection('categories').add({name:n, type:t, isPinned: false, createdAt: firebase.firestore.FieldValue.serverTimestamp()}); document.getElementById(i).value=''; }
+    async function updateCategoryName(id) { await db.collection('users').doc(currentUser.uid).collection('categories').doc(id).update({name: document.getElementById(`edit-cat-${id}`).value}); }
+    async function deleteCategory(id) { if(confirm('ลบ?')) await db.collection('users').doc(currentUser.uid).collection('categories').doc(id).delete(); }
+    async function toggleAdvancedFeaturesSetting() { userSettings.enableAdvanced = document.getElementById('setting-enable-advanced').checked; applyAdvancedFeaturesVisibility(); await autoSaveSettings(); }
+    async function autoSaveSettings() { userSettings.currency = document.getElementById('setting-currency').value; updateCurrencyUI(); await db.collection('users').doc(currentUser.uid).collection('settings').doc('config').set({currency: userSettings.currency, enableAdvanced: userSettings.enableAdvanced}); }
+    function escapeHtml(text) { return text ? text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;") : ''; }
+  </script>
+</body>
+</html>
