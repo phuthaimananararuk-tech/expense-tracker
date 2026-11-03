@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>YUET (v1.10) - Transfer Protection & Double-Tap Multi-Cat</title>
+  <title>YUET (v1.11) - Editable Split & Team Pay Auto-Note</title>
   
   <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
@@ -41,7 +41,7 @@
       <div class="flex flex-col items-center">
         <div class="flex items-baseline space-x-1">
           <h1 class="text-xl font-black tracking-wider uppercase drop-shadow-sm">YUET</h1>
-          <span class="text-[9px] font-medium text-emerald-200 tracking-tight">(v1.10)</span>
+          <span class="text-[9px] font-medium text-emerald-200 tracking-tight">(v1.11)</span>
         </div>
         <p class="text-[8px] text-emerald-100/80 tracking-tight font-light">by Phuthai Mananararuk & Gemini</p>
       </div>
@@ -117,7 +117,7 @@
             <button type="submit" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-medium py-2 rounded-xl text-xs shadow-xs transition mt-1">+ บันทึกรายการ</button>
           </form>
 
-          <!-- DEDICATED FORM 2: Transfer Form (โอนเงินระหว่างบัญชี - v1.10 Disable Duplicate) -->
+          <!-- DEDICATED FORM 2: Transfer Form -->
           <form id="transfer-form" class="hidden bg-gray-50 p-3 rounded-2xl border border-gray-200 space-y-2.5">
             <div class="grid grid-cols-2 gap-2">
               <div><label class="block text-[11px] text-gray-500 mb-1">ต้นทาง</label><div id="transfer-from-container" class="flex flex-col gap-1"></div></div>
@@ -418,9 +418,35 @@
     <div class="bg-white rounded-3xl w-full max-w-xs p-4 space-y-4 shadow-2xl relative"><button onclick="closeCashflowPopUpModal()" class="absolute top-3 right-4 text-gray-400 font-bold text-base">✕</button><div class="border-b pb-2"><h3 class="text-xs font-bold text-gray-700 uppercase">Cash Flow</h3></div><div class="flex items-center justify-between bg-gray-50 p-2 rounded-2xl border border-gray-200"><button onclick="changePopupCashflowMonth(-1)" class="p-1.5 hover:bg-gray-200 rounded-xl text-gray-700 font-bold">←</button><span id="popup-cashflow-month-label" class="text-xs font-bold text-gray-800"></span><button onclick="changePopupCashflowMonth(1)" class="p-1.5 hover:bg-gray-200 rounded-xl text-gray-700 font-bold">→</button></div><div class="space-y-1.5 bg-gray-50 p-3 rounded-2xl border border-gray-100"><div class="relative w-full h-4 bg-gray-200 rounded-full overflow-hidden flex items-center border"><div class="absolute left-1/2 top-0 bottom-0 w-0.5 bg-gray-500 z-10"></div><div id="popup-cashflow-bar-fill" class="h-full transition-all duration-500 ease-out"></div></div><div class="flex justify-between items-center text-xs pt-1"><span class="text-rose-500 font-medium">จ่าย</span><span id="popup-cashflow-net-text" class="font-bold">฿0.00</span><span class="text-emerald-500 font-medium">รับ</span></div></div></div>
   </div>
 
-  <!-- EDIT TRANSACTION MODAL -->
+  <!-- EDIT TRANSACTION MODAL (v1.11 Supports Normal & Split Transactions) -->
   <div id="edit-modal" class="hidden fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-40">
-    <div class="bg-white rounded-3xl w-full max-w-sm p-4 space-y-3 shadow-2xl"><h3 class="text-xs font-bold text-gray-700 uppercase border-b pb-2">แก้ไขรายการ</h3><input type="hidden" id="edit-tx-id"><div><label class="block text-[11px] text-gray-500 mb-1">จำนวนเงิน</label><input type="text" id="edit-amount" readonly onclick="openCustomKeypad('edit-amount')" class="w-full px-2 py-1.5 text-xs border rounded-xl bg-white cursor-pointer"></div><div><label class="block text-[11px] text-gray-500 mb-1">วันที่</label><input type="date" id="edit-date" class="w-full px-2 py-1.5 text-xs border rounded-xl bg-white"></div><div><label class="block text-[11px] text-gray-500 mb-1">บันทึกช่วยจำ</label><input type="text" id="edit-note" class="w-full px-2 py-1.5 text-xs border rounded-xl bg-white"></div><div class="flex space-x-2 pt-2"><button type="button" onclick="closeEditModal()" class="w-1/2 bg-gray-200 text-gray-700 py-2 rounded-xl text-xs font-medium">ยกเลิก</button><button type="button" onclick="saveEditedTransaction()" class="w-1/2 bg-emerald-600 text-white py-2 rounded-xl text-xs font-medium">บันทึก</button></div></div>
+    <div class="bg-white rounded-3xl w-full max-w-sm p-4 space-y-3 shadow-2xl">
+      <h3 id="edit-modal-title" class="text-xs font-bold text-gray-700 uppercase border-b pb-2">แก้ไขรายการ</h3>
+      <input type="hidden" id="edit-tx-id">
+      <input type="hidden" id="edit-tx-kind">
+
+      <!-- Dynamic Fields for Normal Transaction -->
+      <div id="edit-fields-normal" class="space-y-3">
+        <div><label class="block text-[11px] text-gray-500 mb-1">จำนวนเงิน</label><input type="text" id="edit-amount" readonly onclick="openCustomKeypad('edit-amount')" class="w-full px-2 py-1.5 text-xs border rounded-xl bg-white cursor-pointer"></div>
+      </div>
+
+      <!-- Dynamic Fields for Split Transaction (v1.11) -->
+      <div id="edit-fields-split" class="space-y-3 hidden">
+        <div><label class="block text-[11px] text-purple-900 mb-1">ยอดเต็มลูกค้า (<span class="currency-symbol">฿</span>)</label><input type="text" id="edit-split-total" readonly onclick="openCustomKeypad('edit-split-total')" oninput="updateEditSplitMath()" class="w-full px-2 py-1.5 text-xs border rounded-xl bg-white cursor-pointer font-bold"></div>
+        <div><label class="block text-[11px] text-purple-900 mb-1">ส่วนของเรา (<span class="currency-symbol">฿</span>)</label><input type="text" id="edit-split-my" readonly onclick="openCustomKeypad('edit-split-my')" oninput="updateEditSplitMath()" class="w-full px-2 py-1.5 text-xs border rounded-xl bg-white cursor-pointer font-bold"></div>
+        <div class="bg-purple-50 p-2 rounded-xl border border-purple-100 flex justify-between items-center text-xs">
+          <span class="text-purple-700">รอจ่ายทีมงาน:</span><b id="lbl-edit-split-team" class="text-purple-900 font-bold">฿0.00</b>
+        </div>
+      </div>
+
+      <div><label class="block text-[11px] text-gray-500 mb-1">วันที่</label><input type="date" id="edit-date" class="w-full px-2 py-1.5 text-xs border rounded-xl bg-white"></div>
+      <div><label class="block text-[11px] text-gray-500 mb-1">บันทึกช่วยจำ</label><input type="text" id="edit-note" class="w-full px-2 py-1.5 text-xs border rounded-xl bg-white"></div>
+      
+      <div class="flex space-x-2 pt-2">
+        <button type="button" onclick="closeEditModal()" class="w-1/2 bg-gray-200 text-gray-700 py-2 rounded-xl text-xs font-medium">ยกเลิก</button>
+        <button type="button" onclick="saveEditedTransaction()" class="w-1/2 bg-emerald-600 text-white py-2 rounded-xl text-xs font-medium">บันทึก</button>
+      </div>
+    </div>
   </div>
 
   <!-- APPLICATION LOGIC -->
@@ -459,7 +485,7 @@
     let activeKeypadFieldId = null;
     let pendingMultiCatTxPayload = null;
 
-    // Double-tap Gesture Tracker for Expense Category Buttons (v1.10)
+    // Double-tap Gesture Tracker for Expense Category Buttons
     let categoryTapTracker = { catId: null, timer: null };
 
     // Chart.js Instances
@@ -645,11 +671,15 @@
     }
 
     function updateSplitMath() { const t=parseFloat(document.getElementById('split-total-amount').value)||0, m=parseFloat(document.getElementById('split-my-share').value)||0; document.getElementById('split-team-share-lbl').innerText=`${userSettings.currency}${Math.max(0,t-m).toLocaleString()}`; }
+    
+    function updateEditSplitMath() { 
+      const t=parseFloat(document.getElementById('edit-split-total').value)||0, m=parseFloat(document.getElementById('edit-split-my').value)||0; 
+      document.getElementById('lbl-edit-split-team').innerText=`${userSettings.currency}${Math.max(0,t-m).toLocaleString()}`; 
+    }
 
-    // GESTURE HANDLER: EXPENSE CATEGORY SINGLE-TAP VS DOUBLE-TAP (v1.10)
+    // GESTURE HANDLER: EXPENSE CATEGORY SINGLE-TAP VS DOUBLE-TAP
     function handleExpenseCategoryTap(catId) {
       if (categoryTapTracker.timer && categoryTapTracker.catId === catId) {
-        // DOUBLE-TAP DETECTED: Toggle / Add into multi-selection list
         clearTimeout(categoryTapTracker.timer);
         categoryTapTracker.timer = null;
         categoryTapTracker.catId = null;
@@ -663,11 +693,9 @@
         }
         renderCategoryButtons();
       } else {
-        // SINGLE-TAP INITIATED: Wait 300ms for potential second tap
         if (categoryTapTracker.timer) clearTimeout(categoryTapTracker.timer);
         categoryTapTracker.catId = catId;
         categoryTapTracker.timer = setTimeout(() => {
-          // SINGLE-TAP EXECUTION: Switch selection strictly to this single category
           selectedCategoryIds = [catId];
           categoryTapTracker.timer = null;
           categoryTapTracker.catId = null;
@@ -685,7 +713,6 @@
 
     function renderAccountButtons() { document.getElementById('account-buttons-container').innerHTML=genBtns(accountsList,selectedAccountId,'selectedAccountId','bg-emerald-600 text-white border-emerald-600 shadow-xs','bg-white text-gray-700 border-gray-200'); }
     
-    // TRANSFER BUTTONS RENDERER (v1.10 LOCK DUPLICATE ON DESTINATION)
     function renderTransferButtons() { 
       document.getElementById('transfer-from-container').innerHTML = accountsList.map(a => `
         <button type="button" onclick="transferFromId='${a.id}'; if(transferToId==='${a.id}') { const alt=accountsList.find(x=>x.id!=='${a.id}'); if(alt) transferToId=alt.id; } renderTransferButtons()" 
@@ -805,7 +832,6 @@
         document.getElementById('tx-amount').value = '';
         document.getElementById('tx-note').value = '';
         
-        // Reset multi-category selection back to default (first category only)
         const expCats = categoriesList.filter(c => c.type === 'expense');
         if (expCats.length) selectedCategoryIds = [expCats[0].id];
         renderCategoryButtons();
@@ -934,11 +960,31 @@
       c.innerHTML=lst.map(t=>`<div class="flex justify-between p-1.5 border-b text-xs hover:bg-gray-50"><label class="flex items-center space-x-2 cursor-pointer flex-1"><input type="checkbox" name="settle-item" value="${t.id}" data-max="${t.remainingPending}" class="rounded w-4 h-4"><div class="flex flex-col"><span class="font-medium">${escapeHtml(t.note||'-')}</span><span class="text-[10px] text-gray-400">ค้าง: ${userSettings.currency}${t.remainingPending.toLocaleString()} • ${t.date}</span></div></label></div>`).join('');
     }
 
-    // PENDING TEAM LIST RENDERER (v1.10 Shows items with remainingTeamPending > 0)
+    // PENDING TEAM LIST RENDERER (v1.11 Auto-fills note with selected item note + "-")
     function renderPendingTeamList() {
       const c=document.getElementById('pending-team-items-container'), lst=allTransactions.filter(t=>t.kind==='split'&&t.remainingTeamPending>0);
       if(!lst.length)return c.innerHTML=`<p class="text-center text-xs text-gray-400 py-3">ไม่มีรายการค้างจ่ายทีมงาน</p>`;
-      c.innerHTML=lst.map(t=>`<div class="flex justify-between p-1.5 border-b text-xs hover:bg-gray-50"><label class="flex items-center space-x-2 cursor-pointer flex-1"><input type="checkbox" name="team-pay-item" value="${t.id}" data-max="${t.remainingTeamPending}" class="rounded w-4 h-4"><div class="flex flex-col"><span class="font-medium">${escapeHtml(t.note||'-')}</span><span class="text-[10px] text-gray-400">ค้างจ่ายทีม: ${userSettings.currency}${t.remainingTeamPending.toLocaleString()} • ${t.date}</span></div></label></div>`).join('');
+      
+      c.innerHTML=lst.map(t=>`
+        <div class="flex justify-between p-1.5 border-b text-xs hover:bg-gray-50">
+          <label class="flex items-center space-x-2 cursor-pointer flex-1">
+            <input type="checkbox" name="team-pay-item" value="${t.id}" data-max="${t.remainingTeamPending}" data-note="${escapeHtml(t.note || '')}" onchange="handleTeamPayCheckboxChange()" class="rounded w-4 h-4">
+            <div class="flex flex-col">
+              <span class="font-medium">${escapeHtml(t.note||'-')}</span>
+              <span class="text-[10px] text-gray-400">ค้างจ่ายทีม: ${userSettings.currency}${t.remainingTeamPending.toLocaleString()} • ${t.date}</span>
+            </div>
+          </label>
+        </div>
+      `).join('');
+    }
+
+    function handleTeamPayCheckboxChange() {
+      const cbs = document.querySelectorAll('input[name="team-pay-item"]:checked');
+      if (cbs.length > 0) {
+        // Take note from the last checked item
+        const lastCheckedNote = cbs[cbs.length - 1].getAttribute('data-note');
+        document.getElementById('team-pay-note').value = lastCheckedNote ? `${lastCheckedNote} - ` : '';
+      }
     }
     
     document.getElementById('settle-form').addEventListener('submit', async (e) => {
@@ -963,7 +1009,7 @@
       }catch(err){alert(err.message);}
     });
 
-    // SUBMIT DEDICATED FORM: Team Pay (v1.10 Stores linkedSplitItems for restoration on delete)
+    // SUBMIT DEDICATED FORM: Team Pay
     document.getElementById('team-pay-form').addEventListener('submit', async (e) => {
       e.preventDefault(); const amt=parseFloat(document.getElementById('team-pay-amount').value), cbs=document.querySelectorAll('input[name="team-pay-item"]:checked');
       if(isNaN(amt)||amt<=0)return alert("กรอกจำนวนเงินให้ถูกต้อง"); if(!cbs.length)return alert("เลือกรายการค้างจ่ายทีมงานอย่างน้อย 1 รายการ"); 
@@ -981,7 +1027,7 @@
         }
         b.set(db.collection('users').doc(currentUser.uid).collection('transactions').doc(), {kind:'team-pay',amount:amt,accountId:selectedTeamPayAccountId,linkedSplitItems:linkedSplitItems,note:document.getElementById('team-pay-note').value,date:document.getElementById('team-pay-date').value,createdAt:firebase.firestore.FieldValue.serverTimestamp()});
         const a=await db.collection('users').doc(currentUser.uid).collection('accounts').doc(selectedTeamPayAccountId).get(); if(a.exists)b.update(a.ref,{balance:a.data().balance-amt});
-        await b.commit(); alert("บันทึกการโอนให้ทีมเรียบร้อย!"); switchEntryMode('transfer');
+        await b.commit(); document.getElementById('team-pay-note').value=''; alert("บันทึกการโอนให้ทีมเรียบร้อย!"); switchEntryMode('transfer');
       }catch(err){alert(err.message);}
     });
 
@@ -1202,7 +1248,6 @@
         updateEntryCurrentMonthCashFlowUI(); if(!document.getElementById('cashflow-modal').classList.contains('hidden')) updatePopupCashflowUI();
         if (!summaryView.classList.contains('hidden')) renderSummaryAnalyticsUI();
 
-        // Refresh dynamic lists if active
         if (currentEntryMode === 'team-pay') renderPendingTeamList();
         if (currentEntryMode === 'settle') renderPendingFriendList();
 
@@ -1220,17 +1265,104 @@
 
             return `<div onclick="openEditModal('${t.id}')" class="flex justify-between items-center p-2.5 bg-gray-50 border rounded-xl text-xs hover:bg-gray-100 cursor-pointer mb-1"><div class="flex flex-col"><span class="font-medium">${escapeHtml(t.note||'-')} ${b}</span><span class="text-[10px] text-gray-400">${accountsList.find(a=>a.id===t.accountId)?.name||''} • [${t.categoryName}]</span>${breakdownText}</div><div class="flex items-center space-x-2"><span class="font-bold ${t.type==='income'?'text-emerald-600':'text-rose-600'}">${t.type==='income'?'+':'-'}${t.amount.toLocaleString()}</span><button onclick="event.stopPropagation(); deleteTx('${t.id}')" class="text-gray-300 hover:text-rose-500 font-bold px-1">×</button></div></div>`;
           }
-          return `<div class="flex justify-between items-center p-2.5 border rounded-xl text-xs mb-1 ${t.kind==='transfer'?'bg-blue-50/50 border-blue-100':t.kind==='split'?'bg-purple-50/50 border-purple-100':t.kind==='team-pay'?'bg-teal-50/50 border-teal-100':'bg-amber-50/50 border-amber-100'}"><div class="flex flex-col"><span class="font-medium">${t.kind==='transfer'?`โอน: ${t.fromAccountName} ➔ ${t.toAccountName}`:t.kind==='split'?`รับแทนทีม (${accountsList.find(a=>a.id===t.accountId)?.name})`:t.kind==='team-pay'?`โอนให้ทีม (${accountsList.find(a=>a.id===t.accountId)?.name})`:'รับเงินคืน'}</span><span class="text-[10px] text-gray-400">${escapeHtml(t.note||'-')}</span></div><div class="flex items-center space-x-2"><span class="font-bold">${t.kind==='split'?'+'+t.totalAmount.toLocaleString():t.kind==='transfer'||t.kind==='team-pay'?'-'+t.amount.toLocaleString():'+'+t.amount.toLocaleString()}</span><button onclick="deleteTx('${t.id}')" class="text-gray-300 hover:text-rose-500 font-bold px-1">×</button></div></div>`;
+          
+          // Render Split Transaction as Editable in History (v1.11)
+          if(t.kind==='split') {
+            const pendingText = t.remainingTeamPending > 0 ? `<span class="text-[9px] bg-purple-100 text-purple-800 px-1 py-0.5 rounded ml-1">ค้างทีม ฿${t.remainingTeamPending.toLocaleString()}</span>` : `<span class="text-[9px] bg-emerald-100 text-emerald-800 px-1 py-0.5 rounded ml-1">จ่ายทีมครบ</span>`;
+            return `<div onclick="openEditModal('${t.id}')" class="flex justify-between items-center p-2.5 bg-purple-50/50 border border-purple-100 rounded-xl text-xs hover:bg-purple-100/60 cursor-pointer mb-1"><div class="flex flex-col"><span class="font-medium">รับแทนทีม (${accountsList.find(a=>a.id===t.accountId)?.name}) ${pendingText}</span><span class="text-[10px] text-gray-400">${escapeHtml(t.note||'-')} (ส่วนเรา ฿${t.myShare.toLocaleString()})</span></div><div class="flex items-center space-x-2"><span class="font-bold text-purple-900">+${t.totalAmount.toLocaleString()}</span><button onclick="event.stopPropagation(); deleteTx('${t.id}')" class="text-gray-300 hover:text-rose-500 font-bold px-1">×</button></div></div>`;
+          }
+
+          return `<div class="flex justify-between items-center p-2.5 border rounded-xl text-xs mb-1 ${t.kind==='transfer'?'bg-blue-50/50 border-blue-100':t.kind==='team-pay'?'bg-teal-50/50 border-teal-100':'bg-amber-50/50 border-amber-100'}"><div class="flex flex-col"><span class="font-medium">${t.kind==='transfer'?`โอน: ${t.fromAccountName} ➔ ${t.toAccountName}`:t.kind==='team-pay'?`โอนให้ทีม (${accountsList.find(a=>a.id===t.accountId)?.name})`:'รับเงินคืน'}</span><span class="text-[10px] text-gray-400">${escapeHtml(t.note||'-')}</span></div><div class="flex items-center space-x-2"><span class="font-bold">${t.kind==='transfer'||t.kind==='team-pay'?'-'+t.amount.toLocaleString():'+'+t.amount.toLocaleString()}</span><button onclick="deleteTx('${t.id}')" class="text-gray-300 hover:text-rose-500 font-bold px-1">×</button></div></div>`;
         }).join('')).join('') || '<p class="text-center text-xs py-6">ไม่มีประวัติ</p>';
 
         document.getElementById('total-pending-friend').innerText=`${userSettings.currency}${pFr.toLocaleString()}`; document.getElementById('total-pending-team').innerText=`${userSettings.currency}${pTm.toLocaleString()}`;
       });
     }
 
-    // EDIT / DELETE (v1.10 Restores remainingTeamPending when deleting Team-Pay transactions)
-    function openEditModal(id) { const t=allTransactions.find(x=>x.id===id); if(t.kind!=='transaction')return; document.getElementById('edit-tx-id').value=t.id; document.getElementById('edit-amount').value=t.amount; document.getElementById('edit-date').value=t.date; document.getElementById('edit-note').value=t.note||''; document.getElementById('edit-modal').classList.remove('hidden'); }
+    // EDIT / DELETE (v1.11 Supports editing Split transactions in History)
+    function openEditModal(id) { 
+      const t=allTransactions.find(x=>x.id===id); 
+      if(!t || (t.kind !== 'transaction' && t.kind !== 'split')) return; 
+
+      document.getElementById('edit-tx-id').value = t.id; 
+      document.getElementById('edit-tx-kind').value = t.kind;
+      document.getElementById('edit-date').value = t.date; 
+      document.getElementById('edit-note').value = t.note || ''; 
+
+      const titleEl = document.getElementById('edit-modal-title');
+      const normBox = document.getElementById('edit-fields-normal');
+      const splitBox = document.getElementById('edit-fields-split');
+
+      if (t.kind === 'split') {
+        titleEl.innerText = "แก้ไขรายการรับเงินแทน";
+        normBox.classList.add('hidden');
+        splitBox.classList.remove('hidden');
+
+        document.getElementById('edit-split-total').value = t.totalAmount;
+        document.getElementById('edit-split-my').value = t.myShare;
+        updateEditSplitMath();
+      } else {
+        titleEl.innerText = "แก้ไขรายการ";
+        splitBox.classList.add('hidden');
+        normBox.classList.remove('hidden');
+
+        document.getElementById('edit-amount').value = t.amount;
+      }
+
+      document.getElementById('edit-modal').classList.remove('hidden'); 
+    }
+
     function closeEditModal() { document.getElementById('edit-modal').classList.add('hidden'); }
-    async function saveEditedTransaction() { const id=document.getElementById('edit-tx-id').value, amt=parseFloat(document.getElementById('edit-amount').value), d=document.getElementById('edit-date').value, n=document.getElementById('edit-note').value, t=allTransactions.find(x=>x.id===id); if(isNaN(amt)||amt<=0)return; try { const r=db.collection('users').doc(currentUser.uid).collection('accounts').doc(t.accountId); await db.runTransaction(async tr=>{ const a=await tr.get(r); if(a.exists) tr.update(r, {balance: a.data().balance + (t.type==='income'?(amt-t.amount):-(amt-t.amount))}); tr.update(db.collection('users').doc(currentUser.uid).collection('transactions').doc(id), {amount:amt, date:d, note:n}); }); closeEditModal(); } catch (err) { alert(err.message); } }
+
+    async function saveEditedTransaction() { 
+      const id = document.getElementById('edit-tx-id').value;
+      const kind = document.getElementById('edit-tx-kind').value;
+      const d = document.getElementById('edit-date').value;
+      const n = document.getElementById('edit-note').value;
+      const t = allTransactions.find(x => x.id === id); 
+
+      if (!t) return;
+
+      try {
+        const r = db.collection('users').doc(currentUser.uid).collection('accounts').doc(t.accountId);
+        
+        if (kind === 'split') {
+          const newTotal = parseFloat(document.getElementById('edit-split-total').value);
+          const newMy = parseFloat(document.getElementById('edit-split-my').value);
+          if (isNaN(newTotal) || newTotal <= 0 || isNaN(newMy) || newMy < 0 || newMy > newTotal) return alert("กรอกยอดเงินไม่ถูกต้อง");
+
+          const newTeamShare = newTotal - newMy;
+          const paidToTeamAlready = t.teamShare - t.remainingTeamPending;
+          const newRemainingTeam = Math.max(0, newTeamShare - paidToTeamAlready);
+
+          await db.runTransaction(async tr => {
+            const a = await tr.get(r);
+            if (a.exists) {
+              const diffTotal = newTotal - t.totalAmount;
+              tr.update(r, { balance: a.data().balance + diffTotal });
+            }
+            tr.update(db.collection('users').doc(currentUser.uid).collection('transactions').doc(id), {
+              totalAmount: newTotal,
+              myShare: newMy,
+              teamShare: newTeamShare,
+              remainingTeamPending: newRemainingTeam,
+              date: d,
+              note: n
+            });
+          });
+        } else {
+          const amt = parseFloat(document.getElementById('edit-amount').value);
+          if (isNaN(amt) || amt <= 0) return alert("กรอกจำนวนเงินให้ถูกต้อง");
+
+          await db.runTransaction(async tr => { 
+            const a = await tr.get(r); 
+            if (a.exists) tr.update(r, { balance: a.data().balance + (t.type === 'income' ? (amt - t.amount) : -(amt - t.amount)) }); 
+            tr.update(db.collection('users').doc(currentUser.uid).collection('transactions').doc(id), { amount: amt, date: d, note: n }); 
+          });
+        }
+        closeEditModal(); 
+      } catch (err) { alert(err.message); } 
+    }
     
     async function deleteTx(id) { 
       if(!confirm("ลบรายการ?")) return; 
@@ -1243,7 +1375,6 @@
             if(a.exists) tr.update(r,{balance: a.data().balance + (t.type==='income'||t.kind==='settlement'||t.kind==='split'?- (t.totalAmount||t.amount):t.amount)}); 
           }); 
         } else if(t.kind==='team-pay') {
-          // Restore Team-Pay Deductions to original Split transactions (v1.10)
           const b = db.batch();
           const r = db.collection('users').doc(currentUser.uid).collection('accounts').doc(t.accountId);
           const a = await r.get();
