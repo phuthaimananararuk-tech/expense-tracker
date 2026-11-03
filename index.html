@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>YUET (v1.13) - Most Recent Categories & Seamless Multi-tap</title>
+  <title>YUET (v1.14) - Unbound Settings Height</title>
   
   <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
@@ -41,7 +41,7 @@
       <div class="flex flex-col items-center">
         <div class="flex items-baseline space-x-1">
           <h1 class="text-xl font-black tracking-wider uppercase drop-shadow-sm">YUET</h1>
-          <span class="text-[9px] font-medium text-emerald-200 tracking-tight">(v1.13)</span>
+          <span class="text-[9px] font-medium text-emerald-200 tracking-tight">(v1.14)</span>
         </div>
         <p class="text-[8px] text-emerald-100/80 tracking-tight font-light">by Phuthai Mananararuk & Gemini</p>
       </div>
@@ -318,16 +318,16 @@
         <div id="full-tx-list" class="space-y-2 overflow-y-auto pr-1 flex-1"><p class="text-center text-xs text-gray-400 py-6">กำลังโหลดประวัติ...</p></div>
       </section>
 
-      <!-- ==================== 4. SETTING VIEW ==================== -->
-      <section id="setting-view" class="hidden space-y-4">
+      <!-- ==================== 4. SETTING VIEW (v1.14 Full Height Display) ==================== -->
+      <section id="setting-view" class="hidden space-y-4 max-h-[620px] overflow-y-auto pr-1">
         <div class="border-b pb-2"><h2 class="text-xs font-bold text-gray-700 uppercase">Setting - ตั้งค่าระบบ</h2></div>
         <div class="space-y-1"><label class="block text-xs font-bold text-gray-700">สกุลเงินทั่วแอป</label><select id="setting-currency" onchange="autoSaveSettings()" class="w-full px-3 py-2 text-xs border rounded-xl bg-white"><option value="฿">บาท (฿)</option><option value="$">ดอลลาร์ ($)</option><option value="€">ยูโร (€)</option><option value="¥">เยน (¥)</option></select></div>
         <div class="bg-indigo-50 p-3 rounded-2xl border border-indigo-100 space-y-1.5"><label class="flex items-center space-x-2 cursor-pointer"><input type="checkbox" id="setting-enable-advanced" onchange="toggleAdvancedFeaturesSetting()" class="rounded text-indigo-600 focus:ring-indigo-500 w-4 h-4"><span class="text-xs font-bold text-indigo-900">เปิดใช้งานฟังก์ชันพิเศษ </span></label><p class="text-[10px] text-indigo-600/80 leading-relaxed">กดปุ่มโหมด (Expense / Income / Transfer) ซ้ำอีกครั้งเพื่อเปิดเมนูซ่อน: <u>ผ่อนชำระ, หารค่าใช้จ่าย, รับเงินคืน, รับเงินแทน, โอนให้ทีม</u></p></div>
         
-        <!-- Account Settings with Pin Feature (v1.13 Clean No Emoticon) -->
+        <!-- Account Settings with Full Length Container -->
         <div class="space-y-2 border-t pt-3">
           <h3 class="text-xs font-bold text-gray-700 uppercase">จัดการบัญชีเงิน (📌 ปักหมุดให้อยู่บรรทัดแรกหน้า Entry)</h3>
-          <div id="accounts-settings-list" class="space-y-1 max-h-32 overflow-y-auto pr-1"></div>
+          <div id="accounts-settings-list" class="space-y-1"></div>
           <div class="bg-gray-50 p-2 rounded-xl border space-y-1.5">
             <p class="text-[11px] font-semibold text-gray-600">เพิ่มบัญชีใหม่</p>
             <div class="grid grid-cols-2 gap-2">
@@ -338,13 +338,13 @@
           </div>
         </div>
 
-        <!-- Category Settings -->
+        <!-- Category Settings with Full Length Containers -->
         <div class="space-y-2 border-t pt-3">
           <h3 class="text-xs font-bold text-gray-700 uppercase">จัดการหมวดหมู่</h3>
           <div class="grid grid-cols-2 gap-2">
             <div class="space-y-1.5">
               <p class="text-[11px] font-semibold text-rose-600">รายจ่าย</p>
-              <div id="expense-cats-list" class="space-y-1 max-h-36 overflow-y-auto pr-1"></div>
+              <div id="expense-cats-list" class="space-y-1"></div>
               <div class="flex space-x-1">
                 <input type="text" id="new-exp-cat-name" class="w-full px-1.5 py-1 text-xs border rounded bg-white">
                 <button onclick="addNewCategory('expense')" class="bg-rose-600 text-white px-2 py-1 rounded text-xs">+</button>
@@ -352,7 +352,7 @@
             </div>
             <div class="space-y-1.5">
               <p class="text-[11px] font-semibold text-emerald-600">รายรับ</p>
-              <div id="income-cats-list" class="space-y-1 max-h-36 overflow-y-auto pr-1"></div>
+              <div id="income-cats-list" class="space-y-1"></div>
               <div class="flex space-x-1">
                 <input type="text" id="new-inc-cat-name" class="w-full px-1.5 py-1 text-xs border rounded bg-white">
                 <button onclick="addNewCategory('income')" class="bg-emerald-600 text-white px-2 py-1 rounded text-xs">+</button>
@@ -367,7 +367,7 @@
     <footer id="auth-status-bar" class="bg-gray-100 p-2 text-center text-[10px] text-gray-400 border-t border-gray-100">สถานะ: ยังไม่ได้เข้าสู่ระบบ</footer>
   </div>
 
-  <!-- POP-UP SELECTOR MODAL (v1.13 Supporting Accounts & Categories Grid) -->
+  <!-- POP-UP SELECTOR MODAL -->
   <div id="selector-modal" class="hidden fixed inset-0 bg-black/60 flex items-end sm:items-center justify-center p-0 sm:p-4 z-50 transition-opacity">
     <div class="bg-white rounded-t-3xl sm:rounded-3xl w-full max-w-sm p-4 space-y-3 shadow-2xl relative animate-slide-up max-h-[75vh] flex flex-col">
       <div class="flex justify-between items-center border-b pb-2 flex-shrink-0">
@@ -758,7 +758,7 @@
       }
     }
 
-    // ACCOUNT PINNED SELECTOR (v1.13 Clean No Emoticons & Non-pinned in Pop-up)
+    // ACCOUNT PINNED SELECTOR
     function renderAccountPinnedSelector(selectedId, setGlobalVarFnName, rerenderFnName, activeClass) {
       let pinned = accountsList.filter(i => i.isPinned);
       if (!pinned.length && accountsList.length) pinned = [accountsList[0]];
@@ -807,7 +807,7 @@
     function renderReimbAccountButtons() { document.getElementById('reimb-account-buttons').innerHTML = renderAccountPinnedSelector(selectedReimbAccountId, 'selectedReimbAccountId', 'renderReimbAccountButtons', 'bg-amber-600 text-white border-amber-600 shadow-xs'); }
     function renderTeamPayAccountButtons() { document.getElementById('team-pay-account-buttons').innerHTML = renderAccountPinnedSelector(selectedTeamPayAccountId, 'selectedTeamPayAccountId', 'renderTeamPayAccountButtons', 'bg-teal-600 text-white border-teal-600 shadow-xs'); }
 
-    // CATEGORY MOST RECENT SELECTOR (v1.13 Auto Most Recent + All in Pop-up)
+    // CATEGORY MOST RECENT SELECTOR
     function getMostRecentCategories(type) {
       const filteredCats = categoriesList.filter(c => c.type === type);
       const recentIds = [];
@@ -1262,7 +1262,7 @@
         }
       });
 
-      // 1. Render Ratio Bar (แดงซ้าย / เขียวขวา)
+      // 1. Render Ratio Bar
       document.getElementById('lbl-ratio-exp').innerText = `${userSettings.currency}${totExp.toLocaleString()}`;
       document.getElementById('lbl-ratio-inc').innerText = `${userSettings.currency}${totInc.toLocaleString()}`;
 
@@ -1579,7 +1579,7 @@
       } catch (err) { alert(err.message); } 
     }
 
-    // SETTINGS (v1.13 Clean Account Pin Toggling & Category Management)
+    // SETTINGS (v1.14 Render full height for lists)
     function renderSettingsAccounts() { 
       document.getElementById('accounts-settings-list').innerHTML = accountsList.map(a=>`
         <div class="flex justify-between items-center p-2 bg-gray-50 border rounded-xl text-xs">
