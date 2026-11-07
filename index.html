@@ -2,9 +2,19 @@
 <html lang="th">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>จดตังค์ BETA - Clean Currency & Muted UI Theme</title>
+  <!-- 1. ปรับ Viewport เพิ่ม viewport-fit=cover เพื่อให้ขยายเต็มจอด้านหลังรอยบาก Notch -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>จดตังค์ BETA</title>
   
+  <!-- 2. PWA Meta Tags & Manifest สำหรับ iOS / Android -->
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#1e293b">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="จดตังค์">
+  <link rel="apple-touch-icon" href="icon-192.png">
+
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -12,7 +22,21 @@
   <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   
   <style>
-    body { font-family: 'Kanit', sans-serif; }
+    body { 
+      font-family: 'Kanit', sans-serif;
+      /* รองรับความสูงเต็มจอในทุกระบบปฏิบัติการ (iOS/Android) */
+      min-height: 100vh;
+      min-height: 100dvh;
+    }
+
+    /* จัดการระยะขอบเพื่อไม่ให้รอยบาก (Notch) หรือ Dynamic Island ทับเนื้อหา */
+    .safe-padding-top {
+      padding-top: max(0.75rem, env(safe-area-inset-top));
+    }
+    .safe-padding-bottom {
+      padding-bottom: max(0.5rem, env(safe-area-inset-bottom));
+    }
+
     @keyframes toastFade {
       0% { opacity: 0; transform: scale(0.7); }
       30% { opacity: 1; transform: scale(1.05); }
@@ -27,12 +51,13 @@
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
 </head>
-<body class="bg-slate-100 text-slate-700 min-h-screen flex flex-col items-center justify-start p-2 sm:p-4">
+<body class="bg-slate-900 text-slate-700 min-h-screen flex flex-col items-center justify-start p-0 sm:p-4">
 
-  <div class="w-full max-w-md bg-white rounded-3xl shadow-xl border border-slate-200/80 overflow-hidden min-h-[720px] flex flex-col justify-between my-auto relative">
+  <!-- Container ปรับให้ยืดเต็มจอแบบ 100dvh บนมือถือ -->
+  <div class="w-full max-w-md bg-white sm:rounded-3xl shadow-xl border-0 sm:border border-slate-200/80 overflow-hidden h-screen sm:h-auto sm:min-h-[720px] flex flex-col justify-between my-auto relative">
     
-    <!-- Header (Muted Dark Slate) -->
-    <header class="bg-slate-800 text-white px-5 py-3 shadow-xs relative flex items-center justify-between">
+    <!-- Header (เพิ่ม Safe Padding ให้ไม่ติดขอบบนรอยบาก) -->
+    <header class="bg-slate-800 text-white px-5 safe-padding-top pb-3 shadow-xs relative flex items-center justify-between flex-shrink-0">
       <button id="open-settings-btn" class="text-slate-300 hover:text-white hover:bg-slate-700/60 p-1.5 rounded-xl transition hidden" title="Setting">
         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-2.924-1.756 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
       </button>
@@ -40,7 +65,7 @@
       <div class="flex flex-col items-center">
         <div class="flex items-baseline space-x-1">
           <h1 class="text-xl font-black tracking-wider uppercase drop-shadow-xs text-slate-100">จดตังค์ BETA</h1>
-          <span class="text-[9px] font-medium text-slate-400 tracking-tight">(v1.38)</span>
+          <span class="text-[9px] font-medium text-slate-400 tracking-tight">(v1.40)</span>
         </div>
         <p class="text-[8px] text-slate-400 tracking-tight font-light">by Phuthai Mananararuk & Gemini</p>
       </div>
@@ -48,14 +73,14 @@
       <button id="logout-btn" class="hidden bg-slate-700 hover:bg-slate-600 text-xs text-slate-200 py-1.5 px-3 rounded-xl transition font-medium">ออก</button>
     </header>
 
-    <!-- Navigation Tabs (Neutral Muted) -->
-    <nav id="top-nav-tabs" class="hidden bg-slate-100 p-1.5 border-b border-slate-200 grid grid-cols-3 gap-1">
+    <!-- Navigation Tabs -->
+    <nav id="top-nav-tabs" class="hidden bg-slate-100 p-1.5 border-b border-slate-200 grid grid-cols-3 gap-1 flex-shrink-0">
       <button id="nav-tab-entry" onclick="goToView('entry')" class="py-2 text-xs font-bold rounded-xl transition text-center shadow-xs bg-white text-slate-800">Entry</button>
       <button id="nav-tab-summary" onclick="goToView('summary')" class="py-2 text-xs font-bold rounded-xl transition text-center text-slate-500 hover:text-slate-800">Summary</button>
       <button id="nav-tab-history" onclick="goToView('history')" class="py-2 text-xs font-bold rounded-xl transition text-center text-slate-500 hover:text-slate-800">History</button>
     </nav>
 
-    <main class="p-4 flex-1 flex flex-col justify-between overflow-x-hidden">
+    <main class="p-4 flex-1 flex flex-col justify-between overflow-x-hidden min-h-0">
 
       <!-- Auth Views -->
       <section id="login-view" class="space-y-4 my-auto">
@@ -78,7 +103,7 @@
       </section>
 
       <!-- 1. ENTRY VIEW -->
-      <section id="entry-view" class="hidden space-y-3 flex-1 flex flex-col justify-between">
+      <section id="entry-view" class="hidden space-y-3 flex-1 flex flex-col justify-between overflow-y-auto pr-1">
         <div class="space-y-3">
 
           <div id="mode-buttons-container" class="grid grid-cols-3 gap-1 bg-slate-200/80 p-1 rounded-xl text-center">
@@ -87,7 +112,7 @@
             <button type="button" id="btn-mode-transfer" onclick="handleModeClick('transfer')" class="py-1.5 text-[10px] sm:text-[11px] font-semibold rounded-lg transition text-slate-600">Transfer...</button>
           </div>
 
-          <!-- Normal Form (Muted Clean Background) -->
+          <!-- Normal Form -->
           <form id="tx-form" class="bg-slate-50 p-3 rounded-2xl border border-slate-200/80 space-y-2.5">
             <div>
               <label class="block text-[11px] font-medium text-slate-400 mb-1">เลือกบัญชี</label>
@@ -97,7 +122,6 @@
             <div>
               <div class="flex justify-between items-center mb-1">
                 <label class="block text-[11px] font-medium text-slate-400">เลือกหมวดหมู่</label>
-                <!-- ปุ่มเลือกหลายหมวดหมู่แบบไร้กรอบ -->
                 <button type="button" id="btn-open-multi-cat-select" onclick="openMultiCatSelectModal()" class="text-[10px] font-bold text-slate-600 hover:text-slate-800 transition hidden">+ เลือกหลายหมวดหมู่</button>
               </div>
               <div id="category-buttons-container"></div>
@@ -251,8 +275,8 @@
         </div>
       </section>
 
-      <!-- 2. SUMMARY VIEW -->
-      <section id="summary-view" class="hidden space-y-3.5 max-h-[620px] overflow-y-auto pr-1">
+      <!-- 2. SUMMARY VIEW (ปรับให้ Scroll ทั้งหน้าและคลี่รายการผ่อนทั้งหมดออก) -->
+      <section id="summary-view" class="hidden space-y-3.5 flex-1 overflow-y-auto pr-1">
         <div class="flex justify-between items-center border-b border-slate-200 pb-1.5">
           <h2 class="text-xs font-bold text-slate-600 uppercase">Summary - สรุปยอด & การวิเคราะห์</h2>
           <span id="summary-current-balance" class="text-xs font-black text-slate-800 bg-slate-100 px-2.5 py-0.5 rounded-full border border-slate-200">0.00</span>
@@ -267,18 +291,20 @@
           <div class="bg-slate-50 p-3 rounded-2xl border border-slate-200/80 shadow-xs space-y-1 flex flex-col items-center"><h4 class="text-[10px] font-bold text-slate-600 text-center">หมวดหมู่รายรับ</h4><div class="h-36 w-36 relative flex items-center justify-center"><canvas id="incomePieChart"></canvas></div></div>
           <div class="bg-slate-50 p-3 rounded-2xl border border-slate-200/80 shadow-xs space-y-1 flex flex-col items-center"><h4 class="text-[10px] font-bold text-slate-600 text-center">หมวดหมู่รายจ่าย</h4><div class="h-36 w-36 relative flex items-center justify-center"><canvas id="expensePieChart"></canvas></div></div>
         </div>
+        
         <div class="grid grid-cols-2 gap-2">
-          <div id="card-pending-friend" class="bg-slate-50 p-2.5 rounded-2xl border border-slate-200/80 shadow-xs text-center"><p class="text-[9px] font-bold text-slate-500">เงินรอคืน (เพื่อน)</p><p id="total-pending-friend" class="text-xs font-bold text-slate-700">0.00</p></div>
-          <div id="card-pending-team" class="bg-slate-50 p-2.5 rounded-2xl border border-slate-200/80 shadow-xs text-center"><p class="text-[9px] font-bold text-slate-500">เงินรอจ่าย (ทีมงาน)</p><p id="total-pending-team" class="text-xs font-bold text-slate-700">0.00</p></div>
+          <div id="card-pending-friend" onclick="openReadOnlyPendingFriendModal()" class="bg-slate-50 p-2.5 rounded-2xl border border-slate-200/80 shadow-xs text-center cursor-pointer hover:bg-slate-100 transition"><p class="text-[9px] font-bold text-slate-500">เงินรอคืน (เพื่อน) 🔍</p><p id="total-pending-friend" class="text-xs font-bold text-slate-700">0.00</p></div>
+          <div id="card-pending-team" onclick="openReadOnlyPendingTeamModal()" class="bg-slate-50 p-2.5 rounded-2xl border border-slate-200/80 shadow-xs text-center cursor-pointer hover:bg-slate-100 transition"><p class="text-[9px] font-bold text-slate-500">เงินรอจ่าย (ทีมงาน) 🔍</p><p id="total-pending-team" class="text-xs font-bold text-slate-700">0.00</p></div>
         </div>
         <div class="space-y-2 border-t border-slate-200 pt-2.5">
           <div class="flex justify-between items-center"><h3 class="text-xs font-bold text-slate-600 uppercase">สัญญาผ่อนชำระ</h3><span id="lbl-total-active-inst" class="text-[10px] font-semibold text-slate-600 bg-slate-100 px-2 py-0.5 rounded-full border border-slate-200">0 รายการ</span></div>
-          <div id="installment-tracker-container" class="space-y-2 max-h-40 overflow-y-auto pr-1"></div>
+          <!-- เอา max-h-40 overflow-y-auto ออก เพื่อให้แสดงครบทุกรายการในทีเดียว -->
+          <div id="installment-tracker-container" class="space-y-2"></div>
         </div>
       </section>
 
       <!-- 3. HISTORY VIEW -->
-      <section id="history-view" class="hidden space-y-2.5 flex flex-col h-[520px]">
+      <section id="history-view" class="hidden space-y-2.5 flex flex-col flex-1 min-h-0">
         <div class="border-b border-slate-200 pb-2 flex justify-between items-center flex-shrink-0">
           <h2 class="text-xs font-bold text-slate-600 uppercase">History - ประวัติรายการ</h2>
           <span id="history-count-badge" class="text-[10px] text-slate-400 font-medium">0 รายการ</span>
@@ -296,11 +322,11 @@
           </button>
         </div>
 
-        <div id="full-tx-list" class="space-y-2 overflow-y-auto pr-1 flex-1"><p class="text-center text-xs text-slate-400 py-6">กำลังโหลดประวัติ...</p></div>
+        <div id="full-tx-list" class="space-y-2 overflow-y-auto pr-1 flex-1 min-h-0"><p class="text-center text-xs text-slate-400 py-6">กำลังโหลดประวัติ...</p></div>
       </section>
 
       <!-- 4. SETTING VIEW -->
-      <section id="setting-view" class="hidden space-y-4 max-h-[620px] overflow-y-auto pr-1">
+      <section id="setting-view" class="hidden space-y-4 flex-1 overflow-y-auto pr-1">
         <div class="border-b border-slate-200 pb-2"><h2 class="text-xs font-bold text-slate-600 uppercase">Setting - ตั้งค่าระบบ</h2></div>
         
         <div class="space-y-2 border-t border-slate-200 pt-3">
@@ -343,7 +369,9 @@
       </section>
 
     </main>
-    <footer id="auth-status-bar" class="bg-slate-100 p-2 text-center text-[10px] text-slate-400 border-t border-slate-200">สถานะ: ยังไม่ได้เข้าสู่ระบบ</footer>
+
+    <!-- Auth Status Bar (เพิ่ม Safe Padding ให้ไม่ติดขอบล่างของหน้าจอ) -->
+    <footer id="auth-status-bar" class="bg-slate-100 p-2 safe-padding-bottom text-center text-[10px] text-slate-400 border-t border-slate-200 flex-shrink-0">สถานะ: ยังไม่ได้เข้าสู่ระบบ</footer>
   </div>
 
   <!-- Account Edit Modal -->
@@ -411,7 +439,7 @@
 
   <!-- ALL-COMPATIBLE EDIT TRANSACTION MODAL -->
   <div id="edit-tx-modal" class="hidden fixed inset-0 bg-slate-900/40 backdrop-blur-xs flex items-end sm:items-center justify-center p-0 sm:p-4 z-50">
-    <div class="bg-white rounded-t-3xl sm:rounded-3xl w-full max-w-sm p-4 space-y-3 shadow-2xl relative max-h-[90vh] flex flex-col overflow-y-auto border border-slate-200">
+    <div class="bg-white rounded-t-3xl sm:rounded-3xl w-full max-w-sm p-4 space-y-3 shadow-2xl relative max-h-[90vh] flex flex-col overflow-y-auto border border-slate-200 safe-padding-bottom">
       
       <div class="flex justify-between items-center border-b border-slate-200 pb-2 flex-shrink-0">
         <div>
@@ -432,7 +460,6 @@
           <div id="edit-category-buttons-container"></div>
         </div>
 
-        <!-- Dynamic Installment Fields -->
         <div id="edit-inst-fields" class="hidden space-y-2 bg-slate-50 p-2.5 rounded-2xl border border-slate-200">
           <div class="grid grid-cols-2 gap-2">
             <div>
@@ -460,7 +487,6 @@
           </div>
         </div>
 
-        <!-- Dynamic Split Amount Box -->
         <div id="edit-split-fields" class="hidden space-y-2">
           <div class="grid grid-cols-2 gap-2">
             <div>
@@ -478,7 +504,6 @@
           </div>
         </div>
 
-        <!-- Dynamic Reimb Amount Box -->
         <div id="edit-reimb-fields" class="hidden space-y-2">
           <div class="grid grid-cols-2 gap-2">
             <div>
@@ -496,7 +521,6 @@
           </div>
         </div>
 
-        <!-- Normal Single Amount Field -->
         <div id="edit-normal-amount-field" class="grid grid-cols-2 gap-2">
           <div id="edit-normal-amount-box">
             <label class="block text-[11px] text-slate-400 mb-1">จำนวนเงิน</label>
@@ -523,9 +547,60 @@
     </div>
   </div>
 
+  <!-- READ-ONLY MODAL: Pending Friend List -->
+  <div id="readonly-pending-friend-modal" class="hidden fixed inset-0 bg-slate-900/40 backdrop-blur-xs flex items-end sm:items-center justify-center p-0 sm:p-4 z-50">
+    <div class="bg-white rounded-t-3xl sm:rounded-3xl w-full max-w-sm p-4 space-y-3 shadow-2xl relative max-h-[80vh] flex flex-col border border-slate-200 safe-padding-bottom">
+      <div class="flex justify-between items-center border-b border-slate-200 pb-2 flex-shrink-0">
+        <div>
+          <h3 class="text-xs font-bold text-slate-700 uppercase">รายละเอียดเงินรอคืน (เพื่อน)</h3>
+          <p class="text-[10px] text-slate-400">รายการสำรองจ่ายที่ยังได้คืนไม่ครบ</p>
+        </div>
+        <button type="button" onclick="closeReadOnlyPendingFriendModal()" class="text-slate-400 font-bold text-lg px-2">✕</button>
+      </div>
+      <div id="readonly-pending-friend-container" class="space-y-2 overflow-y-auto p-1 flex-1"></div>
+      <div class="pt-2 flex-shrink-0 border-t border-slate-200">
+        <button type="button" onclick="closeReadOnlyPendingFriendModal()" class="w-full bg-slate-700 hover:bg-slate-800 text-white py-2.5 rounded-xl text-xs font-bold transition">ปิด</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- READ-ONLY MODAL: Pending Team List -->
+  <div id="readonly-pending-team-modal" class="hidden fixed inset-0 bg-slate-900/40 backdrop-blur-xs flex items-end sm:items-center justify-center p-0 sm:p-4 z-50">
+    <div class="bg-white rounded-t-3xl sm:rounded-3xl w-full max-w-sm p-4 space-y-3 shadow-2xl relative max-h-[80vh] flex flex-col border border-slate-200 safe-padding-bottom">
+      <div class="flex justify-between items-center border-b border-slate-200 pb-2 flex-shrink-0">
+        <div>
+          <h3 class="text-xs font-bold text-slate-700 uppercase">รายละเอียดเงินรอจ่าย (ทีมงาน)</h3>
+          <p class="text-[10px] text-slate-400">รายการรับเงินแทนที่ยังไม่ได้โอนให้ทีม</p>
+        </div>
+        <button type="button" onclick="closeReadOnlyPendingTeamModal()" class="text-slate-400 font-bold text-lg px-2">✕</button>
+      </div>
+      <div id="readonly-pending-team-container" class="space-y-2 overflow-y-auto p-1 flex-1"></div>
+      <div class="pt-2 flex-shrink-0 border-t border-slate-200">
+        <button type="button" onclick="closeReadOnlyPendingTeamModal()" class="w-full bg-slate-700 hover:bg-slate-800 text-white py-2.5 rounded-xl text-xs font-bold transition">ปิด</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- READ-ONLY MODAL: Installment Payment History -->
+  <div id="readonly-inst-history-modal" class="hidden fixed inset-0 bg-slate-900/40 backdrop-blur-xs flex items-end sm:items-center justify-center p-0 sm:p-4 z-50">
+    <div class="bg-white rounded-t-3xl sm:rounded-3xl w-full max-w-sm p-4 space-y-3 shadow-2xl relative max-h-[80vh] flex flex-col border border-slate-200 safe-padding-bottom">
+      <div class="flex justify-between items-center border-b border-slate-200 pb-2 flex-shrink-0">
+        <div>
+          <h3 id="readonly-inst-title" class="text-xs font-bold text-slate-700 uppercase">ประวัติการผ่อนชำระ</h3>
+          <p id="readonly-inst-subtitle" class="text-[10px] text-slate-400">รายละเอียดงวดที่จ่ายไปแล้ว</p>
+        </div>
+        <button type="button" onclick="closeReadOnlyInstHistoryModal()" class="text-slate-400 font-bold text-lg px-2">✕</button>
+      </div>
+      <div id="readonly-inst-history-container" class="space-y-2 overflow-y-auto p-1 flex-1"></div>
+      <div class="pt-2 flex-shrink-0 border-t border-slate-200">
+        <button type="button" onclick="closeReadOnlyInstHistoryModal()" class="w-full bg-slate-700 hover:bg-slate-800 text-white py-2.5 rounded-xl text-xs font-bold transition">ปิด</button>
+      </div>
+    </div>
+  </div>
+
   <!-- Multi-Category Selection Modal -->
   <div id="multi-cat-select-modal" class="hidden fixed inset-0 bg-slate-900/40 backdrop-blur-xs flex items-end sm:items-center justify-center p-0 sm:p-4 z-50">
-    <div class="bg-white rounded-t-3xl sm:rounded-3xl w-full max-w-sm p-4 space-y-3 shadow-2xl relative max-h-[75vh] flex flex-col border border-slate-200">
+    <div class="bg-white rounded-t-3xl sm:rounded-3xl w-full max-w-sm p-4 space-y-3 shadow-2xl relative max-h-[75vh] flex flex-col border border-slate-200 safe-padding-bottom">
       <div class="flex justify-between items-center border-b border-slate-200 pb-2 flex-shrink-0">
         <div>
           <h3 class="text-xs font-bold text-slate-700 uppercase">เลือกหมวดหมู่รายจ่าย</h3>
@@ -542,7 +617,7 @@
 
   <!-- History Advanced Filter Modal -->
   <div id="history-filter-modal" class="hidden fixed inset-0 bg-slate-900/40 backdrop-blur-xs flex items-end sm:items-center justify-center p-0 sm:p-4 z-50">
-    <div class="bg-white rounded-t-3xl sm:rounded-3xl w-full max-w-sm p-4 space-y-3.5 shadow-2xl relative max-h-[85vh] flex flex-col border border-slate-200">
+    <div class="bg-white rounded-t-3xl sm:rounded-3xl w-full max-w-sm p-4 space-y-3.5 shadow-2xl relative max-h-[85vh] flex flex-col border border-slate-200 safe-padding-bottom">
       <div class="flex justify-between items-center border-b border-slate-200 pb-2 flex-shrink-0">
         <h3 class="text-xs font-bold text-slate-700 uppercase">ตัวกรองรายการเชิงลึก</h3>
         <button type="button" onclick="closeHistoryFilterModal()" class="text-slate-400 font-bold text-lg px-2">✕</button>
@@ -616,7 +691,7 @@
 
   <!-- Account Selector Modal -->
   <div id="selector-modal" class="hidden fixed inset-0 bg-slate-900/40 backdrop-blur-xs flex items-end sm:items-center justify-center p-0 sm:p-4 z-50">
-    <div class="bg-white rounded-t-3xl sm:rounded-3xl w-full max-w-sm p-4 space-y-3 shadow-2xl relative max-h-[75vh] flex flex-col border border-slate-200">
+    <div class="bg-white rounded-t-3xl sm:rounded-3xl w-full max-w-sm p-4 space-y-3 shadow-2xl relative max-h-[75vh] flex flex-col border border-slate-200 safe-padding-bottom">
       <div class="flex justify-between items-center border-b border-slate-200 pb-2 flex-shrink-0"><h3 id="selector-modal-title" class="text-xs font-bold text-slate-700 uppercase">เลือกรายการ</h3><button type="button" onclick="closeSelectorModal()" class="text-slate-400 font-bold text-lg px-2">✕</button></div>
       <div id="selector-grid-container" class="grid grid-cols-2 gap-2 overflow-y-auto p-1 flex-1"></div>
       <div class="pt-1 flex-shrink-0"><button type="button" onclick="closeSelectorModal()" class="w-full bg-slate-100 text-slate-600 py-2 rounded-xl text-xs font-medium">ปิด</button></div>
@@ -642,7 +717,7 @@
     </div>
   </div>
 
-  <!-- Multi-Cat Modal (Allocation) -->
+  <!-- Multi-Cat Modal -->
   <div id="multi-cat-modal" class="hidden fixed inset-0 bg-slate-900/40 backdrop-blur-xs flex items-center justify-center p-4 z-40">
     <div class="bg-white rounded-3xl w-full max-w-sm p-5 space-y-4 shadow-2xl relative border border-slate-200">
       <button type="button" onclick="closeMultiCatModal()" class="absolute top-4 right-4 text-slate-400 font-bold text-lg">✕</button>
@@ -653,9 +728,9 @@
     </div>
   </div>
 
-  <!-- Keypad Overlay -->
+  <!-- Keypad Overlay (เพิ่ม Safe Padding ให้ไม่ติดแถบโฮมไอโฟนด้านล่าง) -->
   <div id="custom-keypad-overlay" class="hidden fixed inset-0 bg-slate-900/30 flex items-end justify-center z-50">
-    <div class="bg-white w-full max-w-md rounded-t-3xl p-4 shadow-2xl border-t border-slate-200 space-y-3">
+    <div class="bg-white w-full max-w-md rounded-t-3xl p-4 shadow-2xl border-t border-slate-200 space-y-3 safe-padding-bottom">
       <div class="flex justify-between items-center border-b border-slate-200 pb-2"><span class="text-xs font-bold text-slate-400 uppercase">คีย์บอร์ดคำนวณ</span><button type="button" onclick="closeCustomKeypad()" class="text-slate-400 font-bold px-2 text-sm">✕ ปิด</button></div>
       <div id="keypad-live-display" class="bg-slate-50 border border-slate-200 rounded-2xl px-3 py-2 text-right text-xl font-bold text-slate-800 tracking-wider overflow-x-auto min-h-[44px] flex items-center justify-end">0</div>
       <div class="grid grid-cols-4 gap-2 font-bold text-slate-700">
@@ -737,7 +812,6 @@
       t.classList.remove('hidden'); setTimeout(() => t.classList.add('hidden'), 300);
     }
 
-    // Keypad Controllers
     function openCustomKeypad(id) { activeKeypadFieldId = id; const el = document.getElementById(id); document.getElementById('keypad-live-display').innerText = el.value || '0'; document.getElementById('custom-keypad-overlay').classList.remove('hidden'); }
     function closeCustomKeypad() { evaluateActiveFieldMath(); activeKeypadFieldId = null; document.getElementById('custom-keypad-overlay').classList.add('hidden'); }
     function keypadPress(val) { if (!activeKeypadFieldId) return; const el = document.getElementById(activeKeypadFieldId); el.value = (el.value === '0' && val !== '.') ? val : (el.value + val); document.getElementById('keypad-live-display').innerText = el.value || '0'; triggerFieldInputEvent(el); }
@@ -764,7 +838,6 @@
     }
     function triggerFieldInputEvent(el) { el.dispatchEvent(new Event('input', { bubbles: true })); }
 
-    // Navigation
     function goToView(vName) {
       closeActiveSwipedCard();
       Object.values(views).forEach(v => v.classList.add('hidden'));
@@ -783,7 +856,6 @@
       }
     }
 
-    // Auth Listeners
     document.getElementById('go-to-register-btn').addEventListener('click', () => { document.getElementById('reg-email').value = document.getElementById('login-email').value; document.getElementById('reg-password').value = document.getElementById('login-password').value; goToView('register'); });
     document.getElementById('back-to-login-btn').addEventListener('click', () => goToView('login'));
     document.getElementById('login-btn').addEventListener('click', async () => { const e = document.getElementById('login-email').value.trim(), p = document.getElementById('login-password').value; if (!e || !p) return alert("กรุณากรอกให้ครบ"); try { const res = await auth.signInWithEmailAndPassword(e, p); if (!res.user.emailVerified) { alert("กรุณายืนยันอีเมล"); await auth.signOut(); } } catch (err) { alert(err.message); } });
@@ -1086,7 +1158,7 @@
 
       const unpinnedCount = accountsList.length - pinned.length;
       if (unpinnedCount > 0 || !isSelectedInPinned) {
-        const extraLabel = (!isSelectedInPinned && selectedItem) ? `${selectedItem.name} ✓` : `+ เลือกอื่น`;
+        const extraLabel = (!isSelectedInPinned && selectedItem) ? `${selectedItem.name} ✓` : `+`;
         const extraClass = (!isSelectedInPinned && selectedItem) ? (ACCOUNT_COLOR_THEMES[selectedItem.colorTheme]?.active || 'bg-slate-700 text-white') : 'bg-slate-100 text-slate-600 border-slate-300 hover:bg-slate-200 font-bold';
         html += `<button type="button" onclick="openAccountSelectorModal('${setGlobalVarFnName}')" class="px-2.5 py-1.5 rounded-xl text-xs font-medium transition border ${extraClass}">${escapeHtml(extraLabel)}</button>`;
       }
@@ -1372,7 +1444,88 @@
       }catch(err){alert(err.message);}
     });
 
-    // --- FULL COMPATIBLE TRANSACTION EDIT SYSTEM ---
+    function openReadOnlyPendingFriendModal() {
+      const container = document.getElementById('readonly-pending-friend-container');
+      const pendingList = allTransactions.filter(t => t.kind === 'transaction' && t.isReimburse && t.remainingPending > 0);
+
+      if (!pendingList.length) {
+        container.innerHTML = `<p class="text-center text-xs text-slate-400 py-6">ไม่มีรายการเงินรอคืนจากเพื่อน</p>`;
+      } else {
+        container.innerHTML = pendingList.map(t => {
+          const accName = accountsList.find(a => a.id === t.accountId)?.name || 'บัญชี';
+          return `
+            <div class="p-2.5 bg-slate-50 border border-slate-200/80 rounded-2xl space-y-1">
+              <div class="flex justify-between items-start text-xs">
+                <span class="font-bold text-slate-800">${escapeHtml(t.note || 'สำรองจ่าย')}</span>
+                <span class="font-black text-rose-600">รอคืน: ${t.remainingPending.toLocaleString(undefined, {minimumFractionDigits: 2})}</span>
+              </div>
+              <div class="flex justify-between items-center text-[10px] text-slate-400">
+                <span>ยอดเต็ม: ${t.amount.toLocaleString(undefined, {minimumFractionDigits: 2})} (ส่วนเรา: ${t.myShare.toLocaleString(undefined, {minimumFractionDigits: 2})})</span>
+                <span>${t.date} (${accName})</span>
+              </div>
+            </div>
+          `;
+        }).join('');
+      }
+      document.getElementById('readonly-pending-friend-modal').classList.remove('hidden');
+    }
+    function closeReadOnlyPendingFriendModal() { document.getElementById('readonly-pending-friend-modal').classList.add('hidden'); }
+
+    function openReadOnlyPendingTeamModal() {
+      const container = document.getElementById('readonly-pending-team-container');
+      const pendingList = allTransactions.filter(t => t.kind === 'split' && t.remainingTeamPending > 0);
+
+      if (!pendingList.length) {
+        container.innerHTML = `<p class="text-center text-xs text-slate-400 py-6">ไม่มีรายการเงินรอจ่ายทีมงาน</p>`;
+      } else {
+        container.innerHTML = pendingList.map(t => {
+          const accName = accountsList.find(a => a.id === t.accountId)?.name || 'บัญชี';
+          return `
+            <div class="p-2.5 bg-slate-50 border border-slate-200/80 rounded-2xl space-y-1">
+              <div class="flex justify-between items-start text-xs">
+                <span class="font-bold text-slate-800">${escapeHtml(t.note || 'รับเงินแทน')}</span>
+                <span class="font-black text-amber-600">รอจ่ายทีม: ${t.remainingTeamPending.toLocaleString(undefined, {minimumFractionDigits: 2})}</span>
+              </div>
+              <div class="flex justify-between items-center text-[10px] text-slate-400">
+                <span>ยอดเต็ม: ${t.totalAmount.toLocaleString(undefined, {minimumFractionDigits: 2})} (ส่วนเรา: ${t.myShare.toLocaleString(undefined, {minimumFractionDigits: 2})})</span>
+                <span>${t.date} (${accName})</span>
+              </div>
+            </div>
+          `;
+        }).join('');
+      }
+      document.getElementById('readonly-pending-team-modal').classList.remove('hidden');
+    }
+    function closeReadOnlyPendingTeamModal() { document.getElementById('readonly-pending-team-modal').classList.add('hidden'); }
+
+    function openReadOnlyInstHistoryModal(planId) {
+      const plan = activeInstallmentPlans.find(p => p.id === planId);
+      if (!plan) return;
+
+      document.getElementById('readonly-inst-title').innerText = `ประวัติ: ${plan.title || 'ผ่อนชำระ'}`;
+      document.getElementById('readonly-inst-subtitle').innerText = `ยอดเต็ม ${plan.totalAmount?.toLocaleString(undefined, {minimumFractionDigits: 2})} (${plan.currentCount||1}/${plan.totalCount||1} งวด)`;
+
+      const container = document.getElementById('readonly-inst-history-container');
+      const logs = allTransactions.filter(t => t.kind === 'transaction' && t.isInstallment && t.installmentPlanId === planId)
+                                  .sort((a,b) => (a.installmentCurrentCount || 0) - (b.installmentCurrentCount || 0));
+
+      if (!logs.length) {
+        container.innerHTML = `<p class="text-center text-xs text-slate-400 py-6">ยังไม่มีประวัติบันทึกงวดผ่อน</p>`;
+      } else {
+        container.innerHTML = logs.map(t => `
+          <div class="p-2.5 bg-slate-50 border border-slate-200/80 rounded-2xl flex justify-between items-center text-xs">
+            <div>
+              <p class="font-bold text-slate-800">งวดที่ ${t.installmentCurrentCount}/${t.installmentTotalCount}</p>
+              <p class="text-[10px] text-slate-400">${t.date} • ${escapeHtml(t.note || '')}</p>
+            </div>
+            <span class="font-bold text-slate-800">-${t.amount.toLocaleString(undefined, {minimumFractionDigits: 2})}</span>
+          </div>
+        `).join('');
+      }
+      document.getElementById('readonly-inst-history-modal').classList.remove('hidden');
+    }
+    function closeReadOnlyInstHistoryModal() { document.getElementById('readonly-inst-history-modal').classList.add('hidden'); }
+
     function updateEditSplitMath() {
       const tot = parseFloat(document.getElementById('edit-split-total-amount').value) || 0;
       const my = parseFloat(document.getElementById('edit-split-my-share').value) || 0;
@@ -1432,7 +1585,6 @@
       const categorySection = document.getElementById('edit-category-section');
       const subhead = document.getElementById('edit-tx-modal-subhead');
 
-      // Reset Visibility State
       splitFields.classList.add('hidden');
       reimbFields.classList.add('hidden');
       instFields.classList.add('hidden');
@@ -1658,10 +1810,10 @@
           const pct = Math.min(100, Math.round((currentCount / totalCount) * 100));
 
           c.innerHTML += `
-            <div class="bg-slate-50 border border-slate-200/80 p-3 rounded-2xl space-y-2 text-xs shadow-xs">
+            <div onclick="openReadOnlyInstHistoryModal('${plan.id}')" class="bg-slate-50 border border-slate-200/80 p-3 rounded-2xl space-y-2 text-xs shadow-xs cursor-pointer hover:bg-slate-100 transition">
               <div class="flex justify-between">
                 <div>
-                  <h4 class="font-bold text-slate-800">${escapeHtml(plan.title)}</h4>
+                  <h4 class="font-bold text-slate-800">${escapeHtml(plan.title)} 🔍</h4>
                   <p class="text-[10px] text-slate-400">${acc} • [${escapeHtml(plan.categoryName)}]</p>
                 </div>
                 <span class="text-[10px] font-bold text-slate-700 bg-white px-2 py-0.5 rounded-lg border border-slate-200">
@@ -1673,7 +1825,7 @@
               </div>
               <div class="flex justify-between items-center text-[10px] pt-1">
                 <span class="text-slate-500">งวดถัดไป: ${plan.nextDueDate||'ครบแล้ว'}</span>
-                <button onclick="db.collection('users').doc('${currentUser.uid}').collection('installment_plans').doc('${plan.id}').update({status:'cancelled'})" class="text-rose-400 underline">ยกเลิกสัญญา</button>
+                <button onclick="event.stopPropagation(); db.collection('users').doc('${currentUser.uid}').collection('installment_plans').doc('${plan.id}').update({status:'cancelled'})" class="text-rose-400 underline">ยกเลิกสัญญา</button>
               </div>
             </div>
           `;
@@ -2253,6 +2405,17 @@
 
     async function toggleAccountPin(id, isPinned) { try { await db.collection('users').doc(currentUser.uid).collection('accounts').doc(id).update({ isPinned: isPinned }); } catch (err) { alert(err.message); } }
     function escapeHtml(text) { return text ? text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;") : ''; }
+  </script>
+
+  <!-- PWA Service Worker Registration -->
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./sw.js')
+          .then((reg) => console.log('PWA Service Worker registered:', reg.scope))
+          .catch((err) => console.error('PWA Registration failed:', err));
+      });
+    }
   </script>
 </body>
 </html>
