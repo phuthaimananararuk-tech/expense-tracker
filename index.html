@@ -139,7 +139,11 @@
               <div class="entry-preset-notes-container flex flex-wrap gap-x-2 gap-y-0.5 mb-1 text-[11px]"></div>
               <input type="text" id="tx-note" placeholder="เช่น ค่าอาหาร, ซื้อของ" class="w-full px-2 py-1.5 text-xs border border-slate-300 rounded-xl bg-white text-slate-700">
             </div>
-            <button type="submit" id="btn-submit-tx-form" class="w-full bg-slate-700 hover:bg-slate-800 text-white font-medium py-2 rounded-xl text-xs shadow-xs transition mt-1">+ บันทึกรายการ</button>
+            
+            <div class="flex space-x-2 mt-1">
+              <button type="button" onclick="resetForm('normal')" class="w-1/4 bg-slate-200 hover:bg-slate-300 text-slate-600 font-semibold py-2 rounded-xl text-xs transition">ล้าง</button>
+              <button type="submit" id="btn-submit-tx-form" class="flex-1 bg-slate-700 hover:bg-slate-800 text-white font-bold py-2 rounded-xl text-xs shadow-xs transition">+ บันทึกรายการ</button>
+            </div>
           </form>
 
           <!-- Transfer Form -->
@@ -157,7 +161,11 @@
               <div class="entry-preset-notes-container flex flex-wrap gap-x-2 gap-y-0.5 mb-1 text-[11px]"></div>
               <input type="text" id="tr-note" class="w-full px-2 py-1.5 text-xs border border-slate-300 rounded-xl bg-white text-slate-700">
             </div>
-            <button type="submit" id="btn-submit-transfer-form" class="w-full bg-slate-700 hover:bg-slate-800 text-white font-medium py-2 rounded-xl text-xs shadow-xs transition">บันทึกการโอนเงิน</button>
+
+            <div class="flex space-x-2">
+              <button type="button" onclick="resetForm('transfer')" class="w-1/4 bg-slate-200 hover:bg-slate-300 text-slate-600 font-semibold py-2 rounded-xl text-xs transition">ล้าง</button>
+              <button type="submit" id="btn-submit-transfer-form" class="flex-1 bg-slate-700 hover:bg-slate-800 text-white font-bold py-2 rounded-xl text-xs shadow-xs transition">บันทึกการโอนเงิน</button>
+            </div>
           </form>
 
           <!-- Settle Form -->
@@ -174,7 +182,11 @@
               <div class="entry-preset-notes-container flex flex-wrap gap-x-2 gap-y-0.5 mb-1 text-[11px]"></div>
               <input type="text" id="settle-note" class="w-full px-2 py-1.5 text-xs border border-slate-300 rounded-xl bg-white text-slate-700">
             </div>
-            <button type="submit" id="btn-submit-settle-form" class="w-full bg-slate-700 hover:bg-slate-800 text-white font-medium py-2 rounded-xl text-xs shadow-xs transition">ยืนยันรับเงินคืน</button>
+
+            <div class="flex space-x-2">
+              <button type="button" onclick="resetForm('settle')" class="w-1/4 bg-slate-200 hover:bg-slate-300 text-slate-600 font-semibold py-2 rounded-xl text-xs transition">ล้าง</button>
+              <button type="submit" id="btn-submit-settle-form" class="flex-1 bg-slate-700 hover:bg-slate-800 text-white font-bold py-2 rounded-xl text-xs shadow-xs transition">ยืนยันรับเงินคืน</button>
+            </div>
           </form>
 
           <!-- Split Form -->
@@ -195,7 +207,11 @@
               <div class="entry-preset-notes-container flex flex-wrap gap-x-2 gap-y-0.5 mb-1 text-[11px]"></div>
               <input type="text" id="split-note" class="w-full px-2 py-1.5 text-xs border border-slate-300 rounded-xl bg-white text-slate-700">
             </div>
-            <button type="submit" id="btn-submit-split-form" class="w-full bg-slate-700 hover:bg-slate-800 text-white font-medium py-2 rounded-xl text-xs shadow-xs transition">บันทึกรับเงินแทน</button>
+
+            <div class="flex space-x-2">
+              <button type="button" onclick="resetForm('split')" class="w-1/4 bg-slate-200 hover:bg-slate-300 text-slate-600 font-semibold py-2 rounded-xl text-xs transition">ล้าง</button>
+              <button type="submit" id="btn-submit-split-form" class="flex-1 bg-slate-700 hover:bg-slate-800 text-white font-bold py-2 rounded-xl text-xs shadow-xs transition">บันทึกรับเงินแทน</button>
+            </div>
           </form>
 
           <!-- Installment Form -->
@@ -221,7 +237,11 @@
               <div class="entry-preset-notes-container flex flex-wrap gap-x-2 gap-y-0.5 mb-1 text-[11px]"></div>
               <input type="text" id="inst-note" placeholder="เช่น ผ่อนโทรศัพท์" class="w-full px-2 py-1.5 text-xs border border-slate-300 rounded-xl bg-white text-slate-700">
             </div>
-            <button type="submit" id="btn-submit-installment-form" class="w-full bg-slate-700 hover:bg-slate-800 text-white font-medium py-2 rounded-xl text-xs shadow-xs transition">สร้างสัญญาผ่อนชำระ</button>
+
+            <div class="flex space-x-2">
+              <button type="button" onclick="resetForm('installment')" class="w-1/4 bg-slate-200 hover:bg-slate-300 text-slate-600 font-semibold py-2 rounded-xl text-xs transition">ล้าง</button>
+              <button type="submit" id="btn-submit-installment-form" class="flex-1 bg-slate-700 hover:bg-slate-800 text-white font-bold py-2 rounded-xl text-xs shadow-xs transition">สร้างสัญญาผ่อนชำระ</button>
+            </div>
           </form>
 
           <!-- Reimburse Form -->
@@ -240,7 +260,11 @@
               <div class="entry-preset-notes-container flex flex-wrap gap-x-2 gap-y-0.5 mb-1 text-[11px]"></div>
               <input type="text" id="reimb-note" placeholder="เช่น ค่าอาหารมื้อเย็นสำรองจ่ายไปก่อน" class="w-full px-2 py-1.5 text-xs border border-slate-300 rounded-xl bg-white text-slate-700">
             </div>
-            <button type="submit" id="btn-submit-reimburse-form" class="w-full bg-slate-700 hover:bg-slate-800 text-white font-medium py-2 rounded-xl text-xs shadow-xs transition">บันทึกสำรองจ่าย</button>
+
+            <div class="flex space-x-2">
+              <button type="button" onclick="resetForm('reimburse')" class="w-1/4 bg-slate-200 hover:bg-slate-300 text-slate-600 font-semibold py-2 rounded-xl text-xs transition">ล้าง</button>
+              <button type="submit" id="btn-submit-reimburse-form" class="flex-1 bg-slate-700 hover:bg-slate-800 text-white font-bold py-2 rounded-xl text-xs shadow-xs transition">บันทึกสำรองจ่าย</button>
+            </div>
           </form>
 
           <!-- Team Pay Form -->
@@ -257,7 +281,11 @@
               <div class="entry-preset-notes-container flex flex-wrap gap-x-2 gap-y-0.5 mb-1 text-[11px]"></div>
               <input type="text" id="team-pay-note" placeholder="เช่น โอนจ่ายค่าตัดต่อโปรเจกต์คุณบี" class="w-full px-2 py-1.5 text-xs border border-slate-300 rounded-xl bg-white text-slate-700">
             </div>
-            <button type="submit" id="btn-submit-team-pay-form" class="w-full bg-slate-700 hover:bg-slate-800 text-white font-medium py-2 rounded-xl text-xs shadow-xs transition">ยืนยันการโอนให้ทีม</button>
+
+            <div class="flex space-x-2">
+              <button type="button" onclick="resetForm('team-pay')" class="w-1/4 bg-slate-200 hover:bg-slate-300 text-slate-600 font-semibold py-2 rounded-xl text-xs transition">ล้าง</button>
+              <button type="submit" id="btn-submit-team-pay-form" class="flex-1 bg-slate-700 hover:bg-slate-800 text-white font-bold py-2 rounded-xl text-xs shadow-xs transition">ยืนยันการโอนให้ทีม</button>
+            </div>
           </form>
         </div>
       </section>
@@ -750,6 +778,7 @@
 
     let editingTxIdInModal = null, editSelectedAccountId = null, editSelectedCategoryId = null;
 
+    // ตั้งค่าเริ่มต้นของ State บัญชีและหมวดหมู่ทั้งหมดเป็น null หรือ [] (ไม่ Pre-select)
     let selectedAccountId = null, selectedCategoryIds = [], selectedCategoryId = null;  
     let selectedSettleAccountId = null, selectedSplitAccountId = null, selectedSplitCategoryId = null;
     let selectedInstAccountId = null, selectedInstCategoryId = null, selectedReimbAccountId = null, selectedReimbCategoryId = null, selectedTeamPayAccountId = null;
@@ -905,11 +934,15 @@
       });
     }
 
+    function getTodayDateString() {
+      const now = new Date();
+      return new Date(now.getTime() - (now.getTimezoneOffset() * 60000)).toISOString().split('T')[0];
+    }
+
     async function initUserData(uid) {
       [unsubscribeAcc, unsubscribeCat, unsubscribeTx, unsubscribeInst, unsubscribePresetNotes].forEach(u => u && u());
 
-      const now = new Date();
-      const todayStr = new Date(now.getTime() - (now.getTimezoneOffset() * 60000)).toISOString().split('T')[0];
+      const todayStr = getTodayDateString();
 
       ['tx-date', 'tr-date', 'settle-date', 'split-date', 'inst-date', 'reimb-date', 'team-pay-date'].forEach(id => {
         const el = document.getElementById(id);
@@ -927,17 +960,15 @@
 
         recalculateAccountBalances();
 
-        const fallbackId = accountsList[0].id;
-        const ensureValid = (val) => (!val || !accountsList.some(a => a.id === val)) ? fallbackId : val;
-
-        selectedAccountId = ensureValid(selectedAccountId);
-        selectedSettleAccountId = ensureValid(selectedSettleAccountId);
-        selectedSplitAccountId = ensureValid(selectedSplitAccountId);
-        selectedInstAccountId = ensureValid(selectedInstAccountId);
-        selectedReimbAccountId = ensureValid(selectedReimbAccountId);
-        selectedTeamPayAccountId = ensureValid(selectedTeamPayAccountId);
-        transferFromId = ensureValid(transferFromId);
-        transferToId = (!transferToId || !accountsList.some(a => a.id === transferToId)) ? (accountsList.length > 1 ? accountsList[1].id : fallbackId) : transferToId;
+        // ตรวจสอบความถูกต้อง โดยไม่บังคับ Pre-select รายการแรก
+        if (selectedAccountId && !accountsList.some(a => a.id === selectedAccountId)) selectedAccountId = null;
+        if (selectedSettleAccountId && !accountsList.some(a => a.id === selectedSettleAccountId)) selectedSettleAccountId = null;
+        if (selectedSplitAccountId && !accountsList.some(a => a.id === selectedSplitAccountId)) selectedSplitAccountId = null;
+        if (selectedInstAccountId && !accountsList.some(a => a.id === selectedInstAccountId)) selectedInstAccountId = null;
+        if (selectedReimbAccountId && !accountsList.some(a => a.id === selectedReimbAccountId)) selectedReimbAccountId = null;
+        if (selectedTeamPayAccountId && !accountsList.some(a => a.id === selectedTeamPayAccountId)) selectedTeamPayAccountId = null;
+        if (transferFromId && !accountsList.some(a => a.id === transferFromId)) transferFromId = null;
+        if (transferToId && !accountsList.some(a => a.id === transferToId)) transferToId = null;
 
         renderAllAccountButtons(); renderSettingsAccounts(); populateHistoryFilterDropdowns();
         if (!views.summary.classList.contains('hidden')) renderSummaryAnalyticsUI();
@@ -953,6 +984,74 @@
       loadTransactionsRealtime(uid); 
       loadInstallmentPlansRealtime(uid); 
       goToView('entry');
+    }
+
+    function resetForm(targetForm) {
+      const today = getTodayDateString();
+
+      if (targetForm === 'normal') {
+        selectedAccountId = null;
+        selectedCategoryIds = [];
+        selectedCategoryId = null;
+        document.getElementById('tx-amount').value = '';
+        document.getElementById('tx-note').value = '';
+        document.getElementById('tx-date').value = today;
+        renderAllAccountButtons();
+        renderCategoryButtons();
+      } else if (targetForm === 'transfer') {
+        transferFromId = null;
+        transferToId = null;
+        document.getElementById('tr-amount').value = '';
+        document.getElementById('tr-note').value = '';
+        document.getElementById('tr-date').value = today;
+        renderTransferButtons();
+      } else if (targetForm === 'settle') {
+        selectedSettleAccountId = null;
+        document.getElementById('settle-received-amount').value = '';
+        document.getElementById('settle-note').value = '';
+        document.getElementById('settle-date').value = today;
+        document.querySelectorAll('input[name="settle-item"]').forEach(cb => cb.checked = false);
+        renderAllAccountButtons();
+      } else if (targetForm === 'split') {
+        selectedSplitAccountId = null;
+        selectedSplitCategoryId = null;
+        document.getElementById('split-total-amount').value = '';
+        document.getElementById('split-my-share').value = '';
+        document.getElementById('split-note').value = '';
+        document.getElementById('split-date').value = today;
+        updateSplitMath();
+        renderAllAccountButtons();
+        renderSplitCategoryButtons();
+      } else if (targetForm === 'installment') {
+        selectedInstAccountId = null;
+        selectedInstCategoryId = null;
+        document.getElementById('inst-total-amount').value = '';
+        document.getElementById('inst-count').value = '10';
+        document.getElementById('inst-start-count').value = '1';
+        document.getElementById('inst-day').value = '1';
+        document.getElementById('inst-note').value = '';
+        document.getElementById('inst-date').value = today;
+        updateDedicatedInstMath();
+        renderAllAccountButtons();
+        renderInstCategoryButtons();
+      } else if (targetForm === 'reimburse') {
+        selectedReimbAccountId = null;
+        selectedReimbCategoryId = null;
+        document.getElementById('reimb-total-amount').value = '';
+        document.getElementById('reimb-my-share').value = '';
+        document.getElementById('reimb-note').value = '';
+        document.getElementById('reimb-date').value = today;
+        updateDedicatedReimbMath();
+        renderAllAccountButtons();
+        renderReimbCategoryButtons();
+      } else if (targetForm === 'team-pay') {
+        selectedTeamPayAccountId = null;
+        document.getElementById('team-pay-amount').value = '';
+        document.getElementById('team-pay-note').value = '';
+        document.getElementById('team-pay-date').value = today;
+        document.querySelectorAll('input[name="team-pay-item"]').forEach(cb => cb.checked = false);
+        renderAllAccountButtons();
+      }
     }
 
     function loadPresetNotesRealtime(uid) {
@@ -1193,7 +1292,6 @@
 
       if (currentTxType === 'expense') {
         multiCatBtn.classList.remove('hidden');
-        if (!selectedCategoryIds.length || !selectedCategoryIds.some(id => c.some(cat => cat.id === id))) { if (c.length) selectedCategoryIds = [c[0].id]; }
         const recentList = getMostRecentCategories('expense');
         let html = `<div class="flex flex-wrap gap-1 items-center">`;
         recentList.forEach(i => {
@@ -1210,7 +1308,6 @@
         document.getElementById('category-buttons-container').innerHTML = html;
       } else {
         multiCatBtn.classList.add('hidden');
-        if (!selectedCategoryId || !c.some(x => x.id === selectedCategoryId)) if (c.length) selectedCategoryId = c[0].id;
         const recentList = getMostRecentCategories('income');
         let html = `<div class="flex flex-wrap gap-1 items-center">`;
         recentList.forEach(i => {
@@ -1220,7 +1317,7 @@
 
           html += `<button type="button" onclick="selectedCategoryId='${i.id}'; renderCategoryButtons();" class="px-2.5 py-1 rounded-xl text-xs font-semibold transition border ${styleClass}">${escapeHtml(i.name)}</button>`;
         });
-        const isNonRecentSelected = !recentList.some(r => r.id === selectedCategoryId);
+        const isNonRecentSelected = selectedCategoryId && !recentList.some(r => r.id === selectedCategoryId);
         const selectedObj = c.find(x => x.id === selectedCategoryId);
         const extraLabel = (isNonRecentSelected && selectedObj) ? `${selectedObj.name} ✓` : `+`;
         const extraClass = (isNonRecentSelected && selectedObj) ? 'bg-emerald-600 text-white border-emerald-600 shadow-xs' : 'bg-slate-100 text-slate-600 border-slate-300 hover:bg-slate-200 font-bold';
@@ -1254,9 +1351,9 @@
         return `<button type="button" onclick="${cb}='${i.id}'; ${cb.includes('InstCat')?'renderInstCategoryButtons()':cb.includes('ReimbCat')?'renderReimbCategoryButtons()':'renderSplitCategoryButtons()'}" class="px-2.5 py-1 rounded-xl text-xs font-semibold transition border ${styleClass}">${escapeHtml(i.name)}</button>`;
       }).join('');
     }
-    function renderSplitCategoryButtons() { const c=categoriesList.filter(x=>x.type==='income'); if(!selectedSplitCategoryId||!c.some(x=>x.id===selectedSplitCategoryId))if(c.length)selectedSplitCategoryId=c[0].id; document.getElementById('split-category-buttons').innerHTML=genBtns(c,selectedSplitCategoryId,'selectedSplitCategoryId'); }
-    function renderInstCategoryButtons() { const c=categoriesList.filter(x=>x.type==='expense'); if(!selectedInstCategoryId||!c.some(x=>x.id===selectedInstCategoryId))if(c.length)selectedInstCategoryId=c[0].id; document.getElementById('inst-category-buttons').innerHTML=genBtns(c,selectedInstCategoryId,'selectedInstCategoryId'); }
-    function renderReimbCategoryButtons() { const c=categoriesList.filter(x=>x.type==='expense'); if(!selectedReimbCategoryId||!c.some(x=>x.id===selectedReimbCategoryId))if(c.length)selectedReimbCategoryId=c[0].id; document.getElementById('reimb-category-buttons').innerHTML=genBtns(c,selectedReimbCategoryId,'selectedReimbCategoryId'); }
+    function renderSplitCategoryButtons() { const c=categoriesList.filter(x=>x.type==='income'); document.getElementById('split-category-buttons').innerHTML=genBtns(c,selectedSplitCategoryId,'selectedSplitCategoryId'); }
+    function renderInstCategoryButtons() { const c=categoriesList.filter(x=>x.type==='expense'); document.getElementById('inst-category-buttons').innerHTML=genBtns(c,selectedInstCategoryId,'selectedInstCategoryId'); }
+    function renderReimbCategoryButtons() { const c=categoriesList.filter(x=>x.type==='expense'); document.getElementById('reimb-category-buttons').innerHTML=genBtns(c,selectedReimbCategoryId,'selectedReimbCategoryId'); }
     function closeSelectorModal() { document.getElementById('selector-modal').classList.add('hidden'); }
 
     function renderTransferButtons() { 
@@ -1292,7 +1389,7 @@
       try {
         await saveTransactionToDB(pendingMultiCatTxPayload);
         closeMultiCatModal(); triggerSuccessToast();
-        document.getElementById('tx-amount').value = ''; document.getElementById('tx-note').value = ''; renderCategoryButtons();
+        resetForm('normal');
       } catch (err) { alert(err.message); } finally { btn.disabled = false; }
     }
 
@@ -1301,36 +1398,42 @@
     }
 
     document.getElementById('tx-form').addEventListener('submit', async (e) => {
-      e.preventDefault(); if (!currentUser || !selectedAccountId) return alert("เลือกบัญชี");
+      e.preventDefault(); 
       const btn = document.getElementById('btn-submit-tx-form');
       btn.disabled = true;
+
+      if (!currentUser || !selectedAccountId) { btn.disabled = false; return alert("กรุณาเลือกบัญชีเงิน"); }
+
       const amt = parseFloat(document.getElementById('tx-amount').value), n = document.getElementById('tx-note').value.trim(), d = document.getElementById('tx-date').value;
       if (isNaN(amt) || amt <= 0) { btn.disabled = false; return alert("จำนวนเงินไม่ถูกต้อง"); }
 
       try {
         if (currentTxType === 'expense') {
-          if (!selectedCategoryIds.length) { btn.disabled = false; return alert("เลือกอย่างน้อย 1 หมวดหมู่"); }
+          if (!selectedCategoryIds.length) { btn.disabled = false; return alert("กรุณาเลือกอย่างน้อย 1 หมวดหมู่"); }
           const selectedCats = categoriesList.filter(c => selectedCategoryIds.includes(c.id));
           if (selectedCats.length > 1) {
             openMultiCatModal({ kind: 'transaction', type: 'expense', amount: amt, myShare: amt, friendShare: 0, remainingPending: 0, isReimburse: false, isDeposit: false, isMultiCategory: true, note: n, date: d, accountId: selectedAccountId, categoryId: selectedCats[0].id, categoryName: selectedCats.map(c => c.name).join(', '), categoriesBreakdown: selectedCats.map(c => ({ categoryId: c.id, categoryName: c.name, amount: 0 })) });
           } else {
             const cat = selectedCats[0];
             await saveTransactionToDB({ kind: 'transaction', type: 'expense', amount: amt, myShare: amt, friendShare: 0, remainingPending: 0, isReimburse: false, isDeposit: false, isMultiCategory: false, note: n, date: d, accountId: selectedAccountId, categoryId: cat.id, categoryName: cat.name, categoriesBreakdown: [{ categoryId: cat.id, categoryName: cat.name, amount: amt }] });
-            triggerSuccessToast(); document.getElementById('tx-amount').value = ''; document.getElementById('tx-note').value = ''; renderCategoryButtons();
+            triggerSuccessToast(); resetForm('normal');
           }
         } else {
-          if (!selectedCategoryId) { btn.disabled = false; return alert("เลือกหมวดหมู่"); }
+          if (!selectedCategoryId) { btn.disabled = false; return alert("กรุณาเลือกหมวดหมู่รายรับ"); }
           const cat = categoriesList.find(c => c.id === selectedCategoryId);
           await saveTransactionToDB({ kind: 'transaction', type: 'income', amount: amt, myShare: amt, friendShare: 0, remainingPending: 0, isReimburse: false, isDeposit: false, isMultiCategory: false, note: n, date: d, accountId: selectedAccountId, categoryId: cat.id, categoryName: cat.name, categoriesBreakdown: [{ categoryId: cat.id, categoryName: cat.name, amount: amt }] });
-          triggerSuccessToast(); document.getElementById('tx-amount').value = ''; document.getElementById('tx-note').value = ''; renderCategoryButtons();
+          triggerSuccessToast(); resetForm('normal');
         }
       } catch(err){ alert(err.message); } finally { btn.disabled = false; }
     });
 
     document.getElementById('installment-form').addEventListener('submit', async (e) => {
-      e.preventDefault(); if(!currentUser||!selectedInstAccountId||!selectedInstCategoryId)return alert("เลือกบัญชีและหมวดหมู่");
+      e.preventDefault(); 
       const btn = document.getElementById('btn-submit-installment-form');
       btn.disabled = true;
+
+      if(!currentUser||!selectedInstAccountId||!selectedInstCategoryId) { btn.disabled = false; return alert("กรุณาเลือกบัญชีและหมวดหมู่รายจ่าย"); }
+
       const amt=parseFloat(document.getElementById('inst-total-amount').value), totalCount=parseInt(document.getElementById('inst-count').value)||2, startCount=parseInt(document.getElementById('inst-start-count').value)||1, payDay=parseInt(document.getElementById('inst-day').value)||1;
       const dateStr=document.getElementById('inst-date').value, noteStr=document.getElementById('inst-note').value.trim(), cat=categoriesList.find(x=>x.id===selectedInstCategoryId);
 
@@ -1348,32 +1451,39 @@
         batch.set(db.collection('users').doc(currentUser.uid).collection('transactions').doc(), { kind:'transaction', type:'expense', amount:currentPayAmt, myShare:currentPayAmt, friendShare:0, remainingPending:0, isReimburse:false, isInstallment:true, installmentPlanId:planRef.id, installmentCurrentCount:startCount, installmentTotalCount:totalCount, note:`${noteStr||'ผ่อนชำระ'} (${startCount}/${totalCount})`, date:dateStr, accountId:selectedInstAccountId, categoryId:selectedInstCategoryId, categoryName:cat?.name||'', categoriesBreakdown:[{categoryId:cat?.id||'', categoryName:cat?.name||'', amount:currentPayAmt}], createdAt:firebase.firestore.FieldValue.serverTimestamp() });
         await batch.commit();
 
-        triggerSuccessToast(); document.getElementById('inst-total-amount').value=''; document.getElementById('inst-start-count').value='1'; document.getElementById('inst-note').value=''; switchEntryMode('expense');
+        triggerSuccessToast(); resetForm('installment'); switchEntryMode('expense');
       } catch(err){alert(err.message);} finally { btn.disabled = false; }
     });
 
     document.getElementById('reimburse-form').addEventListener('submit', async (e) => {
-      e.preventDefault(); if(!currentUser||!selectedReimbAccountId||!selectedReimbCategoryId)return alert("เลือกบัญชีและหมวดหมู่");
+      e.preventDefault(); 
       const btn = document.getElementById('btn-submit-reimburse-form');
       btn.disabled = true;
+
+      if(!currentUser||!selectedReimbAccountId||!selectedReimbCategoryId) { btn.disabled = false; return alert("กรุณาเลือกบัญชีและหมวดหมู่รายจ่าย"); }
+
       const tot=parseFloat(document.getElementById('reimb-total-amount').value), myVal=document.getElementById('reimb-my-share').value;
       const myS=myVal===''?0:parseFloat(myVal)||0, d=document.getElementById('reimb-date').value, n=document.getElementById('reimb-note').value.trim(), cat=categoriesList.find(x=>x.id===selectedReimbCategoryId);
       if(isNaN(tot)||tot<=0||myS>tot) { btn.disabled = false; return alert("ยอดเงินไม่ถูกต้อง"); }
       const frS=Math.max(0, tot-myS);
       try {
         await db.collection('users').doc(currentUser.uid).collection('transactions').add({ kind:'transaction',type:'expense',amount:tot,myShare:myS,friendShare:frS,remainingPending:frS,isReimburse:true,isDeposit:false,note:n,date:d,accountId:selectedReimbAccountId,categoryId:selectedReimbCategoryId,categoryName:cat?.name||'',categoriesBreakdown:[{categoryId:cat?.id||'',categoryName:cat?.name||'',amount:myS}], createdAt:firebase.firestore.FieldValue.serverTimestamp() });
-        triggerSuccessToast(); document.getElementById('reimb-total-amount').value=''; document.getElementById('reimb-my-share').value=''; document.getElementById('reimb-note').value=''; switchEntryMode('expense');
+        triggerSuccessToast(); resetForm('reimburse'); switchEntryMode('expense');
       } catch(err){alert(err.message);} finally { btn.disabled = false; }
     });
 
     document.getElementById('transfer-form').addEventListener('submit', async (e) => {
-      e.preventDefault(); if(transferFromId===transferToId)return alert("ไม่สามารถเลือกบัญชีต้นทางและปลายทางเป็นบัญชีเดียวกันได้"); 
+      e.preventDefault(); 
       const btn = document.getElementById('btn-submit-transfer-form');
       btn.disabled = true;
+
+      if (!transferFromId || !transferToId) { btn.disabled = false; return alert("กรุณาเลือกบัญชีต้นทางและปลายทาง"); }
+      if (transferFromId === transferToId) { btn.disabled = false; return alert("ไม่สามารถเลือกบัญชีต้นทางและปลายทางเป็นบัญชีเดียวกันได้"); } 
+
       const amt=parseFloat(document.getElementById('tr-amount').value); if(isNaN(amt)||amt<=0) { btn.disabled = false; return alert("จำนวนเงินไม่ถูกต้อง"); }
       try{
         await db.collection('users').doc(currentUser.uid).collection('transactions').add({ kind:'transfer',amount:amt,fromAccountId:transferFromId,fromAccountName:accountsList.find(a=>a.id===transferFromId)?.name||'',toAccountId:transferToId,toAccountName:accountsList.find(a=>a.id===transferToId)?.name||'',note:document.getElementById('tr-note').value,date:document.getElementById('tr-date').value, createdAt:firebase.firestore.FieldValue.serverTimestamp() });
-        triggerSuccessToast(); document.getElementById('tr-amount').value=''; document.getElementById('tr-note').value=''; switchEntryMode('expense');
+        triggerSuccessToast(); resetForm('transfer'); switchEntryMode('expense');
       }catch(err){alert(err.message);} finally { btn.disabled = false; }
     });
 
@@ -1398,15 +1508,18 @@
       e.preventDefault(); 
       const btn = document.getElementById('btn-submit-settle-form');
       btn.disabled = true;
+
+      if (!selectedSettleAccountId) { btn.disabled = false; return alert("กรุณาเลือกบัญชีรับเงิน"); }
+
       const amt=parseFloat(document.getElementById('settle-received-amount').value), cbs=document.querySelectorAll('input[name="settle-item"]:checked');
-      if(isNaN(amt)||amt<=0) { btn.disabled = false; return alert("เลขผิด"); }
-      if(!cbs.length) { btn.disabled = false; return alert("เลือกอย่างน้อย 1"); } 
-      document.getElementById('settle-received-amount').value='';
+      if(isNaN(amt)||amt<=0) { btn.disabled = false; return alert("กรอกจำนวนเงินไม่ถูกต้อง"); }
+      if(!cbs.length) { btn.disabled = false; return alert("เลือกรายการที่รอคืนอย่างน้อย 1 รายการ"); } 
+      
       try{
         let r=amt; const b=db.batch();
         for(const cb of cbs){ if(r<=0)break; const d=Math.min(r,parseFloat(cb.getAttribute('data-max'))); b.update(db.collection('users').doc(currentUser.uid).collection('transactions').doc(cb.value),{remainingPending:allTransactions.find(t=>t.id===cb.value).remainingPending-d}); r-=d; }
         b.set(db.collection('users').doc(currentUser.uid).collection('transactions').doc(), {kind:'settlement',amount:amt,accountId:selectedSettleAccountId,note:document.getElementById('settle-note').value,date:document.getElementById('settle-date').value,createdAt:firebase.firestore.FieldValue.serverTimestamp()});
-        await b.commit(); triggerSuccessToast(); switchEntryMode('income');
+        await b.commit(); triggerSuccessToast(); resetForm('settle'); switchEntryMode('income');
       }catch(err){alert(err.message);} finally { btn.disabled = false; }
     });
 
@@ -1414,11 +1527,14 @@
       e.preventDefault(); 
       const btn = document.getElementById('btn-submit-split-form');
       btn.disabled = true;
+
+      if (!selectedSplitAccountId || !selectedSplitCategoryId) { btn.disabled = false; return alert("กรุณาเลือกบัญชีและหมวดหมู่รายรับ"); }
+
       const tot=parseFloat(document.getElementById('split-total-amount').value), my=parseFloat(document.getElementById('split-my-share').value);
-      if(isNaN(tot)||tot<=0||isNaN(my)||my<0||my>tot) { btn.disabled = false; return alert("เลขผิด"); }
+      if(isNaN(tot)||tot<=0||isNaN(my)||my<0||my>tot) { btn.disabled = false; return alert("ระบุตัวเลขยอดเงินไม่ถูกต้อง"); }
       try{
         await db.collection('users').doc(currentUser.uid).collection('transactions').add({kind:'split',totalAmount:tot,myShare:my,teamShare:tot-my,remainingTeamPending:tot-my,accountId:selectedSplitAccountId,categoryId:selectedSplitCategoryId,categoryName:categoriesList.find(c=>c.id===selectedSplitCategoryId)?.name||'',note:document.getElementById('split-note').value,date:document.getElementById('split-date').value,createdAt:firebase.firestore.FieldValue.serverTimestamp()});
-        triggerSuccessToast(); document.getElementById('split-total-amount').value=''; document.getElementById('split-my-share').value=''; updateSplitMath(); switchEntryMode('income');
+        triggerSuccessToast(); resetForm('split'); switchEntryMode('income');
       }catch(err){alert(err.message);} finally { btn.disabled = false; }
     });
 
@@ -1426,12 +1542,15 @@
       e.preventDefault(); 
       const btn = document.getElementById('btn-submit-team-pay-form');
       btn.disabled = true;
+
+      if (!selectedTeamPayAccountId) { btn.disabled = false; return alert("กรุณาเลือกบัญชีโอนเงินออก"); }
+
       const amt=parseFloat(document.getElementById('team-pay-amount').value);
       if(isNaN(amt)||amt<=0) { btn.disabled = false; return alert("กรอกจำนวนเงินให้ถูกต้อง"); }
 
       const cbs=document.querySelectorAll('input[name="team-pay-item"]:checked');
       if(!cbs.length) { btn.disabled = false; return alert("เลือกรายการค้างจ่ายทีมงานอย่างน้อย 1 รายการ"); }
-      document.getElementById('team-pay-amount').value='';
+
       try{
         let r=amt; const b=db.batch(); const linkedSplitItems = [];
         for(const cb of cbs){ 
@@ -1441,7 +1560,7 @@
           linkedSplitItems.push({ splitId: cb.value, deductedAmount: d }); r-=d; 
         }
         b.set(db.collection('users').doc(currentUser.uid).collection('transactions').doc(), {kind:'team-pay',amount:amt,accountId:selectedTeamPayAccountId,linkedSplitItems:linkedSplitItems,note:document.getElementById('team-pay-note').value,date:document.getElementById('team-pay-date').value,createdAt:firebase.firestore.FieldValue.serverTimestamp()});
-        await b.commit(); triggerSuccessToast(); document.getElementById('team-pay-note').value=''; switchEntryMode('transfer');
+        await b.commit(); triggerSuccessToast(); resetForm('team-pay'); switchEntryMode('transfer');
       }catch(err){alert(err.message);} finally { btn.disabled = false; }
     });
 
@@ -1508,7 +1627,7 @@
 
       const container = document.getElementById('readonly-inst-history-container');
       const logs = allTransactions.filter(t => t.kind === 'transaction' && t.isInstallment && t.installmentPlanId === planId)
-                                  .sort((a,b) => (a.installmentCurrentCount || 0) - (b.installmentCurrentCount || 0));
+                                   .sort((a,b) => (a.installmentCurrentCount || 0) - (b.installmentCurrentCount || 0));
 
       if (!logs.length) {
         container.innerHTML = `<p class="text-center text-xs text-slate-400 py-6">ยังไม่มีประวัติบันทึกงวดผ่อน</p>`;
