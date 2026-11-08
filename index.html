@@ -104,7 +104,7 @@
         <div class="text-center pt-3 border-t border-slate-100"><button id="back-to-login-btn" class="text-xs font-semibold text-slate-400 hover:underline">← ย้อนกลับไปหน้าเข้าสู่ระบบ</button></div>
       </section>
 
-      <!-- 1. ENTRY VIEW (ปรับ Layout พอดีหน้าจอ) -->
+      <!-- 1. ENTRY VIEW -->
       <section id="entry-view" class="hidden space-y-2 flex-1 flex flex-col justify-between overflow-hidden">
         <div class="space-y-2.5 overflow-y-auto pr-1 flex-1">
 
@@ -260,21 +260,6 @@
             <button type="submit" id="btn-submit-team-pay-form" class="w-full bg-slate-700 hover:bg-slate-800 text-white font-medium py-2 rounded-xl text-xs shadow-xs transition">ยืนยันการโอนให้ทีม</button>
           </form>
         </div>
-
-        <!-- Cash Flow Bar (จัดระเบียบให้พอดีขอบล่างเสมอ) -->
-        <div class="bg-slate-50 border border-slate-200/80 rounded-2xl p-2 sm:p-2.5 shadow-xs space-y-1 mt-2 flex-shrink-0">
-          <div class="flex items-center justify-between text-xs font-semibold text-slate-600">
-            <span>Cash Flow (เดือนปัจจุบัน)</span>
-            <button type="button" onclick="openCashflowPopUpModal()" class="text-slate-400 hover:text-slate-600 p-1 rounded-lg" title="ดูเดือนอื่น"><svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"/></svg></button>
-          </div>
-          <div class="relative w-full h-3.5 bg-slate-200/80 rounded-full overflow-hidden flex items-center border border-slate-300">
-            <div class="absolute left-1/2 top-0 bottom-0 w-0.5 bg-slate-400 z-10"></div>
-            <div id="entry-cashflow-bar-fill" class="h-full transition-all duration-500 ease-out"></div>
-          </div>
-          <div class="flex justify-between items-center text-[10px]">
-            <span class="text-rose-500 font-medium">จ่าย</span><span id="entry-cashflow-net-text" class="font-bold text-slate-700">0.00</span><span class="text-emerald-500 font-medium">รับ</span>
-          </div>
-        </div>
       </section>
 
       <!-- 2. SUMMARY VIEW -->
@@ -363,7 +348,7 @@
           </div>
           <div id="preset-notes-list" class="flex flex-wrap gap-1.5 min-h-[32px] p-2.5 bg-slate-50 border border-slate-200 rounded-2xl"></div>
           <div class="flex space-x-1 pt-1">
-            <input type="text" id="new-preset-note-input" placeholder="เพิ่มคำด่วน เช่น ข้าวมันไก่, กาแฟ" class="flex-1 px-2.5 py-1.5 text-xs border border-slate-300 rounded-xl bg-white text-slate-700">
+            <input type="text" id="new-preset-note-input" placeholder="เพิ่มคำด่วน เช่น ข้าวมันไก่, กาแฟ" class="w-full px-2.5 py-1.5 text-xs border border-slate-300 rounded-xl bg-white text-slate-700">
             <button type="button" onclick="addNewPresetNote()" class="bg-slate-700 hover:bg-slate-800 text-white px-3 py-1.5 rounded-xl text-xs font-bold transition shadow-xs">+ เพิ่ม</button>
           </div>
         </div>
@@ -745,11 +730,6 @@
     </div>
   </div>
 
-  <!-- Cash Flow Modal -->
-  <div id="cashflow-modal" class="hidden fixed inset-0 bg-slate-900/40 backdrop-blur-xs flex items-center justify-center p-4 z-40">
-    <div class="bg-white rounded-3xl w-full max-w-xs p-4 space-y-4 shadow-2xl relative border border-slate-200"><button onclick="closeCashflowPopUpModal()" class="absolute top-3 right-4 text-slate-400 font-bold text-base">✕</button><div class="border-b border-slate-200 pb-2"><h3 class="text-xs font-bold text-slate-700 uppercase">Cash Flow</h3></div><div class="flex items-center justify-between bg-slate-50 p-2 rounded-2xl border border-slate-200"><button onclick="changePopupCashflowMonth(-1)" class="p-1.5 hover:bg-slate-200 rounded-xl text-slate-700 font-bold">←</button><span id="popup-cashflow-month-label" class="text-xs font-bold text-slate-700"></span><button onclick="changePopupCashflowMonth(1)" class="p-1.5 hover:bg-slate-200 rounded-xl text-slate-700 font-bold">→</button></div><div class="space-y-1.5 bg-slate-50 p-3 rounded-2xl border border-slate-200/80"><div class="relative w-full h-4 bg-slate-200 rounded-full overflow-hidden flex items-center border border-slate-300"><div class="absolute left-1/2 top-0 bottom-0 w-0.5 bg-slate-400 z-10"></div><div id="popup-cashflow-bar-fill" class="h-full transition-all duration-500 ease-out"></div></div><div class="flex justify-between items-center text-xs pt-1"><span class="text-rose-500 font-medium">จ่าย</span><span id="popup-cashflow-net-text" class="font-bold text-slate-700">0.00</span><span class="text-emerald-500 font-medium">รับ</span></div></div></div>
-  </div>
-
   <script>
     const firebaseConfig = {
       apiKey: "AIzaSyCuu9m390tra3oEca4PygcD1pO6-L7u7XE",
@@ -776,7 +756,6 @@
     let transferFromId = null, transferToId = null;
 
     let currentTxType = 'expense', currentEntryMode = 'expense';
-    let popupYear = new Date().getFullYear(), popupMonth = new Date().getMonth() + 1;
     let activeKeypadFieldId = null, pendingMultiCatTxPayload = null;
     let balanceChartInstance = null, incomePieInstance = null, expensePieInstance = null;
     let activeSwipedCardId = null;
@@ -1927,26 +1906,6 @@
       setInstanceCb(newInst);
     }
 
-    function calculateCashflowForMonth(y, m) {
-      const mStr = `${y}-${String(m).padStart(2, '0')}`; let inc = 0, exp = 0;
-      allTransactions.forEach(t => {
-        if(!t.date?.startsWith(mStr)) return;
-        if(t.kind==='transaction') { if(t.type==='income') inc+=t.amount; else exp+=(t.isReimburse?t.myShare:t.amount); }
-        else if(t.kind==='split') inc+=t.myShare; else if(t.kind==='settlement') inc+=t.amount;
-      }); return { inc, exp, netFlow: inc - exp };
-    }
-
-    function renderCashflowBar(net, max, fId, tId) {
-      const f = document.getElementById(fId), t = document.getElementById(tId);
-      if(net>=0){ f.style.marginLeft='50%'; f.style.width=`${Math.min(50,(net/max)*50)}%`; f.className="h-full bg-emerald-500 rounded-r-full"; t.innerText=`+${net.toLocaleString(undefined, {minimumFractionDigits: 2})}`; t.className="font-bold text-emerald-600"; }
-      else { const p=Math.min(50,(Math.abs(net)/max)*50); f.style.marginLeft=`${50-p}%`; f.style.width=`${p}%`; f.className="h-full bg-rose-500 rounded-l-full"; t.innerText=`-${Math.abs(net).toLocaleString(undefined, {minimumFractionDigits: 2})}`; t.className="font-bold text-rose-600"; }
-    }
-    function updateEntryCurrentMonthCashFlowUI() { const {netFlow, inc, exp} = calculateCashflowForMonth(new Date().getFullYear(), new Date().getMonth()+1); renderCashflowBar(netFlow, Math.max(inc,exp,1), 'entry-cashflow-bar-fill', 'entry-cashflow-net-text'); }
-    function openCashflowPopUpModal() { const d=new Date(); popupYear=d.getFullYear(); popupMonth=d.getMonth()+1; updatePopupCashflowUI(); document.getElementById('cashflow-modal').classList.remove('hidden'); }
-    function closeCashflowPopUpModal() { document.getElementById('cashflow-modal').classList.add('hidden'); }
-    function changePopupCashflowMonth(off) { popupMonth+=off; if(popupMonth>12){popupMonth=1; popupYear++;} else if(popupMonth<1){popupMonth=12; popupYear--;} updatePopupCashflowUI(); }
-    function updatePopupCashflowUI() { document.getElementById('popup-cashflow-month-label').innerText = `${["ม.ค.","ก.พ.","มี.ค.","เม.ย.","พ.ค.","มิ.ย.","ก.ค.","ส.ค.","ก.ย.","ต.ค.","พ.ย.","ธ.ค."][popupMonth-1]} ${popupYear}`; const {netFlow, inc, exp} = calculateCashflowForMonth(popupYear, popupMonth); renderCashflowBar(netFlow, Math.max(inc,exp,1), 'popup-cashflow-bar-fill', 'popup-cashflow-net-text'); }
-
     function populateHistoryFilterDropdowns() {
       const catSelect = document.getElementById('filter-category');
       catSelect.innerHTML = `<option value="all">ทุกหมวดหมู่</option>` + categoriesList.map(c => `<option value="${c.id}">${escapeHtml(c.name)} (${c.type === 'expense' ? 'จ่าย' : 'รับ'})</option>`).join('');
@@ -2114,7 +2073,6 @@
         recalculateAccountBalances();
         renderAllAccountButtons(); renderSettingsAccounts();
 
-        updateEntryCurrentMonthCashFlowUI(); if(!document.getElementById('cashflow-modal').classList.contains('hidden')) updatePopupCashflowUI();
         if (!views.summary.classList.contains('hidden')) renderSummaryAnalyticsUI();
 
         renderCategoryButtons();
