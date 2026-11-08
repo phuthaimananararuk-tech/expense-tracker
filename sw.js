@@ -1,4 +1,5 @@
-const CACHE_NAME = 'jodtang-v1.40';
+// sw.js (v1.41 - Network First Caching Strategy)
+const CACHE_NAME = 'jodtang-v1.41';
 const ASSETS = [
   './',
   './index.html',
@@ -28,8 +29,22 @@ self.addEventListener('activate', (e) => {
   self.clients.claim();
 });
 
+// Network-First Strategy for HTML and core scripts to update immediately
 self.addEventListener('fetch', (e) => {
-  e.respondWith(
-    caches.match(e.request).then((res) => res || fetch(e.request))
-  );
+  if (e.request.mode === 'navigate' || e.request.destination === 'document') {
+    e.respondWith(
+      fetch(e.request)
+        .then((networkResponse) => {
+          return caches.open(CACHE_NAME).then((cache) => {
+            cache.put(e.request, networkResponse.clone());
+            return networkResponse;
+          });
+        })
+        .catch(() => caches.match(e.request) || caches.match('./index.html'))
+    );
+  } else {
+    e.respondWith(
+      caches.match(e.request).then((res) => res || fetch(e.request))
+    );
+  }
 });
