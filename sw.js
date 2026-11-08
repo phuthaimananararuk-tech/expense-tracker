@@ -1,4 +1,3 @@
-// sw.js (v1.41 - Network First Caching Strategy)
 const CACHE_NAME = 'jodtang-v1.41';
 const ASSETS = [
   './',
@@ -29,7 +28,7 @@ self.addEventListener('activate', (e) => {
   self.clients.claim();
 });
 
-// Network-First Strategy for HTML and core scripts to update immediately
+// Network-First Strategy for HTML documents to get updates instantly
 self.addEventListener('fetch', (e) => {
   if (e.request.mode === 'navigate' || e.request.destination === 'document') {
     e.respondWith(
