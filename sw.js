@@ -43,15 +43,4 @@ self.addEventListener('fetch', (e) => {
       })
       .catch(() => caches.match(e.request))
   );
-  // ดักรับคำสั่งสั่งอัปเดตจากหน้าเว็บหลัก
-self.addEventListener('message', (event) => {
-  if (event.data && event.data.action === 'skipWaiting') {
-    self.skipWaiting();
-  }
-});
-
-self.addEventListener('activate', (event) => {
-  // ดึง Control คืนทันทีเมื่อ Service Worker ตัวใหม่ทำงาน
-  event.waitUntil(clients.claim());
-});
 });
