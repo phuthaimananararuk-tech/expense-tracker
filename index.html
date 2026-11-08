@@ -2,11 +2,9 @@
 <html lang="th">
 <head>
   <meta charset="UTF-8">
-  <!-- 1. ปรับ Viewport เพิ่ม viewport-fit=cover เพื่อให้ขยายเต็มจอด้านหลังรอยบาก Notch -->
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <title>จดตังค์ BETA</title>
 
-  <!-- 2. PWA Meta Tags & Manifest สำหรับ iOS / Android -->
   <link rel="manifest" href="manifest.json">
   <meta name="theme-color" content="#1e293b">
   <meta name="mobile-web-app-capable" content="yes">
@@ -31,7 +29,6 @@
       min-height: 100dvh;
     }
 
-    /* จัดการระยะขอบเพื่อไม่ให้รอยบาก (Notch) หรือ Dynamic Island ทับเนื้อหา */
     .safe-padding-top {
       padding-top: max(0.75rem, env(safe-area-inset-top));
     }
@@ -55,10 +52,9 @@
 </head>
 <body class="bg-slate-900 text-slate-700 min-h-screen flex flex-col items-center justify-center p-0 sm:p-4 overflow-hidden">
 
-  <!-- Container ปรับเป็น h-dvh และถอด my-auto ออกเพื่อไม่ให้ดันหลุดขอบล่าง -->
   <div class="w-full max-w-md bg-white sm:rounded-3xl shadow-xl border-0 sm:border border-slate-200/80 overflow-hidden h-dvh sm:h-auto sm:min-h-[720px] flex flex-col justify-between relative">
 
-    <!-- Header (เพิ่ม Safe Padding ให้ไม่ติดขอบบนรอยบาก) -->
+    <!-- Header -->
     <header class="bg-slate-800 text-white px-5 safe-padding-top pb-3 shadow-xs relative flex items-center justify-between flex-shrink-0">
       <button id="open-settings-btn" class="text-slate-300 hover:text-white hover:bg-slate-700/60 p-1.5 rounded-xl transition hidden" title="Setting">
         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-2.924-1.756 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
@@ -122,10 +118,7 @@
             </div>
 
             <div>
-              <div class="flex justify-between items-center mb-1">
-                <label class="block text-[11px] font-medium text-slate-400">เลือกหมวดหมู่</label>
-                <button type="button" id="btn-open-multi-cat-select" onclick="openMultiCatSelectModal()" class="text-[10px] font-bold text-slate-600 hover:text-slate-800 transition hidden">+ เลือกหลายหมวดหมู่</button>
-              </div>
+              <label class="block text-[11px] font-medium text-slate-400 mb-1">เลือกหมวดหมู่</label>
               <div id="category-buttons-container"></div>
             </div>
 
@@ -384,7 +377,7 @@
 
     </main>
 
-    <!-- Auth Status Bar (เพิ่ม Safe Padding ให้ไม่ติดขอบล่างของหน้าจอ) -->
+    <!-- Auth Status Bar -->
     <footer id="auth-status-bar" class="bg-slate-100 p-2 safe-padding-bottom text-center text-[10px] text-slate-400 border-t border-slate-200 flex-shrink-0">สถานะ: ยังไม่ได้เข้าสู่ระบบ</footer>
   </div>
 
@@ -561,7 +554,7 @@
     </div>
   </div>
 
-  <!-- READ-ONLY MODAL: Pending Friend List -->
+  <!-- READ-ONLY MODALS -->
   <div id="readonly-pending-friend-modal" class="hidden fixed inset-0 bg-slate-900/40 backdrop-blur-xs flex items-end sm:items-center justify-center p-0 sm:p-4 z-50">
     <div class="bg-white rounded-t-3xl sm:rounded-3xl w-full max-w-sm p-4 space-y-3 shadow-2xl relative max-h-[80vh] flex flex-col border border-slate-200 safe-padding-bottom">
       <div class="flex justify-between items-center border-b border-slate-200 pb-2 flex-shrink-0">
@@ -578,7 +571,6 @@
     </div>
   </div>
 
-  <!-- READ-ONLY MODAL: Pending Team List -->
   <div id="readonly-pending-team-modal" class="hidden fixed inset-0 bg-slate-900/40 backdrop-blur-xs flex items-end sm:items-center justify-center p-0 sm:p-4 z-50">
     <div class="bg-white rounded-t-3xl sm:rounded-3xl w-full max-w-sm p-4 space-y-3 shadow-2xl relative max-h-[80vh] flex flex-col border border-slate-200 safe-padding-bottom">
       <div class="flex justify-between items-center border-b border-slate-200 pb-2 flex-shrink-0">
@@ -595,7 +587,6 @@
     </div>
   </div>
 
-  <!-- READ-ONLY MODAL: Installment Payment History -->
   <div id="readonly-inst-history-modal" class="hidden fixed inset-0 bg-slate-900/40 backdrop-blur-xs flex items-end sm:items-center justify-center p-0 sm:p-4 z-50">
     <div class="bg-white rounded-t-3xl sm:rounded-3xl w-full max-w-sm p-4 space-y-3 shadow-2xl relative max-h-[80vh] flex flex-col border border-slate-200 safe-padding-bottom">
       <div class="flex justify-between items-center border-b border-slate-200 pb-2 flex-shrink-0">
@@ -608,23 +599,6 @@
       <div id="readonly-inst-history-container" class="space-y-2 overflow-y-auto p-1 flex-1"></div>
       <div class="pt-2 flex-shrink-0 border-t border-slate-200">
         <button type="button" onclick="closeReadOnlyInstHistoryModal()" class="w-full bg-slate-700 hover:bg-slate-800 text-white py-2.5 rounded-xl text-xs font-bold transition">ปิด</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- Multi-Category Selection Modal -->
-  <div id="multi-cat-select-modal" class="hidden fixed inset-0 bg-slate-900/40 backdrop-blur-xs flex items-end sm:items-center justify-center p-0 sm:p-4 z-50">
-    <div class="bg-white rounded-t-3xl sm:rounded-3xl w-full max-w-sm p-4 space-y-3 shadow-2xl relative max-h-[75vh] flex flex-col border border-slate-200 safe-padding-bottom">
-      <div class="flex justify-between items-center border-b border-slate-200 pb-2 flex-shrink-0">
-        <div>
-          <h3 class="text-xs font-bold text-slate-700 uppercase">เลือกหมวดหมู่รายจ่าย</h3>
-          <p class="text-[10px] text-slate-400">แตะเพื่อเลือกหมวดหมู่ที่ต้องการ</p>
-        </div>
-        <button type="button" onclick="closeMultiCatSelectModal()" class="text-slate-400 font-bold text-lg px-2">✕</button>
-      </div>
-      <div id="multi-cat-select-grid" class="grid grid-cols-2 gap-2 overflow-y-auto p-1 flex-1"></div>
-      <div class="pt-2 flex-shrink-0 border-t border-slate-200">
-        <button type="button" onclick="closeMultiCatSelectModal()" class="w-full bg-slate-700 hover:bg-slate-800 text-white py-2.5 rounded-xl text-xs font-bold transition">เสร็จสิ้น</button>
       </div>
     </div>
   </div>
@@ -703,7 +677,7 @@
     </div>
   </div>
 
-  <!-- Account Selector Modal -->
+  <!-- Account / Category Selector Modal -->
   <div id="selector-modal" class="hidden fixed inset-0 bg-slate-900/40 backdrop-blur-xs flex items-end sm:items-center justify-center p-0 sm:p-4 z-50">
     <div class="bg-white rounded-t-3xl sm:rounded-3xl w-full max-w-sm p-4 space-y-3 shadow-2xl relative max-h-[75vh] flex flex-col border border-slate-200 safe-padding-bottom">
       <div class="flex justify-between items-center border-b border-slate-200 pb-2 flex-shrink-0"><h3 id="selector-modal-title" class="text-xs font-bold text-slate-700 uppercase">เลือกรายการ</h3><button type="button" onclick="closeSelectorModal()" class="text-slate-400 font-bold text-lg px-2">✕</button></div>
@@ -731,18 +705,7 @@
     </div>
   </div>
 
-  <!-- Multi-Cat Modal -->
-  <div id="multi-cat-modal" class="hidden fixed inset-0 bg-slate-900/40 backdrop-blur-xs flex items-center justify-center p-4 z-40">
-    <div class="bg-white rounded-3xl w-full max-w-sm p-5 space-y-4 shadow-2xl relative border border-slate-200">
-      <button type="button" onclick="closeMultiCatModal()" class="absolute top-4 right-4 text-slate-400 font-bold text-lg">✕</button>
-      <div class="border-b border-slate-200 pb-2"><h3 class="text-xs font-bold text-slate-700 uppercase">จัดสรรยอดเงินตามหมวดหมู่</h3><p class="text-[10px] text-slate-400 mt-0.5">ยอดรวมสลิป: <b id="lbl-multi-modal-total" class="text-slate-800 font-bold">0.00</b></p></div>
-      <div id="multi-cat-inputs-container" class="space-y-2.5 max-h-60 overflow-y-auto pr-1"></div>
-      <div class="bg-slate-50 p-2.5 rounded-2xl border border-slate-200 text-xs space-y-1"><div class="flex justify-between items-center text-slate-500"><span>รวมที่จัดสรรแล้ว:</span><b id="lbl-multi-modal-allocated" class="font-bold text-slate-700">0.00</b></div><div class="flex justify-between items-center"><span>คงเหลือที่ต้องระบุ:</span><b id="lbl-multi-modal-remaining" class="font-bold text-rose-500">0.00</b></div></div>
-      <div class="pt-1 flex space-x-2"><button type="button" onclick="closeMultiCatModal()" class="w-1/3 bg-slate-100 text-slate-600 py-2.5 rounded-xl text-xs font-medium">ยกเลิก</button><button type="button" id="btn-confirm-multi-cat" onclick="submitMultiCatAllocation()" class="w-2/3 bg-slate-700 text-white py-2.5 rounded-xl text-xs font-bold transition disabled:opacity-40" disabled>ยืนยันการจัดสรร</button></div>
-    </div>
-  </div>
-
-  <!-- Keypad Overlay (เพิ่ม Safe Padding ให้ไม่ติดแถบโฮมไอโฟนด้านล่าง) -->
+  <!-- Keypad Overlay -->
   <div id="custom-keypad-overlay" class="hidden fixed inset-0 bg-slate-900/30 flex items-end justify-center z-50">
     <div class="bg-white w-full max-w-md rounded-t-3xl p-4 shadow-2xl border-t border-slate-200 space-y-3 safe-padding-bottom">
       <div class="flex justify-between items-center border-b border-slate-200 pb-2"><span class="text-xs font-bold text-slate-400 uppercase">คีย์บอร์ดคำนวณ</span><button type="button" onclick="closeCustomKeypad()" class="text-slate-400 font-bold px-2 text-sm">✕ ปิด</button></div>
@@ -778,14 +741,14 @@
 
     let editingTxIdInModal = null, editSelectedAccountId = null, editSelectedCategoryId = null;
 
-    // ตั้งค่าเริ่มต้นของ State บัญชีและหมวดหมู่ทั้งหมดเป็น null หรือ [] (ไม่ Pre-select)
-    let selectedAccountId = null, selectedCategoryIds = [], selectedCategoryId = null;  
+    // ตั้งค่าเริ่มต้นของ State บัญชีและหมวดหมู่ทั้งหมดเป็น null (ไม่ Pre-select)
+    let selectedAccountId = null, selectedCategoryId = null;  
     let selectedSettleAccountId = null, selectedSplitAccountId = null, selectedSplitCategoryId = null;
     let selectedInstAccountId = null, selectedInstCategoryId = null, selectedReimbAccountId = null, selectedReimbCategoryId = null, selectedTeamPayAccountId = null;
     let transferFromId = null, transferToId = null;
 
     let currentTxType = 'expense', currentEntryMode = 'expense';
-    let activeKeypadFieldId = null, pendingMultiCatTxPayload = null;
+    let activeKeypadFieldId = null;
     let balanceChartInstance = null, incomePieInstance = null, expensePieInstance = null;
     let activeSwipedCardId = null;
 
@@ -907,8 +870,9 @@
 
         const catSnap = await db.collection('users').doc(uid).collection('categories').limit(1).get();
         if (catSnap.empty) {
-          batch.set(db.collection('users').doc(uid).collection('categories').doc(), { name: 'ทั่วไป', type: 'expense', colorTheme: 'rose', createdAt: firebase.firestore.FieldValue.serverTimestamp() });
-          batch.set(db.collection('users').doc(uid).collection('categories').doc(), { name: 'ทั่วไป', type: 'income', colorTheme: 'emerald', createdAt: firebase.firestore.FieldValue.serverTimestamp() });
+          batch.set(db.collection('users').doc(uid).collection('categories').doc(), { name: 'อาหาร', type: 'expense', colorTheme: 'rose', isPinned: true, createdAt: firebase.firestore.FieldValue.serverTimestamp() });
+          batch.set(db.collection('users').doc(uid).collection('categories').doc(), { name: 'เดินทาง', type: 'expense', colorTheme: 'amber', isPinned: true, createdAt: firebase.firestore.FieldValue.serverTimestamp() });
+          batch.set(db.collection('users').doc(uid).collection('categories').doc(), { name: 'เงินเดือน', type: 'income', colorTheme: 'emerald', isPinned: true, createdAt: firebase.firestore.FieldValue.serverTimestamp() });
         }
         await batch.commit();
       }
@@ -960,7 +924,6 @@
 
         recalculateAccountBalances();
 
-        // ตรวจสอบความถูกต้อง โดยไม่บังคับ Pre-select รายการแรก
         if (selectedAccountId && !accountsList.some(a => a.id === selectedAccountId)) selectedAccountId = null;
         if (selectedSettleAccountId && !accountsList.some(a => a.id === selectedSettleAccountId)) selectedSettleAccountId = null;
         if (selectedSplitAccountId && !accountsList.some(a => a.id === selectedSplitAccountId)) selectedSplitAccountId = null;
@@ -975,7 +938,17 @@
       });
 
       unsubscribeCat = db.collection('users').doc(uid).collection('categories').orderBy('createdAt','asc').onSnapshot(snap => { 
-        categoriesList = []; snap.forEach(d => categoriesList.push({ id: d.id, colorTheme: d.data().type==='expense'?'rose':'emerald', ...d.data() })); 
+        categoriesList = []; 
+        snap.forEach(d => {
+          const data = d.data();
+          categoriesList.push({ id: d.id, colorTheme: data.type==='expense'?'rose':'emerald', isPinned: true, ...data }); 
+        }); 
+
+        if (selectedCategoryId && !categoriesList.some(c => c.id === selectedCategoryId)) selectedCategoryId = null;
+        if (selectedSplitCategoryId && !categoriesList.some(c => c.id === selectedSplitCategoryId)) selectedSplitCategoryId = null;
+        if (selectedInstCategoryId && !categoriesList.some(c => c.id === selectedInstCategoryId)) selectedInstCategoryId = null;
+        if (selectedReimbCategoryId && !categoriesList.some(c => c.id === selectedReimbCategoryId)) selectedReimbCategoryId = null;
+
         renderCategoryButtons(); renderSplitCategoryButtons(); renderInstCategoryButtons(); renderReimbCategoryButtons(); renderSettingsCategories(); populateHistoryFilterDropdowns();
         if (!views.summary.classList.contains('hidden')) renderSummaryAnalyticsUI();
       });
@@ -991,7 +964,6 @@
 
       if (targetForm === 'normal') {
         selectedAccountId = null;
-        selectedCategoryIds = [];
         selectedCategoryId = null;
         document.getElementById('tx-amount').value = '';
         document.getElementById('tx-note').value = '';
@@ -1203,24 +1175,7 @@
       document.getElementById('split-team-share-lbl').innerText = Math.max(0,t-m).toLocaleString(undefined, {minimumFractionDigits: 2}); 
     }
 
-    function openMultiCatSelectModal() { renderMultiCatSelectGrid(); document.getElementById('multi-cat-select-modal').classList.remove('hidden'); }
-    function closeMultiCatSelectModal() { document.getElementById('multi-cat-select-modal').classList.add('hidden'); renderCategoryButtons(); }
-    function toggleCategorySelection(catId) {
-      if (selectedCategoryIds.includes(catId)) {
-        if (selectedCategoryIds.length > 1) selectedCategoryIds = selectedCategoryIds.filter(id => id !== catId);
-      } else { selectedCategoryIds.push(catId); }
-      renderMultiCatSelectGrid();
-    }
-    function renderMultiCatSelectGrid() {
-      const container = document.getElementById('multi-cat-select-grid'), expCats = categoriesList.filter(c => c.type === 'expense');
-      container.innerHTML = expCats.map(cat => {
-        const isSel = selectedCategoryIds.includes(cat.id);
-        const theme = CATEGORY_COLOR_THEMES[cat.colorTheme] || CATEGORY_COLOR_THEMES.rose;
-        const styleClass = isSel ? theme.active : theme.inactive;
-        return `<button type="button" onclick="toggleCategorySelection('${cat.id}')" class="p-2.5 rounded-2xl text-xs font-semibold border text-center transition flex items-center justify-between ${styleClass}"><span class="truncate">${escapeHtml(cat.name)}</span>${isSel ? '<span class="font-bold">✓</span>' : ''}</button>`;
-      }).join('');
-    }
-
+    // ฟังก์ชัน Pinned Selector กลางสำหรับ บัญชี (Accounts)
     function renderAccountPinnedSelector(selectedId, setGlobalVarFnName) {
       let pinned = accountsList.filter(i => i.isPinned);
       if (!pinned.length && accountsList.length) pinned = [accountsList[0]];
@@ -1234,14 +1189,41 @@
         const theme = ACCOUNT_COLOR_THEMES[i.colorTheme] || ACCOUNT_COLOR_THEMES.card;
         const styleClass = isSel ? theme.active : theme.inactive;
 
-        html += `<button type="button" onclick="${setGlobalVarFnName}='${i.id}'; renderAllAccountButtons();" class="px-3 py-1.5 rounded-xl text-xs font-semibold transition border flex items-center space-x-1 ${styleClass}"><span>${escapeHtml(i.name)}</span></button>`;
+        html += `<button type="button" onclick="${setGlobalVarFnName}='${i.id}'; renderAllAccountButtons();" class="px-2.5 py-1 rounded-xl text-xs font-semibold transition border flex items-center space-x-1 ${styleClass}"><span>${escapeHtml(i.name)}</span></button>`;
       });
 
       const unpinnedCount = accountsList.length - pinned.length;
       if (unpinnedCount > 0 || !isSelectedInPinned) {
         const extraLabel = (!isSelectedInPinned && selectedItem) ? `${selectedItem.name} ✓` : `+`;
         const extraClass = (!isSelectedInPinned && selectedItem) ? (ACCOUNT_COLOR_THEMES[selectedItem.colorTheme]?.active || 'bg-slate-700 text-white') : 'bg-slate-100 text-slate-600 border-slate-300 hover:bg-slate-200 font-bold';
-        html += `<button type="button" onclick="openAccountSelectorModal('${setGlobalVarFnName}')" class="px-2.5 py-1.5 rounded-xl text-xs font-medium transition border ${extraClass}">${escapeHtml(extraLabel)}</button>`;
+        html += `<button type="button" onclick="openAccountSelectorModal('${setGlobalVarFnName}')" class="px-2.5 py-1 rounded-xl text-xs font-medium transition border ${extraClass}">${escapeHtml(extraLabel)}</button>`;
+      }
+      html += `</div>`;
+      return html;
+    }
+
+    // ฟังก์ชัน Pinned Selector กลางสำหรับ หมวดหมู่ (Categories) ให้ทำงานเหมือน บัญชี 100%
+    function renderCategoryPinnedSelector(selectedId, setGlobalVarFnName, type, rerenderFnName) {
+      const typeCats = categoriesList.filter(c => c.type === type);
+      let pinned = typeCats.filter(i => i.isPinned);
+
+      const isSelectedInPinned = pinned.some(i => i.id === selectedId);
+      const selectedItem = typeCats.find(i => i.id === selectedId);
+
+      let html = `<div class="flex flex-wrap gap-1.5 items-center">`;
+      pinned.forEach(i => {
+        const isSel = i.id === selectedId;
+        const theme = CATEGORY_COLOR_THEMES[i.colorTheme] || (type === 'expense' ? CATEGORY_COLOR_THEMES.rose : CATEGORY_COLOR_THEMES.emerald);
+        const styleClass = isSel ? theme.active : theme.inactive;
+
+        html += `<button type="button" onclick="${setGlobalVarFnName}='${i.id}'; ${rerenderFnName}();" class="px-2.5 py-1 rounded-xl text-xs font-semibold transition border ${styleClass}">${escapeHtml(i.name)}</button>`;
+      });
+
+      const unpinnedCount = typeCats.length - pinned.length;
+      if (unpinnedCount > 0 || !isSelectedInPinned) {
+        const extraLabel = (!isSelectedInPinned && selectedItem) ? `${selectedItem.name} ✓` : `+`;
+        const extraClass = (!isSelectedInPinned && selectedItem) ? (CATEGORY_COLOR_THEMES[selectedItem.colorTheme]?.active || 'bg-slate-700 text-white') : 'bg-slate-100 text-slate-600 border-slate-300 hover:bg-slate-200 font-bold';
+        html += `<button type="button" onclick="openCategorySelectorModal('${setGlobalVarFnName}', '${type}', '${rerenderFnName}')" class="px-2.5 py-1 rounded-xl text-xs font-medium transition border ${extraClass}">${escapeHtml(extraLabel)}</button>`;
       }
       html += `</div>`;
       return html;
@@ -1254,10 +1236,26 @@
       container.innerHTML = accountsList.map(item => {
         const theme = ACCOUNT_COLOR_THEMES[item.colorTheme] || ACCOUNT_COLOR_THEMES.card;
         return `
-          <button type="button" onclick="${setGlobalVarFnName}='${item.id}'; renderAllAccountButtons(); closeSelectorModal();" class="p-3 rounded-2xl text-xs font-semibold border text-center transition flex items-center justify-between ${theme.inactive}">
+          <button type="button" onclick="${setGlobalVarFnName}='${item.id}'; renderAllAccountButtons(); closeSelectorModal();" class="p-2.5 rounded-2xl text-xs font-semibold border text-center transition flex items-center justify-between ${theme.inactive}">
             <div class="flex items-center space-x-1.5">
               <span class="truncate font-bold">${escapeHtml(item.name)}</span>
             </div>
+          </button>
+        `;
+      }).join('');
+      document.getElementById('selector-modal').classList.remove('hidden');
+    }
+
+    function openCategorySelectorModal(setGlobalVarFnName, type, rerenderFnName) {
+      document.getElementById('selector-modal-title').innerText = `เลือกหมวดหมู่${type==='expense'?'รายจ่าย':'รายรับ'}`;
+      const container = document.getElementById('selector-grid-container');
+      const typeCats = categoriesList.filter(c => c.type === type);
+
+      container.innerHTML = typeCats.map(item => {
+        const theme = CATEGORY_COLOR_THEMES[item.colorTheme] || (type==='expense'?CATEGORY_COLOR_THEMES.rose:CATEGORY_COLOR_THEMES.emerald);
+        return `
+          <button type="button" onclick="${setGlobalVarFnName}='${item.id}'; ${rerenderFnName}(); closeSelectorModal();" class="p-2.5 rounded-2xl text-xs font-semibold border text-center transition flex items-center justify-between ${theme.inactive}">
+            <span class="truncate font-bold">${escapeHtml(item.name)}</span>
           </button>
         `;
       }).join('');
@@ -1273,124 +1271,25 @@
       document.getElementById('team-pay-account-buttons').innerHTML = renderAccountPinnedSelector(selectedTeamPayAccountId, 'selectedTeamPayAccountId');
     }
 
-    function getMostRecentCategories(type) {
-      const filteredCats = categoriesList.filter(c => c.type === type), recentIds = [];
-      allTransactions.forEach(t => {
-        if (t.kind === 'transaction' && t.type === type) {
-          if (t.categoriesBreakdown?.length > 0) {
-            t.categoriesBreakdown.forEach(b => { if (b.categoryId && !recentIds.includes(b.categoryId) && filteredCats.some(c => c.id === b.categoryId)) recentIds.push(b.categoryId); });
-          } else if (t.categoryId && !recentIds.includes(t.categoryId) && filteredCats.some(c => c.id === t.categoryId)) recentIds.push(t.categoryId);
-        }
-      });
-      filteredCats.forEach(c => { if (!recentIds.includes(c.id)) recentIds.push(c.id); });
-      return recentIds.map(id => filteredCats.find(c => c.id === id)).filter(Boolean).slice(0, 4);
-    }
-
     function renderCategoryButtons() {
-      const c = categoriesList.filter(x => x.type === currentTxType);
-      const multiCatBtn = document.getElementById('btn-open-multi-cat-select');
-
-      if (currentTxType === 'expense') {
-        multiCatBtn.classList.remove('hidden');
-        const recentList = getMostRecentCategories('expense');
-        let html = `<div class="flex flex-wrap gap-1 items-center">`;
-        recentList.forEach(i => {
-          const isSelected = selectedCategoryIds.includes(i.id);
-          const theme = CATEGORY_COLOR_THEMES[i.colorTheme] || CATEGORY_COLOR_THEMES.rose;
-          const styleClass = isSelected ? theme.active : theme.inactive;
-
-          html += `<button type="button" onclick="selectedCategoryIds=['${i.id}']; renderCategoryButtons();" class="px-2.5 py-1 rounded-xl text-xs font-semibold transition border ${styleClass}">${escapeHtml(i.name)}${isSelected && selectedCategoryIds.length > 1 ? ' ✓' : ''}</button>`;
-        });
-        const nonRecentSelected = c.filter(i => !recentList.some(r => r.id === i.id) && selectedCategoryIds.includes(i.id));
-        const extraLabel = nonRecentSelected.length > 0 ? `${nonRecentSelected.map(x=>x.name).join(', ')} ✓` : `+`;
-        const extraClass = nonRecentSelected.length > 0 ? 'bg-rose-600 text-white border-rose-600 shadow-xs' : 'bg-slate-100 text-slate-600 border-slate-300 hover:bg-slate-200 font-bold';
-        html += `<button type="button" onclick="openCategorySelectorModal('expense')" class="px-2.5 py-1 rounded-xl text-xs font-medium transition border ${extraClass}">${escapeHtml(extraLabel)}</button></div>`;
-        document.getElementById('category-buttons-container').innerHTML = html;
-      } else {
-        multiCatBtn.classList.add('hidden');
-        const recentList = getMostRecentCategories('income');
-        let html = `<div class="flex flex-wrap gap-1 items-center">`;
-        recentList.forEach(i => {
-          const isSel = i.id === selectedCategoryId;
-          const theme = CATEGORY_COLOR_THEMES[i.colorTheme] || CATEGORY_COLOR_THEMES.emerald;
-          const styleClass = isSel ? theme.active : theme.inactive;
-
-          html += `<button type="button" onclick="selectedCategoryId='${i.id}'; renderCategoryButtons();" class="px-2.5 py-1 rounded-xl text-xs font-semibold transition border ${styleClass}">${escapeHtml(i.name)}</button>`;
-        });
-        const isNonRecentSelected = selectedCategoryId && !recentList.some(r => r.id === selectedCategoryId);
-        const selectedObj = c.find(x => x.id === selectedCategoryId);
-        const extraLabel = (isNonRecentSelected && selectedObj) ? `${selectedObj.name} ✓` : `+`;
-        const extraClass = (isNonRecentSelected && selectedObj) ? 'bg-emerald-600 text-white border-emerald-600 shadow-xs' : 'bg-slate-100 text-slate-600 border-slate-300 hover:bg-slate-200 font-bold';
-        html += `<button type="button" onclick="openCategorySelectorModal('income')" class="px-2.5 py-1 rounded-xl text-xs font-medium transition border ${extraClass}">${escapeHtml(extraLabel)}</button></div>`;
-        document.getElementById('category-buttons-container').innerHTML = html;
-      }
+      document.getElementById('category-buttons-container').innerHTML = renderCategoryPinnedSelector(selectedCategoryId, 'selectedCategoryId', currentTxType, 'renderCategoryButtons');
     }
 
-    function openCategorySelectorModal(type) {
-      document.getElementById('selector-modal-title').innerText = `เลือกหมวดหมู่${type==='expense'?'รายจ่าย':'รายรับ'}`;
-      renderModalCategoryList();
-      document.getElementById('selector-modal').classList.remove('hidden');
+    function renderSplitCategoryButtons() { 
+      document.getElementById('split-category-buttons').innerHTML = renderCategoryPinnedSelector(selectedSplitCategoryId, 'selectedSplitCategoryId', 'income', 'renderSplitCategoryButtons'); 
+    }
+    function renderInstCategoryButtons() { 
+      document.getElementById('inst-category-buttons').innerHTML = renderCategoryPinnedSelector(selectedInstCategoryId, 'selectedInstCategoryId', 'expense', 'renderInstCategoryButtons'); 
+    }
+    function renderReimbCategoryButtons() { 
+      document.getElementById('reimb-category-buttons').innerHTML = renderCategoryPinnedSelector(selectedReimbCategoryId, 'selectedReimbCategoryId', 'expense', 'renderReimbCategoryButtons'); 
     }
 
-    function renderModalCategoryList() {
-      const container = document.getElementById('selector-grid-container'), c = categoriesList.filter(x => x.type === currentTxType);
-      container.innerHTML = c.map(item => {
-        const isSelected = currentTxType === 'expense' ? selectedCategoryIds.includes(item.id) : item.id === selectedCategoryId;
-        const clickFn = currentTxType === 'expense' ? `selectedCategoryIds=['${item.id}']; renderCategoryButtons(); closeSelectorModal();` : `selectedCategoryId='${item.id}'; renderCategoryButtons(); closeSelectorModal();`;
-        const theme = CATEGORY_COLOR_THEMES[item.colorTheme] || (currentTxType==='expense'?CATEGORY_COLOR_THEMES.rose:CATEGORY_COLOR_THEMES.emerald);
-        const styleClass = isSelected ? theme.active : theme.inactive;
-
-        return `<button type="button" onclick="${clickFn}" class="p-2.5 rounded-2xl text-xs font-semibold border text-center transition flex items-center justify-between ${styleClass}"><span class="truncate">${escapeHtml(item.name)}</span>${isSelected && currentTxType==='expense' ? '<span>✓</span>' : ''}</button>`;
-      }).join('');
-    }
-
-    function genBtns(list, selId, cb) {
-      return list.map(i => {
-        const theme = CATEGORY_COLOR_THEMES[i.colorTheme] || CATEGORY_COLOR_THEMES.purple;
-        const styleClass = i.id === selId ? theme.active : theme.inactive;
-        return `<button type="button" onclick="${cb}='${i.id}'; ${cb.includes('InstCat')?'renderInstCategoryButtons()':cb.includes('ReimbCat')?'renderReimbCategoryButtons()':'renderSplitCategoryButtons()'}" class="px-2.5 py-1 rounded-xl text-xs font-semibold transition border ${styleClass}">${escapeHtml(i.name)}</button>`;
-      }).join('');
-    }
-    function renderSplitCategoryButtons() { const c=categoriesList.filter(x=>x.type==='income'); document.getElementById('split-category-buttons').innerHTML=genBtns(c,selectedSplitCategoryId,'selectedSplitCategoryId'); }
-    function renderInstCategoryButtons() { const c=categoriesList.filter(x=>x.type==='expense'); document.getElementById('inst-category-buttons').innerHTML=genBtns(c,selectedInstCategoryId,'selectedInstCategoryId'); }
-    function renderReimbCategoryButtons() { const c=categoriesList.filter(x=>x.type==='expense'); document.getElementById('reimb-category-buttons').innerHTML=genBtns(c,selectedReimbCategoryId,'selectedReimbCategoryId'); }
     function closeSelectorModal() { document.getElementById('selector-modal').classList.add('hidden'); }
 
     function renderTransferButtons() { 
       document.getElementById('transfer-from-container').innerHTML = accountsList.map(a => `<button type="button" onclick="transferFromId='${a.id}'; if(transferToId==='${a.id}') { const alt=accountsList.find(x=>x.id!=='${a.id}'); if(alt) transferToId=alt.id; } renderTransferButtons()" class="px-2 py-1.5 rounded-xl text-xs font-semibold transition border text-left flex items-center space-x-1 ${a.id === transferFromId ? 'bg-slate-700 text-white border-slate-700' : 'bg-white text-slate-700 border-slate-300'}"><span>${escapeHtml(a.name)}</span></button>`).join(''); 
       document.getElementById('transfer-to-container').innerHTML = accountsList.map(a => a.id === transferFromId ? `<button type="button" disabled class="px-2 py-1.5 rounded-xl text-xs font-semibold transition border text-left bg-slate-200 text-slate-400 border-slate-200 opacity-40 cursor-not-allowed"><span>${escapeHtml(a.name)}</span></button>` : `<button type="button" onclick="transferToId='${a.id}'; renderTransferButtons()" class="px-2 py-1.5 rounded-xl text-xs font-semibold transition border text-left flex items-center space-x-1 ${a.id === transferToId ? 'bg-slate-700 text-white border-slate-700' : 'bg-white text-slate-700 border-slate-300'}"><span>${escapeHtml(a.name)}</span></button>`).join(''); 
-    }
-
-    function openMultiCatModal(payload) {
-      pendingMultiCatTxPayload = payload;
-      document.getElementById('lbl-multi-modal-total').innerText = payload.amount.toLocaleString(undefined, {minimumFractionDigits: 2});
-      document.getElementById('multi-cat-inputs-container').innerHTML = payload.categoriesBreakdown.map((item, idx) => `
-        <div class="flex items-center justify-between bg-slate-50 p-2 rounded-xl border border-slate-200"><span class="text-xs font-semibold text-slate-700 truncate max-w-[120px]">${escapeHtml(item.categoryName)}</span><div class="flex items-center space-x-1"><input type="text" id="multi-cat-amt-${idx}" readonly onclick="openCustomKeypad('multi-cat-amt-${idx}')" oninput="updateMultiCatAllocationMath()" placeholder="0.00" class="w-24 px-2 py-1 text-xs border border-slate-300 rounded-lg bg-white text-right cursor-pointer font-bold text-slate-800"></div></div>
-      `).join('');
-      document.getElementById('multi-cat-modal').classList.remove('hidden'); updateMultiCatAllocationMath();
-    }
-    function closeMultiCatModal() { pendingMultiCatTxPayload = null; document.getElementById('multi-cat-modal').classList.add('hidden'); }
-    function updateMultiCatAllocationMath() {
-      if (!pendingMultiCatTxPayload) return;
-      let sum = 0;
-      pendingMultiCatTxPayload.categoriesBreakdown.forEach((_, idx) => { const el = document.getElementById(`multi-cat-amt-${idx}`); if (el) sum += (parseFloat(el.value) || 0); });
-      const rem = Math.round((pendingMultiCatTxPayload.amount - sum) * 100) / 100;
-      document.getElementById('lbl-multi-modal-allocated').innerText = sum.toLocaleString(undefined, {minimumFractionDigits: 2});
-      const remEl = document.getElementById('lbl-multi-modal-remaining');
-      remEl.innerText = rem.toLocaleString(undefined, {minimumFractionDigits: 2});
-      remEl.className = rem === 0 ? "font-bold text-emerald-600" : "font-bold text-rose-500";
-      document.getElementById('btn-confirm-multi-cat').disabled = (rem !== 0 || sum !== pendingMultiCatTxPayload.amount);
-    }
-    async function submitMultiCatAllocation() {
-      if (!pendingMultiCatTxPayload) return;
-      const btn = document.getElementById('btn-confirm-multi-cat');
-      btn.disabled = true;
-      pendingMultiCatTxPayload.categoriesBreakdown.forEach((item, idx) => { item.amount = parseFloat(document.getElementById(`multi-cat-amt-${idx}`).value) || 0; });
-      try {
-        await saveTransactionToDB(pendingMultiCatTxPayload);
-        closeMultiCatModal(); triggerSuccessToast();
-        resetForm('normal');
-      } catch (err) { alert(err.message); } finally { btn.disabled = false; }
     }
 
     async function saveTransactionToDB(payload) {
@@ -1408,22 +1307,10 @@
       if (isNaN(amt) || amt <= 0) { btn.disabled = false; return alert("จำนวนเงินไม่ถูกต้อง"); }
 
       try {
-        if (currentTxType === 'expense') {
-          if (!selectedCategoryIds.length) { btn.disabled = false; return alert("กรุณาเลือกอย่างน้อย 1 หมวดหมู่"); }
-          const selectedCats = categoriesList.filter(c => selectedCategoryIds.includes(c.id));
-          if (selectedCats.length > 1) {
-            openMultiCatModal({ kind: 'transaction', type: 'expense', amount: amt, myShare: amt, friendShare: 0, remainingPending: 0, isReimburse: false, isDeposit: false, isMultiCategory: true, note: n, date: d, accountId: selectedAccountId, categoryId: selectedCats[0].id, categoryName: selectedCats.map(c => c.name).join(', '), categoriesBreakdown: selectedCats.map(c => ({ categoryId: c.id, categoryName: c.name, amount: 0 })) });
-          } else {
-            const cat = selectedCats[0];
-            await saveTransactionToDB({ kind: 'transaction', type: 'expense', amount: amt, myShare: amt, friendShare: 0, remainingPending: 0, isReimburse: false, isDeposit: false, isMultiCategory: false, note: n, date: d, accountId: selectedAccountId, categoryId: cat.id, categoryName: cat.name, categoriesBreakdown: [{ categoryId: cat.id, categoryName: cat.name, amount: amt }] });
-            triggerSuccessToast(); resetForm('normal');
-          }
-        } else {
-          if (!selectedCategoryId) { btn.disabled = false; return alert("กรุณาเลือกหมวดหมู่รายรับ"); }
-          const cat = categoriesList.find(c => c.id === selectedCategoryId);
-          await saveTransactionToDB({ kind: 'transaction', type: 'income', amount: amt, myShare: amt, friendShare: 0, remainingPending: 0, isReimburse: false, isDeposit: false, isMultiCategory: false, note: n, date: d, accountId: selectedAccountId, categoryId: cat.id, categoryName: cat.name, categoriesBreakdown: [{ categoryId: cat.id, categoryName: cat.name, amount: amt }] });
-          triggerSuccessToast(); resetForm('normal');
-        }
+        if (!selectedCategoryId) { btn.disabled = false; return alert("กรุณาเลือกหมวดหมู่"); }
+        const cat = categoriesList.find(c => c.id === selectedCategoryId);
+        await saveTransactionToDB({ kind: 'transaction', type: currentTxType, amount: amt, myShare: amt, friendShare: 0, remainingPending: 0, isReimburse: false, isDeposit: false, isMultiCategory: false, note: n, date: d, accountId: selectedAccountId, categoryId: cat.id, categoryName: cat.name, categoriesBreakdown: [{ categoryId: cat.id, categoryName: cat.name, amount: amt }] });
+        triggerSuccessToast(); resetForm('normal');
       } catch(err){ alert(err.message); } finally { btn.disabled = false; }
     });
 
@@ -1687,7 +1574,7 @@
       if (!t) return;
 
       editingTxIdInModal = id;
-      editSelectedAccountId = t.accountId || t.fromAccountId || (accountsList.length ? accountsList[0].id : null);
+      editSelectedAccountId = t.accountId || t.fromAccountId || null;
       editSelectedCategoryId = t.categoryId || null;
 
       const isSplit = t.kind === 'split';
@@ -1774,15 +1661,8 @@
     }
 
     function renderEditModalCategoryButtons(type) {
-      const c = categoriesList.filter(x => x.type === type);
-      if (!editSelectedCategoryId && c.length) editSelectedCategoryId = c[0].id;
-
       const container = document.getElementById('edit-category-buttons-container');
-      container.innerHTML = `<div class="flex flex-wrap gap-1 items-center">` + c.map(item => {
-        const isSel = item.id === editSelectedCategoryId;
-        const theme = CATEGORY_COLOR_THEMES[item.colorTheme] || CATEGORY_COLOR_THEMES.rose;
-        return `<button type="button" onclick="editSelectedCategoryId='${item.id}'; renderEditModalCategoryButtons('${type}')" class="px-2.5 py-1 rounded-xl text-xs font-semibold transition border ${isSel ? theme.active : theme.inactive}">${escapeHtml(item.name)}</button>`;
-      }).join('') + `</div>`;
+      container.innerHTML = renderCategoryPinnedSelector(editSelectedCategoryId, 'editSelectedCategoryId', type, `renderEditModalCategoryButtons.bind(null, '${type}')`);
     }
 
     document.getElementById('edit-tx-modal-form').addEventListener('submit', async (e) => {
@@ -2329,6 +2209,7 @@
               </div>
               <div class="swipe-item-content relative bg-white p-3 border border-slate-200/80 rounded-2xl flex justify-between items-center z-10 cursor-pointer">
                 <div class="flex items-center space-x-2">
+                  <button type="button" onclick="toggleCategoryPin('${c.id}', ${!c.isPinned})" class="px-2 py-0.5 rounded-lg text-[9px] font-bold transition ${c.isPinned ? 'bg-slate-100 text-slate-700 border border-slate-200' : 'bg-slate-50 text-slate-400'}">${c.isPinned ? 'ปักหมุด' : 'ซ่อน'}</button>
                   <span class="text-xs font-bold text-slate-700">${escapeHtml(c.name)}</span>
                 </div>
                 <span class="w-2.5 h-2.5 rounded-full ${theme.bgClass}"></span>
@@ -2480,7 +2361,7 @@
           });
         } else {
           await db.collection('users').doc(currentUser.uid).collection('categories').add({
-            name: name, type: type, colorTheme: color, createdAt: firebase.firestore.FieldValue.serverTimestamp()
+            name: name, type: type, colorTheme: color, isPinned: true, createdAt: firebase.firestore.FieldValue.serverTimestamp()
           });
         }
         triggerSuccessToast();
@@ -2503,6 +2384,7 @@
     }
 
     async function toggleAccountPin(id, isPinned) { try { await db.collection('users').doc(currentUser.uid).collection('accounts').doc(id).update({ isPinned: isPinned }); } catch (err) { alert(err.message); } }
+    async function toggleCategoryPin(id, isPinned) { try { await db.collection('users').doc(currentUser.uid).collection('categories').doc(id).update({ isPinned: isPinned }); } catch (err) { alert(err.message); } }
     function escapeHtml(text) { return text ? text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;") : ''; }
   </script>
 
