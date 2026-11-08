@@ -1,4 +1,4 @@
-const CACHE_NAME = 'jodtang-v1.41';
+const CACHE_NAME = 'jodtang-v1.40';
 const ASSETS = [
   './',
   './index.html',
@@ -28,22 +28,19 @@ self.addEventListener('activate', (e) => {
   self.clients.claim();
 });
 
-// Network-First Strategy for HTML documents to get updates instantly
+// ใช้ Network-First Strategy สำหรับไฟล์ในแอป เพื่อให้อัปเดตเวอร์ชันใหม่จากเซิร์ฟเวอร์ได้ทันที
 self.addEventListener('fetch', (e) => {
-  if (e.request.mode === 'navigate' || e.request.destination === 'document') {
-    e.respondWith(
-      fetch(e.request)
-        .then((networkResponse) => {
-          return caches.open(CACHE_NAME).then((cache) => {
-            cache.put(e.request, networkResponse.clone());
-            return networkResponse;
-          });
-        })
-        .catch(() => caches.match(e.request) || caches.match('./index.html'))
-    );
-  } else {
-    e.respondWith(
-      caches.match(e.request).then((res) => res || fetch(e.request))
-    );
-  }
+  if (e.request.method !== 'GET') return;
+
+  e.respondWith(
+    fetch(e.request)
+      .then((networkResponse) => {
+        if (networkResponse && networkResponse.status === 200 && networkResponse.type === 'basic') {
+          const responseToCache = networkResponse.clone();
+          caches.open(CACHE_NAME).then((cache) => cache.put(e.request, responseToCache));
+        }
+        return networkResponse;
+      })
+      .catch(() => caches.match(e.request))
+  );
 });
