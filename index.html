@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-  <title>จดตังค์ BETA</title>
+  <title>จดตังค์</title>
 
   <link rel="manifest" href="manifest.json">
   <meta name="theme-color" content="#1e293b">
@@ -62,8 +62,8 @@
 
       <div class="flex flex-col items-center">
         <div class="flex items-baseline space-x-1">
-          <h1 class="text-xl font-black tracking-wider uppercase drop-shadow-xs text-slate-100">จดตังค์ BETA</h1>
-          <span class="text-[9px] font-medium text-slate-400 tracking-tight">(v1.40)</span>
+          <h1 class="text-xl font-black tracking-wider uppercase drop-shadow-xs text-slate-100">จดตังค์</h1>
+          <span class="text-[9px] font-medium text-slate-400 tracking-tight">(v1.41)</span>
         </div>
         <p class="text-[8px] text-slate-400 tracking-tight font-light">by Phuthai Mananararuk & Gemini</p>
       </div>
@@ -136,6 +136,18 @@
             <div class="flex space-x-2 mt-1">
               <button type="button" onclick="resetForm('normal')" class="w-1/4 bg-slate-200 hover:bg-slate-300 text-slate-600 font-semibold py-2 rounded-xl text-xs transition">ล้าง</button>
               <button type="submit" id="btn-submit-tx-form" class="flex-1 bg-slate-700 hover:bg-slate-800 text-white font-bold py-2 rounded-xl text-xs shadow-xs transition">+ บันทึกรายการ</button>
+            </div>
+
+            <!-- Subscription Reminders Banner Container (Compact Red Theme) -->
+            <div id="subscription-reminder-banner" class="hidden mt-2 bg-[#FF0000] text-white p-2 rounded-xl shadow-xs space-y-1">
+              <div class="flex justify-between items-center text-[11px] font-bold pb-0.5 border-b border-white/20">
+                <span class="flex items-center space-x-1">
+                  <span>🔔</span>
+                  <span>รายจ่ายประจำถึงกำหนดชำระ</span>
+                </span>
+                <span id="sub-banner-count" class="text-[10px] bg-white/20 px-1.5 py-0.2 rounded-full font-semibold">1 รายการ</span>
+              </div>
+              <div id="subscription-reminder-items" class="space-y-1"></div>
             </div>
           </form>
 
@@ -362,6 +374,16 @@
           </div>
         </div>
 
+        <!-- Subscription Reminders Setting Card -->
+        <div class="space-y-2 border-t border-slate-200 pt-3">
+          <div class="flex justify-between items-center">
+            <h3 class="text-xs font-bold text-slate-600 uppercase">จัดการรายจ่ายประจำ (Subscription Reminders)</h3>
+            <span class="text-[9px] text-slate-400 font-light">*ปัดซ้ายเพื่อแก้ไข</span>
+          </div>
+          <div id="subscription-settings-list" class="space-y-2"></div>
+          <button type="button" onclick="openNewSubscriptionModal()" class="w-full py-2 bg-slate-100 border border-slate-200 text-slate-700 hover:bg-slate-200 rounded-xl text-xs font-bold transition shadow-2xs">+ เพิ่มรายการเตือนรายจ่ายประจำ</button>
+        </div>
+
         <div class="space-y-2 border-t border-slate-200 pt-3">
           <div class="flex justify-between items-center">
             <h3 class="text-xs font-bold text-slate-600 uppercase">จัดการบันทึกช่วยจำด่วน (Preset Notes)</h3>
@@ -379,6 +401,48 @@
 
     <!-- Auth Status Bar -->
     <footer id="auth-status-bar" class="bg-slate-100 p-2 safe-padding-bottom text-center text-[10px] text-slate-400 border-t border-slate-200 flex-shrink-0">สถานะ: ยังไม่ได้เข้าสู่ระบบ</footer>
+  </div>
+
+  <!-- Subscription Edit / Add Modal -->
+  <div id="subscription-edit-modal" class="hidden fixed inset-0 bg-slate-900/40 backdrop-blur-xs flex items-center justify-center p-4 z-50">
+    <div class="bg-white rounded-3xl w-full max-w-sm p-5 space-y-4 shadow-2xl relative border border-slate-200 max-h-[90vh] overflow-y-auto">
+      <div class="flex justify-between items-center border-b border-slate-200 pb-2">
+        <h3 id="subscription-modal-title" class="text-xs font-bold text-slate-700 uppercase">เพิ่มรายการรายจ่ายประจำ</h3>
+        <button type="button" onclick="closeSubscriptionModal()" class="text-slate-400 font-bold text-lg px-2">✕</button>
+      </div>
+      <form id="subscription-modal-form" class="space-y-3">
+        <input type="hidden" id="modal-sub-id">
+        <div>
+          <label class="block text-[11px] font-semibold text-slate-500 mb-1">ชื่อรายการ (เช่น Netflix, ค่าเน็ต)</label>
+          <input type="text" id="modal-sub-name" placeholder="ชื่อรายการ" required class="w-full px-3 py-2 text-xs border border-slate-300 rounded-xl bg-white font-semibold text-slate-700">
+        </div>
+        <div class="grid grid-cols-2 gap-2">
+          <div>
+            <label class="block text-[11px] font-semibold text-slate-500 mb-1">ยอดเงิน</label>
+            <input type="text" id="modal-sub-amount" readonly onclick="openCustomKeypad('modal-sub-amount')" placeholder="0.00" required class="w-full px-3 py-2 text-xs border border-slate-300 rounded-xl bg-white font-bold cursor-pointer text-slate-800">
+          </div>
+          <div>
+            <label class="block text-[11px] font-semibold text-slate-500 mb-1">ตัดเงินทุกวันที่ (1-31)</label>
+            <input type="number" id="modal-sub-day" min="1" max="31" value="1" required class="w-full px-3 py-2 text-xs border border-slate-300 rounded-xl bg-white font-bold text-slate-700">
+          </div>
+        </div>
+        <div>
+          <label class="block text-[11px] font-semibold text-slate-500 mb-1">เลือกบัญชีที่ตัดเงินประจำ</label>
+          <div id="modal-sub-account-buttons"></div>
+        </div>
+        <div>
+          <label class="block text-[11px] font-semibold text-slate-500 mb-1">เลือกหมวดหมู่รายจ่าย</label>
+          <div id="modal-sub-category-buttons"></div>
+        </div>
+        <div id="modal-sub-delete-container" class="pt-2 text-center border-t border-slate-100 hidden">
+          <button type="button" onclick="confirmDeleteSubscriptionFromModal()" class="text-xs font-semibold text-rose-500 hover:text-rose-700 transition">ลบรายการเตือนนี้</button>
+        </div>
+        <div class="pt-2 flex space-x-2 border-t border-slate-200">
+          <button type="button" onclick="closeSubscriptionModal()" class="w-1/2 bg-slate-100 hover:bg-slate-200 text-slate-600 py-2.5 rounded-xl text-xs font-semibold">ยกเลิก</button>
+          <button type="submit" class="w-1/2 bg-slate-700 hover:bg-slate-800 text-white py-2.5 rounded-xl text-xs font-bold transition shadow-xs">เสร็จสิ้น</button>
+        </div>
+      </form>
+    </div>
   </div>
 
   <!-- Account Edit Modal -->
@@ -722,29 +786,30 @@
   </div>
 
   <script>
-    const firebaseConfig = {
-      apiKey: "AIzaSyCuu9m390tra3oEca4PygcD1pO6-L7u7XE",
-      authDomain: "eard-604d1.firebaseapp.com",
-      projectId: "eard-604d1",
-      storageBucket: "eard-604d1.firebasestorage.app",
-      messagingSenderId: "114087782046",
-      appId: "1:114087782046:web:3c7c8dce10134cefba3d8f",
-      measurementId: "G-RBTCMEJRNE"
-    };
+  const firebaseConfig = {
+  apiKey: "AIzaSyCuu9m390tra3oEca4PygcD1pO6-L7u7XE",
+  authDomain: "eard-604d1.firebaseapp.com",
+  projectId: "eard-604d1",
+  storageBucket: "eard-604d1.firebasestorage.app",
+  messagingSenderId: "114087782046",
+  appId: "1:114087782046:web:3c7c8dce10134cefba3d8f",
+  measurementId: "G-RBTCMEJRNE"
+};
 
     firebase.initializeApp(firebaseConfig);
     const auth = firebase.auth(), db = firebase.firestore();
     db.enablePersistence().catch(err => console.warn(err.code));
 
-    let currentUser = null, unsubscribeTx = null, unsubscribeAcc = null, unsubscribeCat = null, unsubscribeInst = null, unsubscribePresetNotes = null;
-    let accountsList = [], categoriesList = [], allTransactions = [], activeInstallmentPlans = [], presetNotesList = [];
+    let currentUser = null, unsubscribeTx = null, unsubscribeAcc = null, unsubscribeCat = null, unsubscribeInst = null, unsubscribePresetNotes = null, unsubscribeSub = null;
+    let accountsList = [], categoriesList = [], allTransactions = [], activeInstallmentPlans = [], presetNotesList = [], subscriptionRemindersList = [];
 
+    let activeFilledSubId = null;
     let editingTxIdInModal = null, editSelectedAccountId = null, editSelectedCategoryId = null;
 
-    // ตั้งค่าเริ่มต้นของ State บัญชีและหมวดหมู่ทั้งหมดเป็น null (ไม่ Pre-select)
     let selectedAccountId = null, selectedCategoryId = null;  
     let selectedSettleAccountId = null, selectedSplitAccountId = null, selectedSplitCategoryId = null;
     let selectedInstAccountId = null, selectedInstCategoryId = null, selectedReimbAccountId = null, selectedReimbCategoryId = null, selectedTeamPayAccountId = null;
+    let selectedSubAccountId = null, selectedSubCategoryId = null;
     let transferFromId = null, transferToId = null;
 
     let currentTxType = 'expense', currentEntryMode = 'expense';
@@ -847,7 +912,7 @@
       } catch (err) { alert(err.message); }
     });
 
-    logoutBtn.addEventListener('click', async () => { [unsubscribeTx, unsubscribeAcc, unsubscribeCat, unsubscribeInst, unsubscribePresetNotes].forEach(u => u && u()); await auth.signOut(); });
+    logoutBtn.addEventListener('click', async () => { [unsubscribeTx, unsubscribeAcc, unsubscribeCat, unsubscribeInst, unsubscribePresetNotes, unsubscribeSub].forEach(u => u && u()); await auth.signOut(); });
     openSettingsBtn.addEventListener('click', () => goToView('setting'));
     auth.onAuthStateChanged(async user => { 
       if (user && (user.providerData.some(p => p.providerId !== 'password') || user.emailVerified)) { 
@@ -904,7 +969,7 @@
     }
 
     async function initUserData(uid) {
-      [unsubscribeAcc, unsubscribeCat, unsubscribeTx, unsubscribeInst, unsubscribePresetNotes].forEach(u => u && u());
+      [unsubscribeAcc, unsubscribeCat, unsubscribeTx, unsubscribeInst, unsubscribePresetNotes, unsubscribeSub].forEach(u => u && u());
 
       const todayStr = getTodayDateString();
 
@@ -954,6 +1019,7 @@
       });
 
       loadPresetNotesRealtime(uid);
+      loadSubscriptionsRealtime(uid);
       loadTransactionsRealtime(uid); 
       loadInstallmentPlansRealtime(uid); 
       goToView('entry');
@@ -965,6 +1031,7 @@
       if (targetForm === 'normal') {
         selectedAccountId = null;
         selectedCategoryId = null;
+        activeFilledSubId = null;
         document.getElementById('tx-amount').value = '';
         document.getElementById('tx-note').value = '';
         document.getElementById('tx-date').value = today;
@@ -1039,6 +1106,205 @@
       });
     }
 
+    function loadSubscriptionsRealtime(uid) {
+      if (unsubscribeSub) unsubscribeSub();
+      unsubscribeSub = db.collection('users').doc(uid).collection('subscriptions').orderBy('payDay', 'asc').onSnapshot(snap => {
+        subscriptionRemindersList = [];
+        snap.forEach(d => subscriptionRemindersList.push({ id: d.id, ...d.data() }));
+        renderSettingsSubscriptions();
+        checkAndRenderSubscriptionBanners();
+      });
+    }
+
+    function renderSettingsSubscriptions() {
+      const container = document.getElementById('subscription-settings-list');
+      if (!container) return;
+
+      if (!subscriptionRemindersList.length) {
+        container.innerHTML = `<p class="text-center text-xs text-slate-400 py-3">ยังไม่มีรายการแจ้งเตือนรายจ่ายประจำ</p>`;
+        return;
+      }
+
+      container.innerHTML = subscriptionRemindersList.map(s => {
+        const acc = accountsList.find(a => a.id === s.accountId)?.name || 'บัญชี';
+        const cat = categoriesList.find(c => c.id === s.categoryId)?.name || 'หมวดหมู่';
+        return `
+          <div id="sub-item-${s.id}" class="relative overflow-hidden rounded-2xl bg-slate-700 shadow-2xs">
+            <div class="absolute inset-y-0 right-0 w-16 bg-slate-700 flex items-center justify-center">
+              <button type="button" onclick="openEditSubscriptionModal('${s.id}')" class="w-full h-full text-white text-xs font-bold flex flex-col items-center justify-center space-y-0.5">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
+                <span>แก้ไข</span>
+              </button>
+            </div>
+            <div class="swipe-item-content relative bg-white p-3 border border-slate-200/80 rounded-2xl flex justify-between items-center z-10 cursor-pointer">
+              <div class="flex flex-col">
+                <span class="text-xs font-bold text-slate-700">${escapeHtml(s.name)}</span>
+                <span class="text-[10px] text-slate-400">ตัดทุกวันที่ ${s.payDay} • ${acc} [${cat}]</span>
+              </div>
+              <span class="text-xs font-black text-rose-600">-${(s.amount || 0).toLocaleString(undefined, {minimumFractionDigits: 2})}</span>
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      subscriptionRemindersList.forEach(s => attachSwipeGesture(`sub-item-${s.id}`));
+    }
+
+    function checkAndRenderSubscriptionBanners() {
+      const bannerContainer = document.getElementById('subscription-reminder-banner');
+      const itemsContainer = document.getElementById('subscription-reminder-items');
+      const countBadge = document.getElementById('sub-banner-count');
+      if (!bannerContainer || !itemsContainer) return;
+
+      const now = new Date();
+      const currentDay = now.getDate();
+      const currentMonthKey = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
+
+      // กรองเฉพาะรายการที่ถึงกำหนดชำระ (หรือค้างชำระ) และยังไม่ได้บันทึกหรือกดข้ามในเดือนนี้
+      const dueItems = subscriptionRemindersList.filter(s => {
+        if (s.lastDismissedMonth === currentMonthKey || s.lastPaidMonth === currentMonthKey) return false;
+        return currentDay >= (s.payDay || 1);
+      });
+
+      if (!dueItems.length) {
+        bannerContainer.classList.add('hidden');
+        itemsContainer.innerHTML = '';
+        return;
+      }
+
+      countBadge.innerText = `${dueItems.length} รายการ`;
+      itemsContainer.innerHTML = dueItems.map(s => `
+        <div class="flex items-center justify-between bg-white/10 hover:bg-white/20 p-1.5 rounded-lg text-xs transition">
+          <div onclick="prefillSubscriptionToExpenseForm('${s.id}')" class="flex-1 cursor-pointer flex items-center justify-between pr-2 min-w-0">
+            <span class="font-bold truncate text-[11px] text-white">${escapeHtml(s.name)}</span>
+            <span class="font-black text-xs text-white ml-2">-${s.amount.toLocaleString(undefined, {minimumFractionDigits: 2})}</span>
+          </div>
+          <button type="button" onclick="dismissSubscriptionReminder('${s.id}', '${escapeHtml(s.name)}')" class="text-white/70 hover:text-white font-bold px-1.5 py-0.5 text-xs rounded hover:bg-white/20 transition flex-shrink-0" title="ข้ามการเตือนเดือนนี้">✕</button>
+        </div>
+      `).join('');
+
+      bannerContainer.classList.remove('hidden');
+    }
+
+    function prefillSubscriptionToExpenseForm(subId) {
+      const sub = subscriptionRemindersList.find(s => s.id === subId);
+      if (!sub) return;
+
+      switchEntryMode('expense');
+      activeFilledSubId = subId;
+
+      selectedAccountId = sub.accountId;
+      selectedCategoryId = sub.categoryId;
+      document.getElementById('tx-amount').value = sub.amount;
+      document.getElementById('tx-note').value = sub.name;
+      document.getElementById('tx-date').value = getTodayDateString();
+
+      renderAllAccountButtons();
+      renderCategoryButtons();
+      // นำ triggerSuccessToast() ออกเรียบร้อยเพื่อไม่ให้เด้งซ้ำซ้อนตอนเปิดใส่ฟอร์ม
+    }
+
+    async function dismissSubscriptionReminder(subId, subName) {
+      // ยืนยันก่อนซ่อนการแจ้งเตือน เพื่อป้องกันการเผลอกดโดยไม่ตั้งใจ
+      const confirmDismiss = confirm(`ต้องการข้ามการแจ้งเตือน "${subName}" สำหรับเดือนนี้ใช่หรือไม่?`);
+      if (!confirmDismiss) return;
+
+      const now = new Date();
+      const currentMonthKey = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
+      try {
+        await db.collection('users').doc(currentUser.uid).collection('subscriptions').doc(subId).update({
+          lastDismissedMonth: currentMonthKey
+        });
+      } catch (err) { 
+        console.error(err); 
+        alert("เกิดข้อผิดพลาดในการยกเลิกการแจ้งเตือน");
+      }
+    }
+
+    function openNewSubscriptionModal() {
+      document.getElementById('subscription-modal-title').innerText = 'เพิ่มรายการรายจ่ายประจำ';
+      document.getElementById('modal-sub-id').value = '';
+      document.getElementById('modal-sub-name').value = '';
+      document.getElementById('modal-sub-amount').value = '';
+      document.getElementById('modal-sub-day').value = new Date().getDate();
+      document.getElementById('modal-sub-delete-container').classList.add('hidden');
+
+      selectedSubAccountId = accountsList[0]?.id || null;
+      selectedSubCategoryId = categoriesList.find(c => c.type === 'expense')?.id || null;
+
+      renderSubModalAccountButtons();
+      renderSubModalCategoryButtons();
+      document.getElementById('subscription-edit-modal').classList.remove('hidden');
+    }
+
+    function openEditSubscriptionModal(id) {
+      closeActiveSwipedCard();
+      const sub = subscriptionRemindersList.find(s => s.id === id);
+      if (!sub) return;
+
+      document.getElementById('subscription-modal-title').innerText = 'แก้ไขรายการรายจ่ายประจำ';
+      document.getElementById('modal-sub-id').value = id;
+      document.getElementById('modal-sub-name').value = sub.name || '';
+      document.getElementById('modal-sub-amount').value = sub.amount || '';
+      document.getElementById('modal-sub-day').value = sub.payDay || 1;
+      document.getElementById('modal-sub-delete-container').classList.remove('hidden');
+
+      selectedSubAccountId = sub.accountId;
+      selectedSubCategoryId = sub.categoryId;
+
+      renderSubModalAccountButtons();
+      renderSubModalCategoryButtons();
+      document.getElementById('subscription-edit-modal').classList.remove('hidden');
+    }
+
+    function closeSubscriptionModal() { document.getElementById('subscription-edit-modal').classList.add('hidden'); }
+
+    function renderSubModalAccountButtons() {
+      document.getElementById('modal-sub-account-buttons').innerHTML = renderAccountPinnedSelector(selectedSubAccountId, 'selectedSubAccountId');
+    }
+
+    function renderSubModalCategoryButtons() {
+      document.getElementById('modal-sub-category-buttons').innerHTML = renderCategoryPinnedSelector(selectedSubCategoryId, 'selectedSubCategoryId', 'expense', 'renderSubModalCategoryButtons');
+    }
+
+    document.getElementById('subscription-modal-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const id = document.getElementById('modal-sub-id').value;
+      const name = document.getElementById('modal-sub-name').value.trim();
+      const amt = parseFloat(document.getElementById('modal-sub-amount').value);
+      const day = parseInt(document.getElementById('modal-sub-day').value) || 1;
+
+      if (!name || isNaN(amt) || amt <= 0 || !selectedSubAccountId || !selectedSubCategoryId) {
+        return alert("กรุณากรอกข้อมูลให้ครบถ้วนถูกต้อง");
+      }
+
+      try {
+        if (id) {
+          await db.collection('users').doc(currentUser.uid).collection('subscriptions').doc(id).update({
+            name: name, amount: amt, payDay: day, accountId: selectedSubAccountId, categoryId: selectedSubCategoryId
+          });
+        } else {
+          await db.collection('users').doc(currentUser.uid).collection('subscriptions').add({
+            name: name, amount: amt, payDay: day, accountId: selectedSubAccountId, categoryId: selectedSubCategoryId, createdAt: firebase.firestore.FieldValue.serverTimestamp()
+          });
+        }
+        closeSubscriptionModal();
+      } catch (err) { alert(err.message); }
+    });
+
+    async function confirmDeleteSubscriptionFromModal() {
+      const id = document.getElementById('modal-sub-id').value;
+      if (!id) return;
+      const sub = subscriptionRemindersList.find(s => s.id === id);
+
+      if (confirm(`คุณแน่ใจหรือว่าต้องการลบรายการเตือน "${sub?.name}" ?`)) {
+        try {
+          await db.collection('users').doc(currentUser.uid).collection('subscriptions').doc(id).delete();
+          closeSubscriptionModal();
+        } catch (err) { alert(err.message); }
+      }
+    }
+
     function renderSettingsPresetNotes() {
       const container = document.getElementById('preset-notes-list');
       if (!presetNotesList.length) {
@@ -1062,7 +1328,6 @@
       presetNotesList.push(text);
       await db.collection('users').doc(currentUser.uid).collection('settings').doc('preset_notes').set({ notes: presetNotesList });
       input.value = '';
-      triggerSuccessToast();
     }
 
     async function deletePresetNote(idx) {
@@ -1175,7 +1440,6 @@
       document.getElementById('split-team-share-lbl').innerText = Math.max(0,t-m).toLocaleString(undefined, {minimumFractionDigits: 2}); 
     }
 
-    // ฟังก์ชัน Pinned Selector กลางสำหรับ บัญชี (Accounts)
     function renderAccountPinnedSelector(selectedId, setGlobalVarFnName) {
       let pinned = accountsList.filter(i => i.isPinned);
       if (!pinned.length && accountsList.length) pinned = [accountsList[0]];
@@ -1202,7 +1466,6 @@
       return html;
     }
 
-    // ฟังก์ชัน Pinned Selector กลางสำหรับ หมวดหมู่ (Categories) ให้ทำงานเหมือน บัญชี 100%
     function renderCategoryPinnedSelector(selectedId, setGlobalVarFnName, type, rerenderFnName) {
       const typeCats = categoriesList.filter(c => c.type === type);
       let pinned = typeCats.filter(i => i.isPinned);
@@ -1269,6 +1532,7 @@
       document.getElementById('inst-account-buttons').innerHTML = renderAccountPinnedSelector(selectedInstAccountId, 'selectedInstAccountId');
       document.getElementById('reimb-account-buttons').innerHTML = renderAccountPinnedSelector(selectedReimbAccountId, 'selectedReimbAccountId');
       document.getElementById('team-pay-account-buttons').innerHTML = renderAccountPinnedSelector(selectedTeamPayAccountId, 'selectedTeamPayAccountId');
+      if (document.getElementById('modal-sub-account-buttons')) renderSubModalAccountButtons();
     }
 
     function renderCategoryButtons() {
@@ -1310,6 +1574,16 @@
         if (!selectedCategoryId) { btn.disabled = false; return alert("กรุณาเลือกหมวดหมู่"); }
         const cat = categoriesList.find(c => c.id === selectedCategoryId);
         await saveTransactionToDB({ kind: 'transaction', type: currentTxType, amount: amt, myShare: amt, friendShare: 0, remainingPending: 0, isReimburse: false, isDeposit: false, isMultiCategory: false, note: n, date: d, accountId: selectedAccountId, categoryId: cat.id, categoryName: cat.name, categoriesBreakdown: [{ categoryId: cat.id, categoryName: cat.name, amount: amt }] });
+
+        if (activeFilledSubId) {
+          const now = new Date();
+          const currentMonthKey = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
+          await db.collection('users').doc(currentUser.uid).collection('subscriptions').doc(activeFilledSubId).update({
+            lastPaidMonth: currentMonthKey
+          });
+          activeFilledSubId = null;
+        }
+
         triggerSuccessToast(); resetForm('normal');
       } catch(err){ alert(err.message); } finally { btn.disabled = false; }
     });
@@ -1790,7 +2064,6 @@
       try {
         await db.collection('users').doc(currentUser.uid).collection('transactions').doc(editingTxIdInModal).update(updatePayload);
 
-        triggerSuccessToast();
         closeEditTxModal();
         applyHistoryFilters();
       } catch (err) {
@@ -2297,7 +2570,6 @@
             name: name, colorTheme: color, initialBalance: initBal, isDefault: false, isPinned: true, createdAt: firebase.firestore.FieldValue.serverTimestamp()
           });
         }
-        triggerSuccessToast();
         closeAccountModal();
       } catch (err) { alert(err.message); }
     });
@@ -2311,7 +2583,6 @@
       if (confirm(`คุณแน่ใจหรือว่าต้องการลบบัญชี "${acc?.name}" ?`)) {
         try {
           await db.collection('users').doc(currentUser.uid).collection('accounts').doc(id).delete();
-          triggerSuccessToast();
           closeAccountModal();
         } catch (err) { alert(err.message); }
       }
@@ -2364,7 +2635,6 @@
             name: name, type: type, colorTheme: color, isPinned: true, createdAt: firebase.firestore.FieldValue.serverTimestamp()
           });
         }
-        triggerSuccessToast();
         closeCategoryModal();
       } catch (err) { alert(err.message); }
     });
@@ -2377,7 +2647,6 @@
       if (confirm(`คุณแน่ใจหรือว่าต้องการลบหมวดหมู่ "${cat?.name}" ?`)) {
         try {
           await db.collection('users').doc(currentUser.uid).collection('categories').doc(id).delete();
-          triggerSuccessToast();
           closeCategoryModal();
         } catch (err) { alert(err.message); }
       }
