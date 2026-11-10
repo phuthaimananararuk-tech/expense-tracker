@@ -63,7 +63,7 @@
       <div class="flex flex-col items-center">
         <div class="flex items-baseline space-x-1">
           <h1 class="text-xl font-black tracking-wider uppercase drop-shadow-xs text-slate-100">จดตังค์</h1>
-          <span class="text-[9px] font-medium text-slate-400 tracking-tight">(v1.41)</span>
+          <span class="text-[9px] font-medium text-slate-400 tracking-tight">(v1.42)</span>
         </div>
         <p class="text-[8px] text-slate-400 tracking-tight font-light">by Phuthai Mananararuk & Gemini</p>
       </div>
@@ -226,11 +226,11 @@
             <div><label class="block text-[11px] font-medium text-slate-400 mb-1">เลือกหมวดหมู่รายจ่าย</label><div id="inst-category-buttons"></div></div>
             <div class="grid grid-cols-2 gap-2">
               <div><label class="block text-[11px] font-medium text-slate-400 mb-1">ยอดรวมเต็ม</label><input type="text" id="inst-total-amount" readonly onclick="openCustomKeypad('inst-total-amount')" required oninput="updateDedicatedInstMath()" class="w-full px-2 py-1.5 text-xs border border-slate-300 rounded-xl bg-white cursor-pointer font-bold text-slate-800"></div>
-              <div><label class="block text-[11px] font-medium text-slate-400 mb-1">จำนวนงวดทั้งหมด</label><input type="number" id="inst-count" min="2" max="120" value="10" required oninput="updateDedicatedInstMath()" class="w-full px-2 py-1.5 text-xs border border-slate-300 rounded-xl bg-white text-slate-700"></div>
+              <div><label class="block text-[11px] font-medium text-slate-400 mb-1">จำนวนงวดทั้งหมด</label><input type="number" id="inst-count" min="2" max="120" value="10" inputmode="numeric" pattern="[0-9]*" required oninput="updateDedicatedInstMath()" class="w-full px-2 py-1.5 text-xs border border-slate-300 rounded-xl bg-white text-slate-700"></div>
             </div>
             <div class="grid grid-cols-2 gap-2">
-              <div><label class="block text-[11px] font-medium text-slate-400 mb-1">เริ่มบันทึกที่งวดที่</label><input type="number" id="inst-start-count" min="1" max="120" value="1" required oninput="updateDedicatedInstMath()" class="w-full px-2 py-1.5 text-xs border border-slate-300 rounded-xl bg-white text-slate-700"></div>
-              <div><label class="block text-[11px] font-medium text-slate-400 mb-1">ตัดเงินทุกวันที่</label><input type="number" id="inst-day" min="1" max="31" value="1" required class="w-full px-2 py-1.5 text-xs border border-slate-300 rounded-xl bg-white text-slate-700"></div>
+              <div><label class="block text-[11px] font-medium text-slate-400 mb-1">เริ่มบันทึกที่งวดที่</label><input type="number" id="inst-start-count" min="1" max="120" value="1" inputmode="numeric" pattern="[0-9]*" required oninput="updateDedicatedInstMath()" class="w-full px-2 py-1.5 text-xs border border-slate-300 rounded-xl bg-white text-slate-700"></div>
+              <div><label class="block text-[11px] font-medium text-slate-400 mb-1">ตัดเงินทุกวันที่</label><input type="number" id="inst-day" min="1" max="31" value="1" inputmode="numeric" pattern="[0-9]*" required class="w-full px-2 py-1.5 text-xs border border-slate-300 rounded-xl bg-white text-slate-700"></div>
             </div>
             <div><label class="block text-[11px] font-medium text-slate-400 mb-1">วันที่เริ่มสัญญา</label><input type="date" id="inst-date" required class="w-full px-2 py-1.5 text-xs border border-slate-300 rounded-xl bg-white text-slate-700"></div>
             <div class="bg-white p-2 rounded-xl border border-slate-200 text-[10px] space-y-0.5 text-slate-600">
@@ -423,7 +423,7 @@
           </div>
           <div>
             <label class="block text-[11px] font-semibold text-slate-500 mb-1">ตัดเงินทุกวันที่ (1-31)</label>
-            <input type="number" id="modal-sub-day" min="1" max="31" value="1" required class="w-full px-3 py-2 text-xs border border-slate-300 rounded-xl bg-white font-bold text-slate-700">
+            <input type="number" id="modal-sub-day" min="1" max="31" value="1" inputmode="numeric" pattern="[0-9]*" required class="w-full px-3 py-2 text-xs border border-slate-300 rounded-xl bg-white font-bold text-slate-700">
           </div>
         </div>
         <div>
@@ -539,17 +539,17 @@
             </div>
             <div>
               <label class="block text-[11px] text-slate-600 mb-1">จำนวนงวดทั้งหมด</label>
-              <input type="number" id="edit-inst-total-count" min="2" max="120" oninput="updateEditInstMath()" class="w-full px-2 py-1.5 text-xs border border-slate-300 rounded-xl bg-white font-bold text-slate-700">
+              <input type="number" id="edit-inst-total-count" min="2" max="120" inputmode="numeric" pattern="[0-9]*" oninput="updateEditInstMath()" class="w-full px-2 py-1.5 text-xs border border-slate-300 rounded-xl bg-white font-bold text-slate-700">
             </div>
           </div>
           <div class="grid grid-cols-2 gap-2">
             <div>
               <label class="block text-[11px] text-slate-600 mb-1">เริ่มบันทึกงวดที่</label>
-              <input type="number" id="edit-inst-current-count" min="1" max="120" oninput="updateEditInstMath()" class="w-full px-2 py-1.5 text-xs border border-slate-300 rounded-xl bg-white font-bold text-slate-700">
+              <input type="number" id="edit-inst-current-count" min="1" max="120" inputmode="numeric" pattern="[0-9]*" oninput="updateEditInstMath()" class="w-full px-2 py-1.5 text-xs border border-slate-300 rounded-xl bg-white font-bold text-slate-700">
             </div>
             <div>
               <label class="block text-[11px] text-slate-600 mb-1">ตัดเงินทุกวันที่</label>
-              <input type="number" id="edit-inst-pay-day" min="1" max="31" class="w-full px-2 py-1.5 text-xs border border-slate-300 rounded-xl bg-white font-bold text-slate-700">
+              <input type="number" id="edit-inst-pay-day" min="1" max="31" inputmode="numeric" pattern="[0-9]*" class="w-full px-2 py-1.5 text-xs border border-slate-300 rounded-xl bg-white font-bold text-slate-700">
             </div>
           </div>
           <div class="bg-white p-2 rounded-xl border border-slate-200 text-[10px] space-y-0.5 text-slate-600">
@@ -1160,7 +1160,6 @@
       const currentDay = now.getDate();
       const currentMonthKey = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
 
-      // กรองเฉพาะรายการที่ถึงกำหนดชำระ (หรือค้างชำระ) และยังไม่ได้บันทึกหรือกดข้ามในเดือนนี้
       const dueItems = subscriptionRemindersList.filter(s => {
         if (s.lastDismissedMonth === currentMonthKey || s.lastPaidMonth === currentMonthKey) return false;
         return currentDay >= (s.payDay || 1);
@@ -1201,11 +1200,9 @@
 
       renderAllAccountButtons();
       renderCategoryButtons();
-      // นำ triggerSuccessToast() ออกเรียบร้อยเพื่อไม่ให้เด้งซ้ำซ้อนตอนเปิดใส่ฟอร์ม
     }
 
     async function dismissSubscriptionReminder(subId, subName) {
-      // ยืนยันก่อนซ่อนการแจ้งเตือน เพื่อป้องกันการเผลอกดโดยไม่ตั้งใจ
       const confirmDismiss = confirm(`ต้องการข้ามการแจ้งเตือน "${subName}" สำหรับเดือนนี้ใช่หรือไม่?`);
       if (!confirmDismiss) return;
 
