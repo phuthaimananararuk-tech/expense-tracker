@@ -1,4 +1,4 @@
-const CACHE_NAME = 'jodtang-v1.41';
+const CACHE_NAME = 'jodtang-v1.42';
 const ASSETS = [
   './',
   './index.html',
