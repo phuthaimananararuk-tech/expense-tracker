@@ -104,7 +104,7 @@
 
       <!-- 1. ENTRY VIEW -->
       <section id="entry-view" class="hidden h-full flex flex-col justify-between overflow-hidden relative">
-        <div id="entry-scroll-container" class="space-y-2.5 overflow-y-auto pr-1 flex-1 pb-36 transition-all duration-200">
+        <div id="entry-scroll-container" class="space-y-2.5 overflow-y-auto pr-1 flex-1 pb-3 transition-all duration-200">
 
           <!-- Mode Selector Dropdown Buttons -->
           <div id="mode-buttons-container" class="grid grid-cols-3 gap-1 bg-slate-200/80 p-1 rounded-xl text-center">
@@ -304,13 +304,6 @@
               <button type="button" onclick="resetForm('team-pay')" class="w-1/5 bg-slate-200 hover:bg-slate-300 text-slate-600 font-semibold py-2 rounded-xl text-xs transition">ล้าง</button>
             </div>
           </form>
-        </div>
-
-        <!-- Sticky Fixed Bottom 4x Height "รายการด่วน" Button (Visible only in Expense, Income, Transfer) -->
-        <div id="sticky-favorite-trigger-container" class="absolute bottom-2 left-3 right-3 z-20 pointer-events-auto">
-          <button type="button" onclick="openFavoritesModal()" class="w-full h-32 py-4 bg-amber-500 hover:bg-amber-600 active:bg-amber-700 text-amber-950 font-black rounded-2xl text-xl shadow-lg transition-all flex items-center justify-center border-2 border-amber-400 tracking-wider">
-            <span>รายการด่วน</span>
-          </button>
         </div>
       </section>
 
@@ -1600,22 +1593,11 @@
       const forms = { expense:'tx-form', income:'tx-form', transfer:'transfer-form', settle:'settle-form', split:'split-form', installment:'installment-form', reimburse:'reimburse-form', 'team-pay':'team-pay-form' };
       document.getElementById(forms[mode]).classList.remove('hidden');
 
-      // Toggle Sticky Favorite Button & Adjust Dynamic Scroll Padding
-      const favBtnContainer = document.getElementById('sticky-favorite-trigger-container');
+      // Padding-bottom Standard pb-3 สำหรับทุกโหมด
       const scrollContainer = document.getElementById('entry-scroll-container');
-
-      if (['expense', 'income', 'transfer'].includes(mode)) {
-        if (favBtnContainer) favBtnContainer.classList.remove('hidden');
-        if (scrollContainer) {
-          scrollContainer.classList.remove('pb-3');
-          scrollContainer.classList.add('pb-36');
-        }
-      } else {
-        if (favBtnContainer) favBtnContainer.classList.add('hidden');
-        if (scrollContainer) {
-          scrollContainer.classList.remove('pb-36');
-          scrollContainer.classList.add('pb-3');
-        }
+      if (scrollContainer) {
+        scrollContainer.classList.remove('pb-36');
+        scrollContainer.classList.add('pb-3');
       }
 
       if (mode === 'expense') { currentTxType = 'expense'; renderCategoryButtons(); } 
@@ -2876,6 +2858,38 @@
     async function toggleAccountPin(id, isPinned) { try { await db.collection('users').doc(currentUser.uid).collection('accounts').doc(id).update({ isPinned: isPinned }); } catch (err) { alert(err.message); } }
     async function toggleCategoryPin(id, isPinned) { try { await db.collection('users').doc(currentUser.uid).collection('categories').doc(id).update({ isPinned: isPinned }); } catch (err) { alert(err.message); } }
     function escapeHtml(text) { return text ? text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;") : ''; }
+  </script>
+
+  <!-- DOUBLE TAP ON EMPTY SPACE (Expense & Income Mode Only) -->
+  <script>
+    let lastEmptySpaceTap = 0;
+
+    document.addEventListener('DOMContentLoaded', () => {
+      const scrollContainer = document.getElementById('entry-scroll-container');
+      
+      if (scrollContainer) {
+        scrollContainer.addEventListener('touchend', function (e) {
+          // 1. ตรวจสอบเฉพาะโหมด 'expense' และ 'income' เท่านั้น
+          if (!['expense', 'income'].includes(currentEntryMode)) return;
+
+          // 2. ตรวจสอบว่าตำแหน่งที่แตะ ต้องไม่ใช่ Interactive Element
+          const isInteractiveElement = e.target.closest('button, input, select, label, a, .swipe-item-content');
+          if (isInteractiveElement) return;
+
+          const currentTime = new Date().getTime();
+          const tapLength = currentTime - lastEmptySpaceTap;
+
+          // 3. ถ้า Double Tap ภายในเวลาสั้นกว่า 300ms
+          if (tapLength > 0 && tapLength < 300) {
+            e.preventDefault(); // ป้องกัน Zoom หน้าจอ
+            openFavoritesModal(); // เปิด Pop-up รายการด่วน
+            lastEmptySpaceTap = 0;
+          } else {
+            lastEmptySpaceTap = currentTime;
+          }
+        });
+      }
+    });
   </script>
 
   <!-- PWA Service Worker Registration -->
