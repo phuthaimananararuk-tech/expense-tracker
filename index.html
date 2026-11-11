@@ -61,7 +61,7 @@
       <div class="flex flex-col items-center flex-1">
         <div class="flex items-baseline space-x-1">
           <h1 class="text-xl font-black tracking-wider uppercase drop-shadow-xs text-slate-100">จดตังค์</h1>
-          <span class="text-[9px] font-medium text-slate-400 tracking-tight">(v1.49)</span>
+          <span class="text-[9px] font-medium text-slate-400 tracking-tight">(v1.50)</span>
         </div>
         <p class="text-[8px] text-slate-400 tracking-tight font-light">by Phuthai Mananararuk & Gemini</p>
       </div>
@@ -103,8 +103,8 @@
       </section>
 
       <!-- 1. ENTRY VIEW -->
-      <section id="entry-view" class="hidden space-y-2 flex-1 flex flex-col justify-between overflow-hidden pb-1">
-        <div id="entry-scroll-container" class="space-y-2.5 overflow-y-auto pr-1 flex-1 pb-24">
+      <section id="entry-view" class="hidden h-full flex flex-col justify-between overflow-hidden relative">
+        <div id="entry-scroll-container" class="space-y-2.5 overflow-y-auto pr-1 flex-1 pb-24 transition-all duration-200">
 
           <!-- Mode Selector Dropdown Buttons -->
           <div id="mode-buttons-container" class="grid grid-cols-3 gap-1 bg-slate-200/80 p-1 rounded-xl text-center">
@@ -307,7 +307,7 @@
         </div>
 
         <!-- Sticky Fixed Bottom 3-Line "รายการด่วน" Button (Visible only in Expense, Income, Transfer) -->
-        <div id="sticky-favorite-trigger-container" class="absolute bottom-2 left-3 right-3 z-20">
+        <div id="sticky-favorite-trigger-container" class="absolute bottom-2 left-3 right-3 z-20 pointer-events-auto">
           <button type="button" onclick="openFavoritesModal()" class="w-full h-20 py-4 bg-amber-500 hover:bg-amber-600 active:bg-amber-700 text-amber-950 font-black rounded-2xl text-lg shadow-lg transition-all flex items-center justify-center border-2 border-amber-400 tracking-wider">
             <span>รายการด่วน</span>
           </button>
