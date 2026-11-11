@@ -104,11 +104,21 @@
       <section id="entry-view" class="hidden space-y-2 flex-1 flex flex-col justify-between overflow-hidden">
         <div class="space-y-2.5 overflow-y-auto pr-1 flex-1">
 
-          <div id="mode-buttons-container" class="grid grid-cols-3 gap-1 bg-slate-200/80 p-1 rounded-xl text-center">
-            <button type="button" id="btn-mode-expense" onclick="handleModeClick('expense')" class="py-1.5 text-[10px] sm:text-[11px] font-semibold rounded-lg transition bg-slate-700 text-white shadow-xs">Expense...</button>
-            <button type="button" id="btn-mode-income" onclick="handleModeClick('income')" class="py-1.5 text-[10px] sm:text-[11px] font-semibold rounded-lg transition text-slate-600">Income...</button>
-            <button type="button" id="btn-mode-transfer" onclick="handleModeClick('transfer')" class="py-1.5 text-[10px] sm:text-[11px] font-semibold rounded-lg transition text-slate-600">Transfer...</button>
-          </div>
+          <!-- Mode Selector Dropdown Buttons -->
+<div id="mode-buttons-container" class="grid grid-cols-3 gap-1 bg-slate-200/80 p-1 rounded-xl text-center">
+  <button type="button" id="btn-mode-expense" onclick="handleModeClick('expense')" class="py-1.5 text-[10px] sm:text-[11px] font-semibold rounded-lg transition bg-slate-700 text-white flex items-center justify-center space-x-1">
+    <span>Expense</span>
+    <span class="text-[9px]">▾</span>
+  </button>
+  <button type="button" id="btn-mode-income" onclick="handleModeClick('income')" class="py-1.5 text-[10px] sm:text-[11px] font-semibold rounded-lg transition text-slate-600 flex items-center justify-center space-x-1">
+    <span>Income</span>
+    <span class="text-[9px]">▾</span>
+  </button>
+  <button type="button" id="btn-mode-transfer" onclick="handleModeClick('transfer')" class="py-1.5 text-[10px] sm:text-[11px] font-semibold rounded-lg transition text-slate-600 flex items-center justify-center space-x-1">
+    <span>Transfer</span>
+    <span class="text-[9px]">▾</span>
+  </button>
+</div>
 
           <!-- Normal Form -->
           <form id="tx-form" class="bg-slate-50 p-2.5 sm:p-3 rounded-2xl border border-slate-200/80 space-y-2">
