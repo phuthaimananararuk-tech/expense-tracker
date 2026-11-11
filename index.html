@@ -36,13 +36,13 @@
       padding-bottom: max(0.5rem, env(safe-area-inset-bottom));
     }
 
-    @keyframes toastFade {
+    @keyframes toastFadeLong {
       0% { opacity: 0; transform: scale(0.7); }
-      30% { opacity: 1; transform: scale(1.05); }
-      70% { opacity: 1; transform: scale(1); }
+      15% { opacity: 1; transform: scale(1.05); }
+      85% { opacity: 1; transform: scale(1); }
       100% { opacity: 0; transform: scale(0.95); }
     }
-    .animate-toast-check { animation: toastFade 0.3s ease-in-out forwards; }
+    .animate-toast-check-long { animation: toastFadeLong 0.9s ease-in-out forwards; }
     .swipe-item-content { transition: transform 0.2s ease-out; }
   </style>
 
@@ -63,7 +63,7 @@
       <div class="flex flex-col items-center">
         <div class="flex items-baseline space-x-1">
           <h1 class="text-xl font-black tracking-wider uppercase drop-shadow-xs text-slate-100">จดตังค์</h1>
-          <span class="text-[9px] font-medium text-slate-400 tracking-tight">(v1.43)</span>
+          <span class="text-[9px] font-medium text-slate-400 tracking-tight">(v1.45)</span>
         </div>
         <p class="text-[8px] text-slate-400 tracking-tight font-light">by Phuthai Mananararuk & Gemini</p>
       </div>
@@ -78,7 +78,7 @@
       <button id="nav-tab-history" onclick="goToView('history')" class="py-2 text-xs font-bold rounded-xl transition text-center text-slate-500 hover:text-slate-800">History</button>
     </nav>
 
-    <main class="p-3 sm:p-4 flex-1 flex flex-col justify-between overflow-hidden min-h-0">
+    <main class="p-3 sm:p-4 flex-1 flex flex-col justify-between overflow-hidden min-h-0 relative">
 
       <!-- Auth Views -->
       <section id="login-view" class="space-y-4 my-auto">
@@ -101,24 +101,24 @@
       </section>
 
       <!-- 1. ENTRY VIEW -->
-      <section id="entry-view" class="hidden space-y-2 flex-1 flex flex-col justify-between overflow-hidden">
+      <section id="entry-view" class="hidden space-y-2 flex-1 flex flex-col justify-between overflow-hidden pb-24">
         <div class="space-y-2.5 overflow-y-auto pr-1 flex-1">
 
           <!-- Mode Selector Dropdown Buttons -->
-<div id="mode-buttons-container" class="grid grid-cols-3 gap-1 bg-slate-200/80 p-1 rounded-xl text-center">
-  <button type="button" id="btn-mode-expense" onclick="handleModeClick('expense')" class="py-1.5 text-[10px] sm:text-[11px] font-semibold rounded-lg transition bg-slate-700 text-white flex items-center justify-center space-x-1">
-    <span>Expense</span>
-    <span class="text-[9px]">▾</span>
-  </button>
-  <button type="button" id="btn-mode-income" onclick="handleModeClick('income')" class="py-1.5 text-[10px] sm:text-[11px] font-semibold rounded-lg transition text-slate-600 flex items-center justify-center space-x-1">
-    <span>Income</span>
-    <span class="text-[9px]">▾</span>
-  </button>
-  <button type="button" id="btn-mode-transfer" onclick="handleModeClick('transfer')" class="py-1.5 text-[10px] sm:text-[11px] font-semibold rounded-lg transition text-slate-600 flex items-center justify-center space-x-1">
-    <span>Transfer</span>
-    <span class="text-[9px]">▾</span>
-  </button>
-</div>
+          <div id="mode-buttons-container" class="grid grid-cols-3 gap-1 bg-slate-200/80 p-1 rounded-xl text-center">
+            <button type="button" id="btn-mode-expense" onclick="handleModeClick('expense')" class="py-1.5 text-[10px] sm:text-[11px] font-semibold rounded-lg transition bg-slate-700 text-white flex items-center justify-center space-x-1">
+              <span>Expense</span>
+              <span class="text-[9px]">▾</span>
+            </button>
+            <button type="button" id="btn-mode-income" onclick="handleModeClick('income')" class="py-1.5 text-[10px] sm:text-[11px] font-semibold rounded-lg transition text-slate-600 flex items-center justify-center space-x-1">
+              <span>Income</span>
+              <span class="text-[9px]">▾</span>
+            </button>
+            <button type="button" id="btn-mode-transfer" onclick="handleModeClick('transfer')" class="py-1.5 text-[10px] sm:text-[11px] font-semibold rounded-lg transition text-slate-600 flex items-center justify-center space-x-1">
+              <span>Transfer</span>
+              <span class="text-[9px]">▾</span>
+            </button>
+          </div>
 
           <!-- Normal Form -->
           <form id="tx-form" class="bg-slate-50 p-2.5 sm:p-3 rounded-2xl border border-slate-200/80 space-y-2">
@@ -139,7 +139,7 @@
 
             <div>
               <label class="block text-[11px] font-medium text-slate-400 mb-1">บันทึกช่วยจำ (ไม่บังคับ)</label>
-              <div class="entry-preset-notes-container flex flex-wrap gap-x-2 gap-y-0.5 mb-1 text-[11px]"></div>
+              <div class="entry-preset-notes-container flex flex-wrap gap-x-2 gap-y-0.5 mb-1 text-sm"></div>
               <input type="text" id="tx-note" placeholder="เช่น ค่าอาหาร, ซื้อของ" class="w-full px-2 py-1.5 text-xs border border-slate-300 rounded-xl bg-white text-slate-700">
             </div>
             
@@ -148,7 +148,7 @@
               <button type="button" onclick="resetForm('normal')" class="w-1/5 bg-slate-200 hover:bg-slate-300 text-slate-600 font-semibold py-2 rounded-xl text-xs transition">ล้าง</button>
             </div>
 
-            <!-- Subscription Reminders Banner Container (Compact Red Theme) -->
+            <!-- Subscription Reminders Banner Container -->
             <div id="subscription-reminder-banner" class="hidden mt-2 bg-[#FF0000] text-white p-2 rounded-xl shadow-xs space-y-1">
               <div class="flex justify-between items-center text-[11px] font-bold pb-0.5 border-b border-white/20">
                 <span class="flex items-center space-x-1">
@@ -173,7 +173,7 @@
             </div>
             <div>
               <label class="block text-[11px] font-medium text-slate-400 mb-1">บันทึกช่วยจำ</label>
-              <div class="entry-preset-notes-container flex flex-wrap gap-x-2 gap-y-0.5 mb-1 text-[11px]"></div>
+              <div class="entry-preset-notes-container flex flex-wrap gap-x-2 gap-y-0.5 mb-1 text-sm"></div>
               <input type="text" id="tr-note" class="w-full px-2 py-1.5 text-xs border border-slate-300 rounded-xl bg-white text-slate-700">
             </div>
 
@@ -194,7 +194,7 @@
             <div><label class="block text-[11px] font-medium text-slate-400 mb-1">รายการที่รอคืน (ติ๊กเลือก)</label><div id="pending-items-container" class="space-y-1 max-h-32 overflow-y-auto pr-1 border border-slate-200 bg-white p-2 rounded-xl"></div></div>
             <div>
               <label class="block text-[11px] font-medium text-slate-400 mb-1">บันทึกช่วยจำ</label>
-              <div class="entry-preset-notes-container flex flex-wrap gap-x-2 gap-y-0.5 mb-1 text-[11px]"></div>
+              <div class="entry-preset-notes-container flex flex-wrap gap-x-2 gap-y-0.5 mb-1 text-sm"></div>
               <input type="text" id="settle-note" class="w-full px-2 py-1.5 text-xs border border-slate-300 rounded-xl bg-white text-slate-700">
             </div>
 
@@ -219,7 +219,7 @@
             </div>
             <div>
               <label class="block text-[11px] font-medium text-slate-400 mb-1">บันทึกช่วยจำ</label>
-              <div class="entry-preset-notes-container flex flex-wrap gap-x-2 gap-y-0.5 mb-1 text-[11px]"></div>
+              <div class="entry-preset-notes-container flex flex-wrap gap-x-2 gap-y-0.5 mb-1 text-sm"></div>
               <input type="text" id="split-note" class="w-full px-2 py-1.5 text-xs border border-slate-300 rounded-xl bg-white text-slate-700">
             </div>
 
@@ -249,7 +249,7 @@
             </div>
             <div>
               <label class="block text-[11px] font-medium text-slate-400 mb-1">ชื่อสัญญา / บันทึกช่วยจำ</label>
-              <div class="entry-preset-notes-container flex flex-wrap gap-x-2 gap-y-0.5 mb-1 text-[11px]"></div>
+              <div class="entry-preset-notes-container flex flex-wrap gap-x-2 gap-y-0.5 mb-1 text-sm"></div>
               <input type="text" id="inst-note" placeholder="เช่น ผ่อนโทรศัพท์" class="w-full px-2 py-1.5 text-xs border border-slate-300 rounded-xl bg-white text-slate-700">
             </div>
 
@@ -272,7 +272,7 @@
             <div><label class="block text-[11px] font-medium text-slate-400 mb-1">วันที่</label><input type="date" id="reimb-date" required class="w-full px-2 py-1.5 text-xs border border-slate-300 rounded-xl bg-white text-slate-700"></div>
             <div>
               <label class="block text-[11px] font-medium text-slate-400 mb-1">บันทึกช่วยจำ</label>
-              <div class="entry-preset-notes-container flex flex-wrap gap-x-2 gap-y-0.5 mb-1 text-[11px]"></div>
+              <div class="entry-preset-notes-container flex flex-wrap gap-x-2 gap-y-0.5 mb-1 text-sm"></div>
               <input type="text" id="reimb-note" placeholder="เช่น ค่าอาหารมื้อเย็นสำรองจ่ายไปก่อน" class="w-full px-2 py-1.5 text-xs border border-slate-300 rounded-xl bg-white text-slate-700">
             </div>
 
@@ -293,7 +293,7 @@
             <div><label class="block text-[11px] font-medium text-slate-400 mb-1">รายการค้างจ่ายทีมงาน (ติ๊กเลือก)</label><div id="pending-team-items-container" class="space-y-1 max-h-32 overflow-y-auto pr-1 border border-slate-200 bg-white p-2 rounded-xl"></div></div>
             <div>
               <label class="block text-[11px] font-medium text-slate-400 mb-1">บันทึกช่วยจำ</label>
-              <div class="entry-preset-notes-container flex flex-wrap gap-x-2 gap-y-0.5 mb-1 text-[11px]"></div>
+              <div class="entry-preset-notes-container flex flex-wrap gap-x-2 gap-y-0.5 mb-1 text-sm"></div>
               <input type="text" id="team-pay-note" placeholder="เช่น โอนจ่ายค่าตัดต่อโปรเจกต์คุณบี" class="w-full px-2 py-1.5 text-xs border border-slate-300 rounded-xl bg-white text-slate-700">
             </div>
 
@@ -302,6 +302,14 @@
               <button type="button" onclick="resetForm('team-pay')" class="w-1/5 bg-slate-200 hover:bg-slate-300 text-slate-600 font-semibold py-2 rounded-xl text-xs transition">ล้าง</button>
             </div>
           </form>
+        </div>
+
+        <!-- Sticky Fixed Bottom 3-Line Favorite Button -->
+        <div class="absolute bottom-2 left-3 right-3 z-20">
+          <button type="button" onclick="openFavoritesModal()" class="w-full h-20 py-4 bg-amber-500 hover:bg-amber-600 active:bg-amber-700 text-amber-950 font-black rounded-2xl text-base shadow-lg transition-all flex items-center justify-center space-x-2 border-2 border-amber-400">
+            <span class="text-2xl">⭐</span>
+            <span class="tracking-wide">รายการโปรดทางด่วน (Favorites)</span>
+          </button>
         </div>
       </section>
 
@@ -527,7 +535,11 @@
           <h3 class="text-xs font-bold text-slate-700 uppercase">แก้ไขรายการประวัติ</h3>
           <p id="edit-tx-modal-subhead" class="text-[10px] text-slate-400">ปรับเปลี่ยนข้อมูลตามรูปแบบรายการ</p>
         </div>
-        <button type="button" onclick="closeEditTxModal()" class="text-slate-400 font-bold text-lg px-2">✕</button>
+        <div class="flex items-center space-x-2">
+          <!-- Favorite Star Button (Only when opened from History) -->
+          <button type="button" id="btn-save-as-favorite" onclick="saveCurrentEditingAsFavorite()" class="hidden text-amber-500 hover:text-amber-600 font-bold text-xl px-1.5 py-0.5 rounded-lg hover:bg-amber-50 transition" title="บันทึกเป็นรายการโปรดทางด่วน">⭐</button>
+          <button type="button" onclick="closeEditTxModal()" class="text-slate-400 font-bold text-lg px-2">✕</button>
+        </div>
       </div>
 
       <form id="edit-tx-modal-form" class="space-y-3 pt-1">
@@ -615,7 +627,6 @@
 
         <div>
           <label class="block text-[11px] text-slate-400 mb-1">บันทึกช่วยจำ</label>
-          <div class="entry-preset-notes-container flex flex-wrap gap-x-2 gap-y-0.5 mb-1 text-[11px]"></div>
           <input type="text" id="edit-tx-note" class="w-full px-2 py-1.5 text-xs border border-slate-300 rounded-xl bg-white text-slate-700">
         </div>
 
@@ -625,6 +636,30 @@
         </div>
       </form>
 
+    </div>
+  </div>
+
+  <!-- FAVORITES LIST POP-UP (2-CLICKS QUICK ACTION) -->
+  <div id="favorites-modal" class="hidden fixed inset-0 bg-slate-900/50 backdrop-blur-xs flex items-end sm:items-center justify-center p-0 sm:p-4 z-50">
+    <div class="bg-white rounded-t-3xl sm:rounded-3xl w-full max-w-md p-4 space-y-3 shadow-2xl relative max-h-[80vh] flex flex-col border border-slate-200 safe-padding-bottom">
+      <div class="flex justify-between items-center border-b border-slate-200 pb-2 flex-shrink-0">
+        <div>
+          <h3 class="text-sm font-bold text-slate-800 uppercase flex items-center space-x-1">
+            <span>⭐</span>
+            <span>รายการโปรดทางด่วน (Favorites)</span>
+          </h3>
+          <p class="text-[11px] text-slate-400">แตะรายการที่ต้องการเพื่อบันทึกทันที</p>
+        </div>
+        <button type="button" onclick="closeFavoritesModal()" class="text-slate-400 font-bold text-xl px-2">✕</button>
+      </div>
+
+      <div id="favorites-list-container" class="space-y-2 overflow-y-auto p-1 flex-1 min-h-[200px]">
+        <p class="text-center text-xs text-slate-400 py-8">กำลังโหลดรายการโปรด...</p>
+      </div>
+
+      <div class="pt-2 flex-shrink-0 border-t border-slate-200">
+        <button type="button" onclick="closeFavoritesModal()" class="w-full bg-slate-100 text-slate-600 py-2.5 rounded-xl text-xs font-bold">ปิด</button>
+      </div>
     </div>
   </div>
 
@@ -744,10 +779,10 @@
     </div>
   </div>
 
-  <!-- Toast Checkmark -->
-  <div id="toast-check-overlay" class="hidden fixed inset-0 bg-slate-900/20 flex items-center justify-center z-50 pointer-events-none">
-    <div class="bg-slate-800 text-white p-4 rounded-full shadow-2xl flex items-center justify-center animate-toast-check">
-      <svg class="w-12 h-12 stroke-current" fill="none" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3.5" d="M5 13l4 4L19 7" /></svg>
+  <!-- Toast Checkmark 3x Long Duration (900ms) -->
+  <div id="toast-check-overlay" class="hidden fixed inset-0 bg-slate-900/30 flex items-center justify-center z-50 pointer-events-none">
+    <div class="bg-slate-800 text-white p-5 rounded-full shadow-2xl flex items-center justify-center animate-toast-check-long">
+      <svg class="w-16 h-16 stroke-current" fill="none" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3.5" d="M5 13l4 4L19 7" /></svg>
     </div>
   </div>
 
@@ -797,21 +832,21 @@
 
   <script>
   const firebaseConfig = {
-  apiKey: "AIzaSyCuu9m390tra3oEca4PygcD1pO6-L7u7XE",
-  authDomain: "eard-604d1.firebaseapp.com",
-  projectId: "eard-604d1",
-  storageBucket: "eard-604d1.firebasestorage.app",
-  messagingSenderId: "114087782046",
-  appId: "1:114087782046:web:3c7c8dce10134cefba3d8f",
-  measurementId: "G-RBTCMEJRNE"
-};
+    apiKey: "AIzaSyCuu9m390tra3oEca4PygcD1pO6-L7u7XE",
+    authDomain: "eard-604d1.firebaseapp.com",
+    projectId: "eard-604d1",
+    storageBucket: "eard-604d1.firebasestorage.app",
+    messagingSenderId: "114087782046",
+    appId: "1:114087782046:web:3c7c8dce10134cefba3d8f",
+    measurementId: "G-RBTCMEJRNE"
+  };
 
     firebase.initializeApp(firebaseConfig);
     const auth = firebase.auth(), db = firebase.firestore();
     db.enablePersistence().catch(err => console.warn(err.code));
 
-    let currentUser = null, unsubscribeTx = null, unsubscribeAcc = null, unsubscribeCat = null, unsubscribeInst = null, unsubscribePresetNotes = null, unsubscribeSub = null;
-    let accountsList = [], categoriesList = [], allTransactions = [], activeInstallmentPlans = [], presetNotesList = [], subscriptionRemindersList = [];
+    let currentUser = null, unsubscribeTx = null, unsubscribeAcc = null, unsubscribeCat = null, unsubscribeInst = null, unsubscribePresetNotes = null, unsubscribeSub = null, unsubscribeFav = null;
+    let accountsList = [], categoriesList = [], allTransactions = [], activeInstallmentPlans = [], presetNotesList = [], subscriptionRemindersList = [], favoriteItemsList = [];
 
     let activeFilledSubId = null;
     let editingTxIdInModal = null, editSelectedAccountId = null, editSelectedCategoryId = null;
@@ -854,9 +889,11 @@
     const views = { login: document.getElementById('login-view'), register: document.getElementById('register-view'), entry: document.getElementById('entry-view'), summary: document.getElementById('summary-view'), history: document.getElementById('history-view'), setting: document.getElementById('setting-view') };
     const topNavTabs = document.getElementById('top-nav-tabs'), logoutBtn = document.getElementById('logout-btn'), openSettingsBtn = document.getElementById('open-settings-btn'), authStatusBar = document.getElementById('auth-status-bar');
 
+    // 3x Long Toast Animation (900ms) for high-driving visibility
     function triggerSuccessToast() {
       const t = document.getElementById('toast-check-overlay');
-      t.classList.remove('hidden'); setTimeout(() => t.classList.add('hidden'), 300);
+      t.classList.remove('hidden'); 
+      setTimeout(() => t.classList.add('hidden'), 900);
     }
 
     function openCustomKeypad(id) { activeKeypadFieldId = id; const el = document.getElementById(id); document.getElementById('keypad-live-display').innerText = el.value || '0'; document.getElementById('custom-keypad-overlay').classList.remove('hidden'); }
@@ -922,7 +959,7 @@
       } catch (err) { alert(err.message); }
     });
 
-    logoutBtn.addEventListener('click', async () => { [unsubscribeTx, unsubscribeAcc, unsubscribeCat, unsubscribeInst, unsubscribePresetNotes, unsubscribeSub].forEach(u => u && u()); await auth.signOut(); });
+    logoutBtn.addEventListener('click', async () => { [unsubscribeTx, unsubscribeAcc, unsubscribeCat, unsubscribeInst, unsubscribePresetNotes, unsubscribeSub, unsubscribeFav].forEach(u => u && u()); await auth.signOut(); });
     openSettingsBtn.addEventListener('click', () => goToView('setting'));
     auth.onAuthStateChanged(async user => { 
       if (user && (user.providerData.some(p => p.providerId !== 'password') || user.emailVerified)) { 
@@ -979,7 +1016,7 @@
     }
 
     async function initUserData(uid) {
-      [unsubscribeAcc, unsubscribeCat, unsubscribeTx, unsubscribeInst, unsubscribePresetNotes, unsubscribeSub].forEach(u => u && u());
+      [unsubscribeAcc, unsubscribeCat, unsubscribeTx, unsubscribeInst, unsubscribePresetNotes, unsubscribeSub, unsubscribeFav].forEach(u => u && u());
 
       const todayStr = getTodayDateString();
 
@@ -1030,6 +1067,7 @@
 
       loadPresetNotesRealtime(uid);
       loadSubscriptionsRealtime(uid);
+      loadFavoritesRealtime(uid);
       loadTransactionsRealtime(uid); 
       loadInstallmentPlansRealtime(uid); 
       goToView('entry');
@@ -1100,6 +1138,137 @@
         document.getElementById('team-pay-date').value = today;
         document.querySelectorAll('input[name="team-pay-item"]').forEach(cb => cb.checked = false);
         renderAllAccountButtons();
+      }
+    }
+
+    /* REALTIME FAVORITES LOGIC (COPY SNAPSHOT) */
+    function loadFavoritesRealtime(uid) {
+      if (unsubscribeFav) unsubscribeFav();
+      unsubscribeFav = db.collection('users').doc(uid).collection('favorites').orderBy('createdAt', 'desc').onSnapshot(snap => {
+        favoriteItemsList = [];
+        snap.forEach(d => favoriteItemsList.push({ id: d.id, ...d.data() }));
+        renderFavoritesModalList();
+      });
+    }
+
+    async function saveCurrentEditingAsFavorite() {
+      if (!editingTxIdInModal || !currentUser) return;
+      const t = allTransactions.find(x => x.id === editingTxIdInModal);
+      if (!t) return;
+
+      const favData = {
+        kind: t.kind || 'transaction',
+        type: t.type || 'expense',
+        amount: parseFloat(document.getElementById('edit-tx-amount')?.value) || t.amount || t.totalAmount || 0,
+        myShare: t.myShare || 0,
+        friendShare: t.friendShare || 0,
+        totalAmount: t.totalAmount || 0,
+        teamShare: t.teamShare || 0,
+        isReimburse: !!t.isReimburse,
+        note: document.getElementById('edit-tx-note')?.value.trim() || t.note || '',
+        accountId: editSelectedAccountId || t.accountId || t.fromAccountId || '',
+        accountName: accountsList.find(a => a.id === (editSelectedAccountId || t.accountId))?.name || '',
+        categoryId: editSelectedCategoryId || t.categoryId || '',
+        categoryName: categoriesList.find(c => c.id === (editSelectedCategoryId || t.categoryId))?.name || t.categoryName || '',
+        fromAccountId: t.fromAccountId || '',
+        fromAccountName: t.fromAccountName || '',
+        toAccountId: t.toAccountId || '',
+        toAccountName: t.toAccountName || '',
+        categoriesBreakdown: t.categoriesBreakdown || [],
+        createdAt: firebase.firestore.FieldValue.serverTimestamp()
+      };
+
+      try {
+        await db.collection('users').doc(currentUser.uid).collection('favorites').add(favData);
+        alert("⭐ บันทึกรายการนี้เข้า Favorite ทางด่วนเรียบร้อยแล้ว!");
+      } catch (err) {
+        alert("เกิดข้อผิดพลาดในการบันทึก Favorite: " + err.message);
+      }
+    }
+
+    function openFavoritesModal() {
+      renderFavoritesModalList();
+      document.getElementById('favorites-modal').classList.remove('hidden');
+    }
+
+    function closeFavoritesModal() {
+      document.getElementById('favorites-modal').classList.add('hidden');
+    }
+
+    function renderFavoritesModalList() {
+      const container = document.getElementById('favorites-list-container');
+      if (!container) return;
+
+      if (!favoriteItemsList.length) {
+        container.innerHTML = `<p class="text-center text-xs text-slate-400 py-10">ยังไม่มีรายการโปรด<br><span class="text-[10px] text-slate-400 font-light">สามารถเพิ่มได้จากหน้าแก้ไขรายการประวัติ (History)</span></p>`;
+        return;
+      }
+
+      container.innerHTML = favoriteItemsList.map(fav => {
+        const accName = fav.accountName || accountsList.find(a => a.id === fav.accountId)?.name || (fav.kind === 'transfer' ? `${fav.fromAccountName}➔${fav.toAccountName}` : 'บัญชี');
+        const catName = fav.categoryName || 'ทั่วไป';
+        const displayAmount = fav.amount || fav.totalAmount || 0;
+        const typeColor = fav.type === 'income' ? 'text-emerald-600' : (fav.kind === 'transfer' ? 'text-slate-800' : 'text-rose-600');
+
+        return `
+          <div onclick="quickExecuteFavorite('${fav.id}')" class="p-4 bg-slate-50 hover:bg-amber-50/80 active:scale-[0.98] border-2 border-slate-200/90 hover:border-amber-400 rounded-2xl flex justify-between items-center transition cursor-pointer shadow-xs">
+            <div class="flex flex-col space-y-0.5">
+              <span class="text-sm font-black text-slate-800">${escapeHtml(fav.note || 'รายการโปรด')}</span>
+              <span class="text-[11px] text-slate-500 font-medium">${escapeHtml(accName)} • [${escapeHtml(catName)}]</span>
+            </div>
+            <div class="flex items-center space-x-3">
+              <span class="text-base font-black ${typeColor}">${fav.type==='income'?'+':(fav.kind==='transfer'?'':'-')}${displayAmount.toLocaleString(undefined, {minimumFractionDigits: 2})}</span>
+              <button onclick="event.stopPropagation(); deleteFavorite('${fav.id}')" class="text-slate-300 hover:text-rose-500 font-bold p-1 text-sm" title="ลบออกจาก Favorite">✕</button>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    async function quickExecuteFavorite(favId) {
+      const fav = favoriteItemsList.find(f => f.id === favId);
+      if (!fav || !currentUser) return;
+
+      const todayStr = getTodayDateString();
+      let payload = {
+        kind: fav.kind || 'transaction',
+        type: fav.type || 'expense',
+        amount: fav.amount || 0,
+        myShare: fav.myShare || fav.amount || 0,
+        friendShare: fav.friendShare || 0,
+        remainingPending: fav.friendShare || 0,
+        totalAmount: fav.totalAmount || 0,
+        teamShare: fav.teamShare || 0,
+        remainingTeamPending: fav.teamShare || 0,
+        isReimburse: !!fav.isReimburse,
+        note: fav.note || '',
+        date: todayStr,
+        accountId: fav.accountId || '',
+        categoryId: fav.categoryId || '',
+        categoryName: fav.categoryName || '',
+        fromAccountId: fav.fromAccountId || '',
+        fromAccountName: fav.fromAccountName || '',
+        toAccountId: fav.toAccountId || '',
+        toAccountName: fav.toAccountName || '',
+        categoriesBreakdown: fav.categoriesBreakdown || [{ categoryId: fav.categoryId || '', categoryName: fav.categoryName || '', amount: fav.amount || 0 }],
+        createdAt: firebase.firestore.FieldValue.serverTimestamp()
+      };
+
+      try {
+        await db.collection('users').doc(currentUser.uid).collection('transactions').add(payload);
+        closeFavoritesModal();
+        triggerSuccessToast(); // 3x duration toast
+      } catch (err) {
+        alert("เกิดข้อผิดพลาด: " + err.message);
+      }
+    }
+
+    async function deleteFavorite(favId) {
+      if (!confirm("ต้องการลบรายการนี้ออกจาก Favorite หรือไม่?")) return;
+      try {
+        await db.collection('users').doc(currentUser.uid).collection('favorites').doc(favId).delete();
+      } catch (err) {
+        alert(err.message);
       }
     }
 
@@ -1342,6 +1511,7 @@
       await db.collection('users').doc(currentUser.uid).collection('settings').doc('preset_notes').set({ notes: presetNotesList });
     }
 
+    // Updated preset notes size to 14px (text-sm)
     function renderEntryPresetNotes() {
       const containers = document.querySelectorAll('.entry-preset-notes-container');
       containers.forEach(container => {
@@ -1350,7 +1520,7 @@
           return;
         }
         container.innerHTML = presetNotesList.map(text => `
-          <button type="button" onclick="appendNoteText('${escapeHtml(text)}')" class="text-slate-500 hover:text-slate-800 font-normal transition hover:scale-105 active:scale-95 inline-block cursor-pointer">
+          <button type="button" onclick="appendNoteText('${escapeHtml(text)}')" class="text-slate-500 hover:text-slate-800 font-normal transition hover:scale-105 active:scale-95 inline-block cursor-pointer text-sm">
             +${escapeHtml(text)}
           </button>
         `).join('');
@@ -1358,7 +1528,7 @@
     }
 
     function appendNoteText(textToAppend) {
-      const activeNoteInput = document.querySelector('#entry-view form:not(.hidden) input[id$="-note"], #edit-tx-modal-form input[id$="-note"]');
+      const activeNoteInput = document.querySelector('#entry-view form:not(.hidden) input[id$="-note"]');
       if (!activeNoteInput) return;
       const currentVal = activeNoteInput.value.trim();
       activeNoteInput.value = !currentVal ? textToAppend : `${currentVal} ${textToAppend}`;
@@ -1384,25 +1554,25 @@
     function activateSubMode(mode) { closeSpecialModal(); switchEntryMode(mode); }
 
     function renderModeButtonsState() {
-  const btns = { 
-    expense: document.getElementById('btn-mode-expense'), 
-    income: document.getElementById('btn-mode-income'), 
-    transfer: document.getElementById('btn-mode-transfer') 
-  };
+      const btns = { 
+        expense: document.getElementById('btn-mode-expense'), 
+        income: document.getElementById('btn-mode-income'), 
+        transfer: document.getElementById('btn-mode-transfer') 
+      };
 
-  Object.keys(btns).forEach(m => {
-    btns[m].className = "py-1.5 text-[10px] sm:text-[11px] font-semibold rounded-lg transition text-slate-600 flex items-center justify-center space-x-1";
-    btns[m].innerHTML = `<span>${m.charAt(0).toUpperCase() + m.slice(1)}</span><span class="text-[9px]">▾</span>`;
-  });
+      Object.keys(btns).forEach(m => {
+        btns[m].className = "py-1.5 text-[10px] sm:text-[11px] font-semibold rounded-lg transition text-slate-600 flex items-center justify-center space-x-1";
+        btns[m].innerHTML = `<span>${m.charAt(0).toUpperCase() + m.slice(1)}</span><span class="text-[9px]">▾</span>`;
+      });
 
-  if (['expense', 'installment', 'reimburse'].includes(currentEntryMode)) {
-    btns.expense.className = "py-1.5 text-[10px] sm:text-[11px] font-semibold rounded-lg transition text-white bg-slate-700 flex items-center justify-center space-x-1";
-  } else if (['income', 'settle', 'split'].includes(currentEntryMode)) {
-    btns.income.className = "py-1.5 text-[10px] sm:text-[11px] font-semibold rounded-lg transition text-white bg-slate-700 flex items-center justify-center space-x-1";
-  } else if (['transfer', 'team-pay'].includes(currentEntryMode)) {
-    btns.transfer.className = "py-1.5 text-[10px] sm:text-[11px] font-semibold rounded-lg transition text-white bg-slate-700 flex items-center justify-center space-x-1";
-  }
-}
+      if (['expense', 'installment', 'reimburse'].includes(currentEntryMode)) {
+        btns.expense.className = "py-1.5 text-[10px] sm:text-[11px] font-semibold rounded-lg transition text-white bg-slate-700 flex items-center justify-center space-x-1";
+      } else if (['income', 'settle', 'split'].includes(currentEntryMode)) {
+        btns.income.className = "py-1.5 text-[10px] sm:text-[11px] font-semibold rounded-lg transition text-white bg-slate-700 flex items-center justify-center space-x-1";
+      } else if (['transfer', 'team-pay'].includes(currentEntryMode)) {
+        btns.transfer.className = "py-1.5 text-[10px] sm:text-[11px] font-semibold rounded-lg transition text-white bg-slate-700 flex items-center justify-center space-x-1";
+      }
+    }
 
     function switchEntryMode(mode) {
       currentEntryMode = mode;
@@ -1852,13 +2022,20 @@
       }
     }
 
-    function startEditingTransaction(id) {
+    function startEditingTransaction(id, fromHistory = false) {
       const t = allTransactions.find(x => x.id === id);
       if (!t) return;
 
       editingTxIdInModal = id;
       editSelectedAccountId = t.accountId || t.fromAccountId || null;
       editSelectedCategoryId = t.categoryId || null;
+
+      // Show star button only when opened from History
+      const starBtn = document.getElementById('btn-save-as-favorite');
+      if (starBtn) {
+        if (fromHistory) starBtn.classList.remove('hidden');
+        else starBtn.classList.add('hidden');
+      }
 
       const isSplit = t.kind === 'split';
       const isReimb = t.kind === 'transaction' && t.isReimburse;
@@ -1928,7 +2105,6 @@
       document.getElementById('edit-tx-note').value = t.note || '';
 
       renderEditModalAccountButtons();
-      renderEntryPresetNotes();
 
       document.getElementById('edit-tx-modal').classList.remove('hidden');
     }
@@ -2332,13 +2508,13 @@
         if(t.kind==='transaction'){
           let b=t.isReimburse ? (t.remainingPending>0?`<span class="text-[9px] bg-slate-200 text-slate-700 px-1 py-0.5 rounded ml-1">รอ ${t.remainingPending.toLocaleString()}</span>`:`<span class="text-[9px] bg-slate-200 text-slate-700 px-1 py-0.5 rounded ml-1">คืนครบ</span>`) : (t.isInstallment?`<span class="text-[9px] bg-slate-200 text-slate-700 px-1 py-0.5 rounded ml-1">ผ่อน (${t.installmentCurrentCount||1}/${t.installmentTotalCount||1})</span>`:''); 
           let breakdownText = t.categoriesBreakdown?.length > 1 ? `<div class="text-[9px] text-slate-400 mt-0.5 font-light">${t.categoriesBreakdown.map(sub => `${sub.categoryName}: ${sub.amount.toLocaleString(undefined, {minimumFractionDigits: 2})}`).join(' • ')}</div>` : '';
-          return `<div onclick="startEditingTransaction('${t.id}')" class="flex justify-between items-center p-2.5 bg-slate-50 border border-slate-200/80 rounded-xl text-xs hover:bg-slate-100 cursor-pointer mb-1"><div class="flex flex-col"><span class="font-medium text-slate-700">${escapeHtml(t.note||'-')} ${b}</span><span class="text-[10px] text-slate-400">${accDisp} • [${t.categoryName}]</span>${breakdownText}</div><div class="flex items-center space-x-2"><span class="font-bold ${t.type==='income'?'text-emerald-600':'text-rose-600'}">${t.type==='income'?'+':'-'}${t.amount.toLocaleString(undefined, {minimumFractionDigits: 2})}</span><button onclick="event.stopPropagation(); deleteTx('${t.id}')" class="text-slate-300 hover:text-rose-500 font-bold px-1">✕</button></div></div>`;
+          return `<div onclick="startEditingTransaction('${t.id}', true)" class="flex justify-between items-center p-2.5 bg-slate-50 border border-slate-200/80 rounded-xl text-xs hover:bg-slate-100 cursor-pointer mb-1"><div class="flex flex-col"><span class="font-medium text-slate-700">${escapeHtml(t.note||'-')} ${b}</span><span class="text-[10px] text-slate-400">${accDisp} • [${t.categoryName}]</span>${breakdownText}</div><div class="flex items-center space-x-2"><span class="font-bold ${t.type==='income'?'text-emerald-600':'text-rose-600'}">${t.type==='income'?'+':'-'}${t.amount.toLocaleString(undefined, {minimumFractionDigits: 2})}</span><button onclick="event.stopPropagation(); deleteTx('${t.id}')" class="text-slate-300 hover:text-rose-500 font-bold px-1">✕</button></div></div>`;
         }
         if(t.kind==='split') {
           const pendingText = t.remainingTeamPending > 0 ? `<span class="text-[9px] bg-slate-200 text-slate-700 px-1 py-0.5 rounded ml-1">ค้างทีม ${t.remainingTeamPending.toLocaleString(undefined, {minimumFractionDigits: 2})}</span>` : `<span class="text-[9px] bg-slate-200 text-slate-700 px-1 py-0.5 rounded ml-1">จ่ายทีมครบ</span>`;
-          return `<div onclick="startEditingTransaction('${t.id}')" class="flex justify-between items-center p-2.5 bg-slate-50 border border-slate-200/80 rounded-xl text-xs hover:bg-slate-100 cursor-pointer mb-1"><div class="flex flex-col"><span class="font-medium text-slate-700">รับแทนทีม (${accDisp}) ${pendingText}</span><span class="text-[10px] text-slate-400">${escapeHtml(t.note||'-')} (ส่วนเรา ${t.myShare.toLocaleString(undefined, {minimumFractionDigits: 2})})</span></div><div class="flex items-center space-x-2"><span class="font-bold text-slate-800">+${t.totalAmount.toLocaleString(undefined, {minimumFractionDigits: 2})}</span><button onclick="event.stopPropagation(); deleteTx('${t.id}')" class="text-slate-300 hover:text-rose-500 font-bold px-1">✕</button></div></div>`;
+          return `<div onclick="startEditingTransaction('${t.id}', true)" class="flex justify-between items-center p-2.5 bg-slate-50 border border-slate-200/80 rounded-xl text-xs hover:bg-slate-100 cursor-pointer mb-1"><div class="flex flex-col"><span class="font-medium text-slate-700">รับแทนทีม (${accDisp}) ${pendingText}</span><span class="text-[10px] text-slate-400">${escapeHtml(t.note||'-')} (ส่วนเรา ${t.myShare.toLocaleString(undefined, {minimumFractionDigits: 2})})</span></div><div class="flex items-center space-x-2"><span class="font-bold text-slate-800">+${t.totalAmount.toLocaleString(undefined, {minimumFractionDigits: 2})}</span><button onclick="event.stopPropagation(); deleteTx('${t.id}')" class="text-slate-300 hover:text-rose-500 font-bold px-1">✕</button></div></div>`;
         }
-        return `<div onclick="startEditingTransaction('${t.id}')" class="flex justify-between items-center p-2.5 border border-slate-200/80 bg-slate-50 rounded-xl text-xs hover:bg-slate-100 cursor-pointer mb-1"><div class="flex flex-col"><span class="font-medium text-slate-700">${t.kind==='transfer'?`โอน: ${t.fromAccountName} ➔ ${t.toAccountName}`:t.kind==='team-pay'?`โอนให้ทีม (${accDisp})`:'รับเงินคืน'}</span><span class="text-[10px] text-slate-400">${escapeHtml(t.note||'-')}</span></div><div class="flex items-center space-x-2"><span class="font-bold text-slate-800">${t.kind==='transfer'||t.kind==='team-pay'?'-'+t.amount.toLocaleString(undefined, {minimumFractionDigits: 2}):'+'+t.amount.toLocaleString(undefined, {minimumFractionDigits: 2})}</span><button onclick="event.stopPropagation(); deleteTx('${t.id}')" class="text-slate-300 hover:text-rose-500 font-bold px-1">✕</button></div></div>`;
+        return `<div onclick="startEditingTransaction('${t.id}', true)" class="flex justify-between items-center p-2.5 border border-slate-200/80 bg-slate-50 rounded-xl text-xs hover:bg-slate-100 cursor-pointer mb-1"><div class="flex flex-col"><span class="font-medium text-slate-700">${t.kind==='transfer'?`โอน: ${t.fromAccountName} ➔ ${t.toAccountName}`:t.kind==='team-pay'?`โอนให้ทีม (${accDisp})`:'รับเงินคืน'}</span><span class="text-[10px] text-slate-400">${escapeHtml(t.note||'-')}</span></div><div class="flex items-center space-x-2"><span class="font-bold text-slate-800">${t.kind==='transfer'||t.kind==='team-pay'?'-'+t.amount.toLocaleString(undefined, {minimumFractionDigits: 2}):'+'+t.amount.toLocaleString(undefined, {minimumFractionDigits: 2})}</span><button onclick="event.stopPropagation(); deleteTx('${t.id}')" class="text-slate-300 hover:text-rose-500 font-bold px-1">✕</button></div></div>`;
       }).join('')).join('');
     }
 
