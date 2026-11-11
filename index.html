@@ -56,19 +56,21 @@
 
     <!-- Header -->
     <header class="bg-slate-800 text-white px-5 safe-padding-top pb-3 shadow-xs relative flex items-center justify-between flex-shrink-0">
-      <button id="open-settings-btn" class="text-slate-300 hover:text-white hover:bg-slate-700/60 p-1.5 rounded-xl transition hidden" title="Setting">
-        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-2.924-1.756 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
-      </button>
+      <div class="flex-1"></div>
 
-      <div class="flex flex-col items-center">
+      <div class="flex flex-col items-center flex-1">
         <div class="flex items-baseline space-x-1">
           <h1 class="text-xl font-black tracking-wider uppercase drop-shadow-xs text-slate-100">จดตังค์</h1>
-          <span class="text-[9px] font-medium text-slate-400 tracking-tight">(v1.46)</span>
+          <span class="text-[9px] font-medium text-slate-400 tracking-tight">(v1.47)</span>
         </div>
         <p class="text-[8px] text-slate-400 tracking-tight font-light">by Phuthai Mananararuk & Gemini</p>
       </div>
 
-      <button id="logout-btn" class="hidden bg-slate-700 hover:bg-slate-600 text-xs text-slate-200 py-1.5 px-3 rounded-xl transition font-medium">ออก</button>
+      <div class="flex-1 flex justify-end">
+        <button id="open-settings-btn" class="text-slate-300 hover:text-white hover:bg-slate-700/60 p-1.5 rounded-xl transition hidden" title="Setting">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-2.924-1.756 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+        </button>
+      </div>
     </header>
 
     <!-- Navigation Tabs -->
@@ -363,7 +365,13 @@
 
       <!-- 4. SETTING VIEW -->
       <section id="setting-view" class="hidden space-y-4 flex-1 overflow-y-auto pr-1">
-        <div class="border-b border-slate-200 pb-2"><h2 class="text-xs font-bold text-slate-600 uppercase">Setting - ตั้งค่าระบบ</h2></div>
+        <div class="border-b border-slate-200 pb-2 flex justify-between items-center">
+          <h2 class="text-xs font-bold text-slate-600 uppercase">Setting - ตั้งค่าระบบ</h2>
+          <!-- ปุ่มออกจากระบบ ย้ายมาไว้แถวแรกสุดของ Setting -->
+          <button type="button" onclick="handleLogout()" class="bg-rose-50 hover:bg-rose-100 text-rose-600 border border-rose-200 text-xs font-semibold py-1.5 px-3 rounded-xl transition">
+            ออกจากระบบ
+          </button>
+        </div>
 
         <div class="space-y-2 border-t border-slate-200 pt-3">
           <div class="flex justify-between items-center">
@@ -886,7 +894,7 @@
     let historyFilterState = { kind: 'all', category: 'all', account: 'all', fromAccount: 'all', toAccount: 'all', startDate: '', endDate: '' };
 
     const views = { login: document.getElementById('login-view'), register: document.getElementById('register-view'), entry: document.getElementById('entry-view'), summary: document.getElementById('summary-view'), history: document.getElementById('history-view'), setting: document.getElementById('setting-view') };
-    const topNavTabs = document.getElementById('top-nav-tabs'), logoutBtn = document.getElementById('logout-btn'), openSettingsBtn = document.getElementById('open-settings-btn'), authStatusBar = document.getElementById('auth-status-bar');
+    const topNavTabs = document.getElementById('top-nav-tabs'), openSettingsBtn = document.getElementById('open-settings-btn'), authStatusBar = document.getElementById('auth-status-bar');
 
     // 3x Long Toast Animation (900ms) for high-driving visibility
     function triggerSuccessToast() {
@@ -926,12 +934,12 @@
     function goToView(vName) {
       closeActiveSwipedCard();
       Object.values(views).forEach(v => v.classList.add('hidden'));
-      logoutBtn.classList.add('hidden'); openSettingsBtn.classList.add('hidden'); topNavTabs.classList.add('hidden');
+      openSettingsBtn.classList.add('hidden'); topNavTabs.classList.add('hidden');
       if (vName === 'login' || vName === 'register') {
         views[vName].classList.remove('hidden');
         authStatusBar.innerText = vName === 'login' ? 'สถานะ: ยังไม่ได้เข้าสู่ระบบ' : 'สถานะ: กำลังสมัครสมาชิก';
       } else {
-        topNavTabs.classList.remove('hidden'); logoutBtn.classList.remove('hidden'); openSettingsBtn.classList.remove('hidden');
+        topNavTabs.classList.remove('hidden'); openSettingsBtn.classList.remove('hidden');
         authStatusBar.innerText = `ผู้ใช้งาน: ${currentUser ? (currentUser.email || currentUser.displayName) : ''}`;
         ['nav-tab-entry','nav-tab-summary','nav-tab-history'].forEach(id => document.getElementById(id).className = "py-2 text-xs font-bold rounded-xl transition text-center text-slate-500 hover:text-slate-800");
         views[vName].classList.remove('hidden');
@@ -958,7 +966,11 @@
       } catch (err) { alert(err.message); }
     });
 
-    logoutBtn.addEventListener('click', async () => { [unsubscribeTx, unsubscribeAcc, unsubscribeCat, unsubscribeInst, unsubscribePresetNotes, unsubscribeSub, unsubscribeFav].forEach(u => u && u()); await auth.signOut(); });
+    async function handleLogout() {
+      [unsubscribeTx, unsubscribeAcc, unsubscribeCat, unsubscribeInst, unsubscribePresetNotes, unsubscribeSub, unsubscribeFav].forEach(u => u && u());
+      await auth.signOut();
+    }
+
     openSettingsBtn.addEventListener('click', () => goToView('setting'));
     auth.onAuthStateChanged(async user => { 
       if (user && (user.providerData.some(p => p.providerId !== 'password') || user.emailVerified)) { 
