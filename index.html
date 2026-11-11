@@ -63,7 +63,7 @@
       <div class="flex flex-col items-center">
         <div class="flex items-baseline space-x-1">
           <h1 class="text-xl font-black tracking-wider uppercase drop-shadow-xs text-slate-100">จดตังค์</h1>
-          <span class="text-[9px] font-medium text-slate-400 tracking-tight">(v1.45)</span>
+          <span class="text-[9px] font-medium text-slate-400 tracking-tight">(v1.46)</span>
         </div>
         <p class="text-[8px] text-slate-400 tracking-tight font-light">by Phuthai Mananararuk & Gemini</p>
       </div>
@@ -304,11 +304,10 @@
           </form>
         </div>
 
-        <!-- Sticky Fixed Bottom 3-Line Favorite Button -->
-        <div class="absolute bottom-2 left-3 right-3 z-20">
-          <button type="button" onclick="openFavoritesModal()" class="w-full h-20 py-4 bg-amber-500 hover:bg-amber-600 active:bg-amber-700 text-amber-950 font-black rounded-2xl text-base shadow-lg transition-all flex items-center justify-center space-x-2 border-2 border-amber-400">
-            <span class="text-2xl">⭐</span>
-            <span class="tracking-wide">รายการโปรดทางด่วน (Favorites)</span>
+        <!-- Sticky Fixed Bottom 3-Line "รายการด่วน" Button (Visible only in Expense, Income, Transfer) -->
+        <div id="sticky-favorite-trigger-container" class="absolute bottom-2 left-3 right-3 z-20">
+          <button type="button" onclick="openFavoritesModal()" class="w-full h-20 py-4 bg-amber-500 hover:bg-amber-600 active:bg-amber-700 text-amber-950 font-black rounded-2xl text-lg shadow-lg transition-all flex items-center justify-center border-2 border-amber-400 tracking-wider">
+            <span>รายการด่วน</span>
           </button>
         </div>
       </section>
@@ -536,8 +535,8 @@
           <p id="edit-tx-modal-subhead" class="text-[10px] text-slate-400">ปรับเปลี่ยนข้อมูลตามรูปแบบรายการ</p>
         </div>
         <div class="flex items-center space-x-2">
-          <!-- Favorite Star Button (Only when opened from History) -->
-          <button type="button" id="btn-save-as-favorite" onclick="saveCurrentEditingAsFavorite()" class="hidden text-amber-500 hover:text-amber-600 font-bold text-xl px-1.5 py-0.5 rounded-lg hover:bg-amber-50 transition" title="บันทึกเป็นรายการโปรดทางด่วน">⭐</button>
+          <!-- 2D Clean Star Button (Only when opened from History) -->
+          <button type="button" id="btn-save-as-favorite" onclick="saveCurrentEditingAsFavorite()" class="hidden text-slate-600 hover:text-slate-900 font-black text-xl px-2 py-0.5 rounded-lg hover:bg-slate-100 transition" title="บันทึกเข้าในรายการด่วน">★</button>
           <button type="button" onclick="closeEditTxModal()" class="text-slate-400 font-bold text-lg px-2">✕</button>
         </div>
       </div>
@@ -644,9 +643,9 @@
     <div class="bg-white rounded-t-3xl sm:rounded-3xl w-full max-w-md p-4 space-y-3 shadow-2xl relative max-h-[80vh] flex flex-col border border-slate-200 safe-padding-bottom">
       <div class="flex justify-between items-center border-b border-slate-200 pb-2 flex-shrink-0">
         <div>
-          <h3 class="text-sm font-bold text-slate-800 uppercase flex items-center space-x-1">
-            <span>⭐</span>
-            <span>รายการโปรดทางด่วน (Favorites)</span>
+          <h3 class="text-sm font-bold text-slate-800 uppercase flex items-center space-x-1.5">
+            <span class="text-slate-700 font-black">★</span>
+            <span>รายการด่วน</span>
           </h3>
           <p class="text-[11px] text-slate-400">แตะรายการที่ต้องการเพื่อบันทึกทันที</p>
         </div>
@@ -654,7 +653,7 @@
       </div>
 
       <div id="favorites-list-container" class="space-y-2 overflow-y-auto p-1 flex-1 min-h-[200px]">
-        <p class="text-center text-xs text-slate-400 py-8">กำลังโหลดรายการโปรด...</p>
+        <p class="text-center text-xs text-slate-400 py-8">กำลังโหลดรายการด่วน...</p>
       </div>
 
       <div class="pt-2 flex-shrink-0 border-t border-slate-200">
@@ -1180,9 +1179,9 @@
 
       try {
         await db.collection('users').doc(currentUser.uid).collection('favorites').add(favData);
-        alert("⭐ บันทึกรายการนี้เข้า Favorite ทางด่วนเรียบร้อยแล้ว!");
+        alert("★ บันทึกเข้า \"รายการด่วน\" เรียบร้อยแล้ว!");
       } catch (err) {
-        alert("เกิดข้อผิดพลาดในการบันทึก Favorite: " + err.message);
+        alert("เกิดข้อผิดพลาดในการบันทึกรายการด่วน: " + err.message);
       }
     }
 
@@ -1200,7 +1199,7 @@
       if (!container) return;
 
       if (!favoriteItemsList.length) {
-        container.innerHTML = `<p class="text-center text-xs text-slate-400 py-10">ยังไม่มีรายการโปรด<br><span class="text-[10px] text-slate-400 font-light">สามารถเพิ่มได้จากหน้าแก้ไขรายการประวัติ (History)</span></p>`;
+        container.innerHTML = `<p class="text-center text-xs text-slate-400 py-10">ยังไม่มีรายการด่วน<br><span class="text-[10px] text-slate-400 font-light">กดบันทึก ★ ได้จากหน้าแก้ไขรายการประวัติ (History)</span></p>`;
         return;
       }
 
@@ -1213,12 +1212,12 @@
         return `
           <div onclick="quickExecuteFavorite('${fav.id}')" class="p-4 bg-slate-50 hover:bg-amber-50/80 active:scale-[0.98] border-2 border-slate-200/90 hover:border-amber-400 rounded-2xl flex justify-between items-center transition cursor-pointer shadow-xs">
             <div class="flex flex-col space-y-0.5">
-              <span class="text-sm font-black text-slate-800">${escapeHtml(fav.note || 'รายการโปรด')}</span>
+              <span class="text-sm font-black text-slate-800">${escapeHtml(fav.note || 'รายการด่วน')}</span>
               <span class="text-[11px] text-slate-500 font-medium">${escapeHtml(accName)} • [${escapeHtml(catName)}]</span>
             </div>
             <div class="flex items-center space-x-3">
               <span class="text-base font-black ${typeColor}">${fav.type==='income'?'+':(fav.kind==='transfer'?'':'-')}${displayAmount.toLocaleString(undefined, {minimumFractionDigits: 2})}</span>
-              <button onclick="event.stopPropagation(); deleteFavorite('${fav.id}')" class="text-slate-300 hover:text-rose-500 font-bold p-1 text-sm" title="ลบออกจาก Favorite">✕</button>
+              <button onclick="event.stopPropagation(); deleteFavorite('${fav.id}')" class="text-slate-300 hover:text-rose-500 font-bold p-1 text-sm" title="ลบออกจากรายการด่วน">✕</button>
             </div>
           </div>
         `;
@@ -1264,7 +1263,7 @@
     }
 
     async function deleteFavorite(favId) {
-      if (!confirm("ต้องการลบรายการนี้ออกจาก Favorite หรือไม่?")) return;
+      if (!confirm("ต้องการลบออกจากรายการด่วนหรือไม่?")) return;
       try {
         await db.collection('users').doc(currentUser.uid).collection('favorites').doc(favId).delete();
       } catch (err) {
@@ -1511,7 +1510,6 @@
       await db.collection('users').doc(currentUser.uid).collection('settings').doc('preset_notes').set({ notes: presetNotesList });
     }
 
-    // Updated preset notes size to 14px (text-sm)
     function renderEntryPresetNotes() {
       const containers = document.querySelectorAll('.entry-preset-notes-container');
       containers.forEach(container => {
@@ -1581,6 +1579,16 @@
 
       const forms = { expense:'tx-form', income:'tx-form', transfer:'transfer-form', settle:'settle-form', split:'split-form', installment:'installment-form', reimburse:'reimburse-form', 'team-pay':'team-pay-form' };
       document.getElementById(forms[mode]).classList.remove('hidden');
+
+      // Toggle Sticky Favorite Button visibility (Visible ONLY in expense, income, transfer)
+      const favBtnContainer = document.getElementById('sticky-favorite-trigger-container');
+      if (favBtnContainer) {
+        if (['expense', 'income', 'transfer'].includes(mode)) {
+          favBtnContainer.classList.remove('hidden');
+        } else {
+          favBtnContainer.classList.add('hidden');
+        }
+      }
 
       if (mode === 'expense') { currentTxType = 'expense'; renderCategoryButtons(); } 
       else if (mode === 'income') { currentTxType = 'income'; renderCategoryButtons(); } 
@@ -2030,7 +2038,7 @@
       editSelectedAccountId = t.accountId || t.fromAccountId || null;
       editSelectedCategoryId = t.categoryId || null;
 
-      // Show star button only when opened from History
+      // Show 2D star button only when opened from History
       const starBtn = document.getElementById('btn-save-as-favorite');
       if (starBtn) {
         if (fromHistory) starBtn.classList.remove('hidden');
