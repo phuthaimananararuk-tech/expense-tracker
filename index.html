@@ -1384,23 +1384,25 @@
     function activateSubMode(mode) { closeSpecialModal(); switchEntryMode(mode); }
 
     function renderModeButtonsState() {
-      const btns = { expense: document.getElementById('btn-mode-expense'), income: document.getElementById('btn-mode-income'), transfer: document.getElementById('btn-mode-transfer') };
-      Object.keys(btns).forEach(m => {
-        btns[m].className = "py-1.5 text-[10px] sm:text-[11px] font-semibold rounded-lg transition text-slate-600";
-        btns[m].innerText = `${m.charAt(0).toUpperCase() + m.slice(1)}...`;
-      });
+  const btns = { 
+    expense: document.getElementById('btn-mode-expense'), 
+    income: document.getElementById('btn-mode-income'), 
+    transfer: document.getElementById('btn-mode-transfer') 
+  };
 
-      if (['expense', 'installment', 'reimburse'].includes(currentEntryMode)) {
-        btns.expense.className = "py-1.5 text-[10px] sm:text-[11px] font-semibold rounded-lg transition text-white shadow-xs bg-slate-700";
-        btns.expense.innerText = "Expense...";
-      } else if (['income', 'settle', 'split'].includes(currentEntryMode)) {
-        btns.income.className = "py-1.5 text-[10px] sm:text-[11px] font-semibold rounded-lg transition text-white shadow-xs bg-slate-700";
-        btns.income.innerText = "Income...";
-      } else if (['transfer', 'team-pay'].includes(currentEntryMode)) {
-        btns.transfer.className = "py-1.5 text-[10px] sm:text-[11px] font-semibold rounded-lg transition text-white shadow-xs bg-slate-700";
-        btns.transfer.innerText = "Transfer...";
-      }
-    }
+  Object.keys(btns).forEach(m => {
+    btns[m].className = "py-1.5 text-[10px] sm:text-[11px] font-semibold rounded-lg transition text-slate-600 flex items-center justify-center space-x-1";
+    btns[m].innerHTML = `<span>${m.charAt(0).toUpperCase() + m.slice(1)}</span><span class="text-[9px]">▾</span>`;
+  });
+
+  if (['expense', 'installment', 'reimburse'].includes(currentEntryMode)) {
+    btns.expense.className = "py-1.5 text-[10px] sm:text-[11px] font-semibold rounded-lg transition text-white bg-slate-700 flex items-center justify-center space-x-1";
+  } else if (['income', 'settle', 'split'].includes(currentEntryMode)) {
+    btns.income.className = "py-1.5 text-[10px] sm:text-[11px] font-semibold rounded-lg transition text-white bg-slate-700 flex items-center justify-center space-x-1";
+  } else if (['transfer', 'team-pay'].includes(currentEntryMode)) {
+    btns.transfer.className = "py-1.5 text-[10px] sm:text-[11px] font-semibold rounded-lg transition text-white bg-slate-700 flex items-center justify-center space-x-1";
+  }
+}
 
     function switchEntryMode(mode) {
       currentEntryMode = mode;
