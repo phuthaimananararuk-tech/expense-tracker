@@ -74,11 +74,11 @@
     </header>
 
     <!-- Navigation Tabs -->
-    <nav id="top-nav-tabs" class="hidden bg-slate-100 p-1.5 border-b border-slate-200 grid grid-cols-3 gap-1 flex-shrink-0">
-      <button id="nav-tab-entry" onclick="goToView('entry')" class="py-2 text-xs font-bold rounded-xl transition text-center shadow-xs bg-white text-slate-800">Entry</button>
-      <button id="nav-tab-summary" onclick="goToView('summary')" class="py-2 text-xs font-bold rounded-xl transition text-center text-slate-500 hover:text-slate-800">Summary</button>
-      <button id="nav-tab-history" onclick="goToView('history')" class="py-2 text-xs font-bold rounded-xl transition text-center text-slate-500 hover:text-slate-800">History</button>
-    </nav>
+    <nav id="top-nav-tabs" class="hidden bg-slate-800 p-1.5 border-b border-slate-700 grid grid-cols-3 gap-1 flex-shrink-0">
+  <button id="nav-tab-entry" onclick="goToView('entry')" class="py-2 text-xs font-bold rounded-xl transition text-center shadow-xs bg-white text-slate-800">Entry</button>
+  <button id="nav-tab-summary" onclick="goToView('summary')" class="py-2 text-xs font-bold rounded-xl transition text-center text-slate-400 hover:text-white">Summary</button>
+  <button id="nav-tab-history" onclick="goToView('history')" class="py-2 text-xs font-bold rounded-xl transition text-center text-slate-400 hover:text-white">History</button>
+</nav>
 
     <main class="p-3 sm:p-4 flex-1 flex flex-col justify-between overflow-hidden min-h-0 relative">
 
@@ -919,11 +919,11 @@
       } else {
         topNavTabs.classList.remove('hidden'); openSettingsBtn.classList.remove('hidden');
         authStatusBar.innerText = `ผู้ใช้งาน: ${currentUser ? (currentUser.email || currentUser.displayName) : ''}`;
-        ['nav-tab-entry','nav-tab-summary','nav-tab-history'].forEach(id => document.getElementById(id).className = "py-2 text-xs font-bold rounded-xl transition text-center text-slate-500 hover:text-slate-800");
-        views[vName].classList.remove('hidden');
-        if (vName === 'entry') document.getElementById('nav-tab-entry').className = "py-2 text-xs font-bold rounded-xl transition text-center shadow-xs bg-white text-slate-800";
-        else if (vName === 'summary') { document.getElementById('nav-tab-summary').className = "py-2 text-xs font-bold rounded-xl transition text-center shadow-xs bg-white text-slate-800"; renderSummaryAnalyticsUI(); }
-        else if (vName === 'history') { document.getElementById('nav-tab-history').className = "py-2 text-xs font-bold rounded-xl transition text-center shadow-xs bg-white text-slate-800"; applyHistoryFilters(); }
+        ['nav-tab-entry','nav-tab-summary','nav-tab-history'].forEach(id => document.getElementById(id).className = "py-2 text-xs font-bold rounded-xl transition text-center text-slate-400 hover:text-white");
+views[vName].classList.remove('hidden');
+if (vName === 'entry') document.getElementById('nav-tab-entry').className = "py-2 text-xs font-bold rounded-xl transition text-center shadow-xs bg-white text-slate-800";
+else if (vName === 'summary') { document.getElementById('nav-tab-summary').className = "py-2 text-xs font-bold rounded-xl transition text-center shadow-xs bg-white text-slate-800"; renderSummaryAnalyticsUI(); }
+else if (vName === 'history') { document.getElementById('nav-tab-history').className = "py-2 text-xs font-bold rounded-xl transition text-center shadow-xs bg-white text-slate-800"; applyHistoryFilters(); }
       }
     }
 
