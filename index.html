@@ -61,7 +61,7 @@
       <div class="flex flex-col items-center flex-1">
         <div class="flex items-baseline space-x-1">
           <h1 class="text-xl font-black tracking-wider uppercase drop-shadow-xs text-slate-100">จดตังค์</h1>
-          <span class="text-[9px] font-medium text-slate-400 tracking-tight">(v1.48)</span>
+          <span class="text-[9px] font-medium text-slate-400 tracking-tight">(v1.49)</span>
         </div>
         <p class="text-[8px] text-slate-400 tracking-tight font-light">by Phuthai Mananararuk & Gemini</p>
       </div>
@@ -103,8 +103,8 @@
       </section>
 
       <!-- 1. ENTRY VIEW -->
-      <section id="entry-view" class="hidden space-y-2 flex-1 flex flex-col justify-between overflow-hidden pb-24">
-        <div class="space-y-2.5 overflow-y-auto pr-1 flex-1">
+      <section id="entry-view" class="hidden space-y-2 flex-1 flex flex-col justify-between overflow-hidden pb-1">
+        <div id="entry-scroll-container" class="space-y-2.5 overflow-y-auto pr-1 flex-1 pb-24">
 
           <!-- Mode Selector Dropdown Buttons -->
           <div id="mode-buttons-container" class="grid grid-cols-3 gap-1 bg-slate-200/80 p-1 rounded-xl text-center">
@@ -1600,13 +1600,21 @@
       const forms = { expense:'tx-form', income:'tx-form', transfer:'transfer-form', settle:'settle-form', split:'split-form', installment:'installment-form', reimburse:'reimburse-form', 'team-pay':'team-pay-form' };
       document.getElementById(forms[mode]).classList.remove('hidden');
 
-      // Toggle Sticky Favorite Button visibility (Visible ONLY in expense, income, transfer)
+      // Toggle Sticky Favorite Button & Adjust Dynamic Scroll Padding
       const favBtnContainer = document.getElementById('sticky-favorite-trigger-container');
-      if (favBtnContainer) {
-        if (['expense', 'income', 'transfer'].includes(mode)) {
-          favBtnContainer.classList.remove('hidden');
-        } else {
-          favBtnContainer.classList.add('hidden');
+      const scrollContainer = document.getElementById('entry-scroll-container');
+
+      if (['expense', 'income', 'transfer'].includes(mode)) {
+        if (favBtnContainer) favBtnContainer.classList.remove('hidden');
+        if (scrollContainer) {
+          scrollContainer.classList.remove('pb-3');
+          scrollContainer.classList.add('pb-24');
+        }
+      } else {
+        if (favBtnContainer) favBtnContainer.classList.add('hidden');
+        if (scrollContainer) {
+          scrollContainer.classList.remove('pb-24');
+          scrollContainer.classList.add('pb-3');
         }
       }
 
