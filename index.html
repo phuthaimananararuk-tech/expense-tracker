@@ -42,7 +42,7 @@
       85% { opacity: 1; transform: scale(1); }
       100% { opacity: 0; transform: scale(0.95); }
     }
-    .animate-toast-check-long { animation: toastFadeLong 0.9s ease-in-out forwards; }
+    .animate-toast-check-long { animation: toastFadeLong 0.5s ease-in-out forwards; }
     .swipe-item-content { transition: transform 0.2s ease-out; }
   </style>
 
@@ -878,7 +878,7 @@
     function triggerSuccessToast() {
       const t = document.getElementById('toast-check-overlay');
       t.classList.remove('hidden'); 
-      setTimeout(() => t.classList.add('hidden'), 900);
+      setTimeout(() => t.classList.add('hidden'), 500);
     }
 
     function openCustomKeypad(id) { activeKeypadFieldId = id; const el = document.getElementById(id); document.getElementById('keypad-live-display').innerText = el.value || '0'; document.getElementById('custom-keypad-overlay').classList.remove('hidden'); }
