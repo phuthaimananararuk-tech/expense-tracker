@@ -61,7 +61,7 @@
       <div class="flex flex-col items-center flex-1">
         <div class="flex items-baseline space-x-1">
           <h1 class="text-xl font-black tracking-wider uppercase drop-shadow-xs text-slate-100">จดตังค์</h1>
-          <span class="text-[9px] font-medium text-slate-400 tracking-tight">(v1.51)</span>
+          <span class="text-[9px] font-medium text-slate-400 tracking-tight">(v1.52)</span>
         </div>
         <p class="text-[8px] text-slate-400 tracking-tight font-light">by Phuthai Mananararuk</p>
       </div>
@@ -75,10 +75,10 @@
 
     <!-- Navigation Tabs -->
     <nav id="top-nav-tabs" class="hidden bg-slate-800 p-1.5 border-b border-slate-700 grid grid-cols-3 gap-1 flex-shrink-0">
-  <button id="nav-tab-entry" onclick="goToView('entry')" class="py-2 text-xs font-bold rounded-xl transition text-center shadow-xs bg-white text-slate-800">Entry</button>
-  <button id="nav-tab-summary" onclick="goToView('summary')" class="py-2 text-xs font-bold rounded-xl transition text-center text-slate-400 hover:text-white">Summary</button>
-  <button id="nav-tab-history" onclick="goToView('history')" class="py-2 text-xs font-bold rounded-xl transition text-center text-slate-400 hover:text-white">History</button>
-</nav>
+      <button id="nav-tab-entry" onclick="goToView('entry')" class="py-2 text-xs font-bold rounded-xl transition text-center shadow-xs bg-white text-slate-800">Entry</button>
+      <button id="nav-tab-summary" onclick="goToView('summary')" class="py-2 text-xs font-bold rounded-xl transition text-center text-slate-400 hover:text-white">Summary</button>
+      <button id="nav-tab-history" onclick="goToView('history')" class="py-2 text-xs font-bold rounded-xl transition text-center text-slate-400 hover:text-white">History</button>
+    </nav>
 
     <main class="p-3 sm:p-4 flex-1 flex flex-col justify-between overflow-hidden min-h-0 relative">
 
@@ -122,7 +122,7 @@
             </button>
           </div>
 
-          <!-- Normal Form -->
+          <!-- Normal Form (Expense & Income) -->
           <form id="tx-form" class="bg-slate-50 p-2.5 sm:p-3 rounded-2xl border border-slate-200/80 space-y-2">
             <div>
               <label class="block text-[11px] font-medium text-slate-400 mb-1">เลือกบัญชี</label>
@@ -360,7 +360,6 @@
       <section id="setting-view" class="hidden space-y-4 flex-1 overflow-y-auto pr-1">
         <div class="border-b border-slate-200 pb-2 flex justify-between items-center">
           <h2 class="text-xs font-bold text-slate-600 uppercase">Setting - ตั้งค่าระบบ</h2>
-          <!-- ปุ่มออกจากระบบ ย้ายมาไว้แถวแรกสุดของ Setting -->
           <button type="button" onclick="handleLogout()" class="bg-rose-50 hover:bg-rose-100 text-rose-600 border border-rose-200 text-xs font-semibold py-1.5 px-3 rounded-xl transition">
             ออกจากระบบ
           </button>
@@ -419,6 +418,63 @@
 
     <!-- Auth Status Bar -->
     <footer id="auth-status-bar" class="bg-slate-100 p-2 safe-padding-bottom text-center text-[10px] text-slate-400 border-t border-slate-200 flex-shrink-0">สถานะ: ยังไม่ได้เข้าสู่ระบบ</footer>
+  </div>
+
+  <!-- =========================================================================
+       POP-UP 1: MULTI-CATEGORY SELECTION MODAL (เลือกหมวดหมู่ตั้งแต่ 2 รายการขึ้นไป)
+       ========================================================================= -->
+  <div id="multi-cat-select-modal" class="hidden fixed inset-0 bg-slate-900/50 backdrop-blur-xs flex items-end sm:items-center justify-center p-0 sm:p-4 z-50">
+    <div class="bg-white rounded-t-3xl sm:rounded-3xl w-full max-w-sm p-4 space-y-3 shadow-2xl relative max-h-[80vh] flex flex-col border border-slate-200 safe-padding-bottom">
+      <div class="flex justify-between items-center border-b border-slate-200 pb-2 flex-shrink-0">
+        <div>
+          <h3 class="text-xs font-bold text-slate-700 uppercase">เลือกหลายหมวดหมู่</h3>
+          <p class="text-[10px] text-slate-400">แตะเลือกหมวดหมู่ที่ต้องการ (อย่างน้อย 2 หมวดหมู่)</p>
+        </div>
+        <span id="multi-cat-selected-badge" class="text-[10px] font-bold bg-slate-100 text-slate-700 px-2.5 py-1 rounded-full border border-slate-200">เลือกแล้ว 0</span>
+      </div>
+
+      <div id="multi-cat-grid-container" class="grid grid-cols-2 gap-2 overflow-y-auto p-1 flex-1"></div>
+
+      <div class="pt-2 flex space-x-2 border-t border-slate-200 flex-shrink-0">
+        <button type="button" onclick="confirmMultiCatSelection()" class="w-4/5 bg-slate-700 hover:bg-slate-800 text-white py-2.5 rounded-xl text-xs font-bold transition shadow-xs">ตกลง / ปิด</button>
+        <button type="button" onclick="clearMultiCatSelection()" class="w-1/5 bg-slate-100 hover:bg-slate-200 text-slate-600 py-2.5 rounded-xl text-xs font-semibold">ล้าง</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- =========================================================================
+       POP-UP 2: MULTI-CATEGORY AMOUNT BREAKDOWN MODAL (กรอกแจกแจงยอดเงินตอนบันทึก)
+       ========================================================================= -->
+  <div id="multi-cat-split-modal" class="hidden fixed inset-0 bg-slate-900/50 backdrop-blur-xs flex items-end sm:items-center justify-center p-0 sm:p-4 z-50">
+    <div class="bg-white rounded-t-3xl sm:rounded-3xl w-full max-w-sm p-4 space-y-3 shadow-2xl relative max-h-[85vh] flex flex-col border border-slate-200 safe-padding-bottom">
+      <div class="flex justify-between items-center border-b border-slate-200 pb-2 flex-shrink-0">
+        <div>
+          <h3 class="text-xs font-bold text-slate-700 uppercase">แจกแจงยอดเงินแต่ละหมวดหมู่</h3>
+          <p class="text-[10px] text-slate-400">ระบุยอดเงินย่อยให้ครบตามยอดรวมบิล</p>
+        </div>
+        <button type="button" onclick="closeMultiCatSplitModal()" class="text-slate-400 font-bold text-lg px-2">✕</button>
+      </div>
+
+      <!-- Summary Allocation Status Box -->
+      <div class="bg-slate-50 p-2.5 rounded-2xl border border-slate-200 space-y-1 flex-shrink-0">
+        <div class="flex justify-between items-center text-xs">
+          <span class="text-slate-500 font-medium">ยอดเงินรวมทั้งหมด:</span>
+          <b id="mcs-target-total" class="text-slate-800 font-black text-sm">0.00</b>
+        </div>
+        <div class="flex justify-between items-center text-xs pt-1 border-t border-slate-200/80">
+          <span class="text-slate-500 font-medium">ยอดคงเหลือที่ต้องจัดสรร:</span>
+          <b id="mcs-remaining-total" class="text-amber-600 font-black text-sm">0.00</b>
+        </div>
+      </div>
+
+      <!-- Breakdown Inputs List -->
+      <div id="multi-cat-split-inputs-container" class="space-y-2 overflow-y-auto pr-1 flex-1"></div>
+
+      <div class="pt-2 flex space-x-2 border-t border-slate-200 flex-shrink-0">
+        <button type="button" id="btn-confirm-multi-cat-save" onclick="confirmSaveMultiCategoryTx()" class="w-4/5 bg-slate-700 hover:bg-slate-800 text-white py-2.5 rounded-xl text-xs font-bold transition shadow-xs">บันทึก</button>
+        <button type="button" onclick="closeMultiCatSplitModal()" class="w-1/5 bg-slate-100 hover:bg-slate-200 text-slate-600 py-2.5 rounded-xl text-xs font-semibold">ยกเลิก</button>
+      </div>
+    </div>
   </div>
 
   <!-- Subscription Edit / Add Modal -->
@@ -553,6 +609,19 @@
           <div id="edit-category-buttons-container"></div>
         </div>
 
+        <!-- Multi-Category Edit Breakdown Section -->
+        <div id="edit-multi-cat-fields" class="hidden space-y-2 bg-slate-50 p-2.5 rounded-2xl border border-slate-200">
+          <div class="flex justify-between items-center">
+            <label class="block text-[11px] font-bold text-slate-600">รายการหลายหมวดหมู่</label>
+            <button type="button" onclick="openEditMultiCatSelector()" class="text-[10px] bg-white hover:bg-slate-100 text-slate-700 font-semibold px-2 py-0.5 rounded-lg border border-slate-300 transition">+ ปรับเปลี่ยนหมวดหมู่</button>
+          </div>
+          <div id="edit-multi-cat-list-container" class="space-y-1.5"></div>
+          <div class="bg-white p-2 rounded-xl border border-slate-200 flex justify-between items-center text-xs">
+            <span class="text-slate-500">ยอดรวมทั้งหมด:</span>
+            <b id="edit-multi-cat-total-lbl" class="text-slate-800 text-sm">0.00</b>
+          </div>
+        </div>
+
         <div id="edit-inst-fields" class="hidden space-y-2 bg-slate-50 p-2.5 rounded-2xl border border-slate-200">
           <div class="grid grid-cols-2 gap-2">
             <div>
@@ -639,12 +708,10 @@
     </div>
   </div>
 
-  <!-- FAVORITES LIST POP-UP (3/4 HEIGHT SCREEN, NO HEADER, EQUAL DYNAMIC SHARED RATIOS) -->
+  <!-- FAVORITES LIST POP-UP -->
   <div id="favorites-modal" class="hidden fixed inset-0 bg-slate-900/50 backdrop-blur-xs flex items-center justify-center p-3 sm:p-4 z-50">
     <div class="bg-white rounded-3xl w-full max-w-md h-[75vh] p-3 shadow-2xl relative flex flex-col border border-slate-200 overflow-hidden">
-      <div id="favorites-list-container" class="w-full h-full">
-        <!-- Rendered dynamically with grid-rows-N -->
-      </div>
+      <div id="favorites-list-container" class="w-full h-full"></div>
     </div>
   </div>
 
@@ -764,7 +831,7 @@
     </div>
   </div>
 
-  <!-- Toast Checkmark 3x Long Duration (900ms) -->
+  <!-- Toast Checkmark -->
   <div id="toast-check-overlay" class="hidden fixed inset-0 bg-slate-900/30 flex items-center justify-center z-50 pointer-events-none">
     <div class="bg-slate-800 text-white p-5 rounded-full shadow-2xl flex items-center justify-center animate-toast-check-long">
       <svg class="w-16 h-16 stroke-current" fill="none" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3.5" d="M5 13l4 4L19 7" /></svg>
@@ -799,8 +866,8 @@
     </div>
   </div>
 
-  <!-- Keypad Overlay -->
-  <div id="custom-keypad-overlay" class="hidden fixed inset-0 bg-slate-900/30 flex items-end justify-center z-50">
+  <!-- Keypad Overlay (z-[60] เพื่อให้อยู่เหนือ Pop-up แจกแจงยอดเงิน) -->
+  <div id="custom-keypad-overlay" class="hidden fixed inset-0 bg-slate-900/30 flex items-end justify-center z-[60]">
     <div class="bg-white w-full max-w-md rounded-t-3xl p-4 shadow-2xl border-t border-slate-200 space-y-3 safe-padding-bottom">
       <div class="flex justify-between items-center border-b border-slate-200 pb-2"><span class="text-xs font-bold text-slate-400 uppercase">คีย์บอร์ดคำนวณ</span><button type="button" onclick="closeCustomKeypad()" class="text-slate-400 font-bold px-2 text-sm">✕ ปิด</button></div>
       <div id="keypad-live-display" class="bg-slate-50 border border-slate-200 rounded-2xl px-3 py-2 text-right text-xl font-bold text-slate-800 tracking-wider overflow-x-auto min-h-[44px] flex items-center justify-end">0</div>
@@ -835,8 +902,13 @@
 
     let activeFilledSubId = null;
     let editingTxIdInModal = null, editSelectedAccountId = null, editSelectedCategoryId = null;
+    let editMultiCatBreakdown = []; // เก็บข้อมูลหลายหมวดหมู่ตอนกำลังแก้ไขใน History
 
-    let selectedAccountId = null, selectedCategoryId = null;  
+    let selectedAccountId = null, selectedCategoryId = null;
+    let selectedMultiCatIds = []; // เก็บ ID หมวดหมู่ที่เลือกในโหมด "เลือกหลายหมวดหมู่"
+    let multiCatSelectContext = 'entry'; // 'entry' หรือ 'edit'
+    let tempMultiCatSelectIds = []; // เก็บค่าชั่วคราวขณะเปิด Pop-up เลือกหมวดหมู่
+
     let selectedSettleAccountId = null, selectedSplitAccountId = null, selectedSplitCategoryId = null;
     let selectedInstAccountId = null, selectedInstCategoryId = null, selectedReimbAccountId = null, selectedReimbCategoryId = null, selectedTeamPayAccountId = null;
     let selectedSubAccountId = null, selectedSubCategoryId = null;
@@ -874,7 +946,6 @@
     const views = { login: document.getElementById('login-view'), register: document.getElementById('register-view'), entry: document.getElementById('entry-view'), summary: document.getElementById('summary-view'), history: document.getElementById('history-view'), setting: document.getElementById('setting-view') };
     const topNavTabs = document.getElementById('top-nav-tabs'), openSettingsBtn = document.getElementById('open-settings-btn'), authStatusBar = document.getElementById('auth-status-bar');
 
-    // 3x Long Toast Animation (900ms) for high-driving visibility
     function triggerSuccessToast() {
       const t = document.getElementById('toast-check-overlay');
       t.classList.remove('hidden'); 
@@ -920,10 +991,10 @@
         topNavTabs.classList.remove('hidden'); openSettingsBtn.classList.remove('hidden');
         authStatusBar.innerText = `ผู้ใช้งาน: ${currentUser ? (currentUser.email || currentUser.displayName) : ''}`;
         ['nav-tab-entry','nav-tab-summary','nav-tab-history'].forEach(id => document.getElementById(id).className = "py-2 text-xs font-bold rounded-xl transition text-center text-slate-400 hover:text-white");
-views[vName].classList.remove('hidden');
-if (vName === 'entry') document.getElementById('nav-tab-entry').className = "py-2 text-xs font-bold rounded-xl transition text-center shadow-xs bg-white text-slate-800";
-else if (vName === 'summary') { document.getElementById('nav-tab-summary').className = "py-2 text-xs font-bold rounded-xl transition text-center shadow-xs bg-white text-slate-800"; renderSummaryAnalyticsUI(); }
-else if (vName === 'history') { document.getElementById('nav-tab-history').className = "py-2 text-xs font-bold rounded-xl transition text-center shadow-xs bg-white text-slate-800"; applyHistoryFilters(); }
+        views[vName].classList.remove('hidden');
+        if (vName === 'entry') document.getElementById('nav-tab-entry').className = "py-2 text-xs font-bold rounded-xl transition text-center shadow-xs bg-white text-slate-800";
+        else if (vName === 'summary') { document.getElementById('nav-tab-summary').className = "py-2 text-xs font-bold rounded-xl transition text-center shadow-xs bg-white text-slate-800"; renderSummaryAnalyticsUI(); }
+        else if (vName === 'history') { document.getElementById('nav-tab-history').className = "py-2 text-xs font-bold rounded-xl transition text-center shadow-xs bg-white text-slate-800"; applyHistoryFilters(); }
       }
     }
 
@@ -1046,6 +1117,7 @@ else if (vName === 'history') { document.getElementById('nav-tab-history').class
         }); 
 
         if (selectedCategoryId && !categoriesList.some(c => c.id === selectedCategoryId)) selectedCategoryId = null;
+        selectedMultiCatIds = selectedMultiCatIds.filter(id => categoriesList.some(c => c.id === id));
         if (selectedSplitCategoryId && !categoriesList.some(c => c.id === selectedSplitCategoryId)) selectedSplitCategoryId = null;
         if (selectedInstCategoryId && !categoriesList.some(c => c.id === selectedInstCategoryId)) selectedInstCategoryId = null;
         if (selectedReimbCategoryId && !categoriesList.some(c => c.id === selectedReimbCategoryId)) selectedReimbCategoryId = null;
@@ -1068,6 +1140,7 @@ else if (vName === 'history') { document.getElementById('nav-tab-history').class
       if (targetForm === 'normal') {
         selectedAccountId = null;
         selectedCategoryId = null;
+        selectedMultiCatIds = [];
         activeFilledSubId = null;
         document.getElementById('tx-amount').value = '';
         document.getElementById('tx-note').value = '';
@@ -1130,6 +1203,219 @@ else if (vName === 'history') { document.getElementById('nav-tab-history').class
       }
     }
 
+    /* =========================================================================
+       MULTI-CATEGORY SELECTION & SPLIT BREAKDOWN LOGIC
+       ========================================================================= */
+    function openMultiCatSelectModal(context = 'entry') {
+      multiCatSelectContext = context;
+      if (context === 'entry') {
+        tempMultiCatSelectIds = [...selectedMultiCatIds];
+      } else {
+        tempMultiCatSelectIds = editMultiCatBreakdown.map(item => item.categoryId);
+      }
+      renderMultiCatSelectGrid();
+      document.getElementById('multi-cat-select-modal').classList.remove('hidden');
+    }
+
+    function renderMultiCatSelectGrid() {
+      const targetType = multiCatSelectContext === 'entry' 
+        ? currentTxType 
+        : (allTransactions.find(x => x.id === editingTxIdInModal)?.type || 'expense');
+      
+      const typeCats = categoriesList.filter(c => c.type === targetType);
+      const container = document.getElementById('multi-cat-grid-container');
+      const badge = document.getElementById('multi-cat-selected-badge');
+
+      badge.innerText = `เลือกแล้ว ${tempMultiCatSelectIds.length}`;
+
+      container.innerHTML = typeCats.map(cat => {
+        const isSel = tempMultiCatSelectIds.includes(cat.id);
+        const theme = CATEGORY_COLOR_THEMES[cat.colorTheme] || (targetType === 'expense' ? CATEGORY_COLOR_THEMES.rose : CATEGORY_COLOR_THEMES.emerald);
+        const styleClass = isSel ? theme.active : theme.inactive;
+
+        return `
+          <button type="button" onclick="toggleTempMultiCat('${cat.id}')" class="p-2.5 rounded-2xl text-xs font-semibold border text-left transition flex items-center justify-between ${styleClass}">
+            <span class="truncate font-bold">${escapeHtml(cat.name)}</span>
+            ${isSel ? '<span class="font-black ml-1">✓</span>' : ''}
+          </button>
+        `;
+      }).join('');
+    }
+
+    function toggleTempMultiCat(catId) {
+      const idx = tempMultiCatSelectIds.indexOf(catId);
+      if (idx > -1) tempMultiCatSelectIds.splice(idx, 1);
+      else tempMultiCatSelectIds.push(catId);
+      renderMultiCatSelectGrid();
+    }
+
+    function clearMultiCatSelection() {
+      tempMultiCatSelectIds = [];
+      renderMultiCatSelectGrid();
+    }
+
+    function confirmMultiCatSelection() {
+      if (tempMultiCatSelectIds.length > 0 && tempMultiCatSelectIds.length < 2) {
+        return alert("กรุณาเลือกอย่างน้อย 2 หมวดหมู่ (หรือกด 'ล้าง' เพื่อยกเลิกการเลือกหลายหมวดหมู่)");
+      }
+
+      if (multiCatSelectContext === 'entry') {
+        selectedMultiCatIds = [...tempMultiCatSelectIds];
+        if (selectedMultiCatIds.length >= 2) {
+          selectedCategoryId = null; // ยกเลิกการเลือกหมวดหมู่เดี่ยว
+        }
+        renderCategoryButtons();
+      } else {
+        if (tempMultiCatSelectIds.length < 2) {
+          return alert("รายการหลายหมวดหมู่ต้องมีอย่างน้อย 2 หมวดหมู่");
+        }
+        // อัปเดตรายการในหน้า Edit โดยรักษาตัวเลขเดิมของหมวดหมู่ที่ยังอยู่
+        const oldMap = {};
+        editMultiCatBreakdown.forEach(item => { oldMap[item.categoryId] = item.amount; });
+        
+        editMultiCatBreakdown = tempMultiCatSelectIds.map(catId => {
+          const catObj = categoriesList.find(c => c.id === catId);
+          return {
+            categoryId: catId,
+            categoryName: catObj ? catObj.name : 'ทั่วไป',
+            amount: oldMap[catId] || 0
+          };
+        });
+        renderEditMultiCatList();
+      }
+
+      document.getElementById('multi-cat-select-modal').classList.add('hidden');
+    }
+
+    /* POP-UP 2: แจกแจงยอดเงินตอนบันทึก */
+    function openMultiCatSplitModal(totalTargetAmount) {
+      document.getElementById('mcs-target-total').innerText = totalTargetAmount.toLocaleString(undefined, { minimumFractionDigits: 2 });
+      const container = document.getElementById('multi-cat-split-inputs-container');
+
+      container.innerHTML = selectedMultiCatIds.map((catId, idx) => {
+        const cat = categoriesList.find(c => c.id === catId);
+        const theme = CATEGORY_COLOR_THEMES[cat?.colorTheme] || (currentTxType === 'expense' ? CATEGORY_COLOR_THEMES.rose : CATEGORY_COLOR_THEMES.emerald);
+        const inputId = `mcs-amount-input-${idx}`;
+
+        return `
+          <div class="flex items-center justify-between bg-slate-50 p-2.5 rounded-2xl border border-slate-200/80 space-x-2">
+            <div class="flex items-center space-x-2 min-w-0 flex-1">
+              <span class="w-3 h-3 rounded-full flex-shrink-0 ${theme.bgClass}"></span>
+              <span class="text-xs font-bold text-slate-700 truncate">${escapeHtml(cat?.name || 'หมวดหมู่')}</span>
+            </div>
+            <div class="w-32 flex-shrink-0">
+              <input type="text" id="${inputId}" data-cat-id="${catId}" readonly onclick="openCustomKeypad('${inputId}')" oninput="updateMultiCatSplitMath()" placeholder="0.00" class="mcs-split-field w-full px-2.5 py-1.5 text-xs border border-slate-300 rounded-xl bg-white cursor-pointer text-right font-bold text-slate-800">
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      updateMultiCatSplitMath();
+      document.getElementById('multi-cat-split-modal').classList.remove('hidden');
+    }
+
+    function closeMultiCatSplitModal() {
+      document.getElementById('multi-cat-split-modal').classList.add('hidden');
+    }
+
+    function updateMultiCatSplitMath() {
+      const targetTotal = parseFloat(document.getElementById('tx-amount').value) || 0;
+      const inputs = document.querySelectorAll('.mcs-split-field');
+      let allocated = 0;
+
+      inputs.forEach(inp => {
+        allocated += (parseFloat(inp.value) || 0);
+      });
+
+      const remaining = Math.round((targetTotal - allocated) * 100) / 100;
+      const remLbl = document.getElementById('mcs-remaining-total');
+
+      if (Math.abs(remaining) < 0.01) {
+        remLbl.innerText = "0.00 (ครบถ้วน ✓)";
+        remLbl.className = "text-emerald-600 font-black text-sm";
+      } else if (remaining > 0) {
+        remLbl.innerText = remaining.toLocaleString(undefined, { minimumFractionDigits: 2 });
+        remLbl.className = "text-amber-600 font-black text-sm";
+      } else {
+        remLbl.innerText = `เกินยอดรวม ${Math.abs(remaining).toLocaleString(undefined, { minimumFractionDigits: 2 })}`;
+        remLbl.className = "text-rose-600 font-black text-sm";
+      }
+    }
+
+    async function confirmSaveMultiCategoryTx() {
+      const btn = document.getElementById('btn-confirm-multi-cat-save');
+      btn.disabled = true;
+
+      const targetTotal = parseFloat(document.getElementById('tx-amount').value) || 0;
+      const n = document.getElementById('tx-note').value.trim();
+      const d = document.getElementById('tx-date').value;
+      const inputs = document.querySelectorAll('.mcs-split-field');
+
+      let breakdown = [];
+      let sumCheck = 0;
+
+      for (const inp of inputs) {
+        const catId = inp.getAttribute('data-cat-id');
+        const val = parseFloat(inp.value) || 0;
+        if (val <= 0) {
+          btn.disabled = false;
+          return alert("กรุณากรอกจำนวนเงินให้ครบทุกหมวดหมู่ที่เลือก (ต้องมากกว่า 0)");
+        }
+        const catObj = categoriesList.find(c => c.id === catId);
+        breakdown.push({
+          categoryId: catId,
+          categoryName: catObj ? catObj.name : 'ทั่วไป',
+          amount: val
+        });
+        sumCheck += val;
+      }
+
+      sumCheck = Math.round(sumCheck * 100) / 100;
+      if (Math.abs(sumCheck - targetTotal) >= 0.01) {
+        btn.disabled = false;
+        return alert(`ผลรวมของแต่ละหมวดหมู่ (${sumCheck.toLocaleString()}) ไม่ตรงกับยอดเงินรวม (${targetTotal.toLocaleString()})`);
+      }
+
+      const summaryCatName = breakdown.map(b => b.categoryName).join(', ');
+
+      try {
+        await saveTransactionToDB({
+          kind: 'transaction',
+          type: currentTxType,
+          amount: targetTotal,
+          myShare: targetTotal,
+          friendShare: 0,
+          remainingPending: 0,
+          isReimburse: false,
+          isDeposit: false,
+          isMultiCategory: true,
+          note: n,
+          date: d,
+          accountId: selectedAccountId,
+          categoryId: breakdown[0].categoryId,
+          categoryName: summaryCatName,
+          categoriesBreakdown: breakdown
+        });
+
+        if (activeFilledSubId) {
+          const now = new Date();
+          const currentMonthKey = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
+          await db.collection('users').doc(currentUser.uid).collection('subscriptions').doc(activeFilledSubId).update({
+            lastPaidMonth: currentMonthKey
+          });
+          activeFilledSubId = null;
+        }
+
+        closeMultiCatSplitModal();
+        triggerSuccessToast();
+        resetForm('normal');
+      } catch (err) {
+        alert(err.message);
+      } finally {
+        btn.disabled = false;
+      }
+    }
+
     /* REALTIME FAVORITES LOGIC (COPY SNAPSHOT) */
     function loadFavoritesRealtime(uid) {
       if (unsubscribeFav) unsubscribeFav();
@@ -1145,25 +1431,31 @@ else if (vName === 'history') { document.getElementById('nav-tab-history').class
       const t = allTransactions.find(x => x.id === editingTxIdInModal);
       if (!t) return;
 
+      const isMulti = !!(t.isMultiCategory && editMultiCatBreakdown.length >= 2);
+      const calcTotal = isMulti 
+        ? editMultiCatBreakdown.reduce((s, item) => s + (parseFloat(item.amount) || 0), 0)
+        : (parseFloat(document.getElementById('edit-tx-amount')?.value) || t.amount || t.totalAmount || 0);
+
       const favData = {
         kind: t.kind || 'transaction',
         type: t.type || 'expense',
-        amount: parseFloat(document.getElementById('edit-tx-amount')?.value) || t.amount || t.totalAmount || 0,
-        myShare: t.myShare || 0,
+        amount: calcTotal,
+        myShare: isMulti ? calcTotal : (t.myShare || 0),
         friendShare: t.friendShare || 0,
         totalAmount: t.totalAmount || 0,
         teamShare: t.teamShare || 0,
         isReimburse: !!t.isReimburse,
+        isMultiCategory: isMulti,
         note: document.getElementById('edit-tx-note')?.value.trim() || t.note || '',
         accountId: editSelectedAccountId || t.accountId || t.fromAccountId || '',
         accountName: accountsList.find(a => a.id === (editSelectedAccountId || t.accountId))?.name || '',
-        categoryId: editSelectedCategoryId || t.categoryId || '',
-        categoryName: categoriesList.find(c => c.id === (editSelectedCategoryId || t.categoryId))?.name || t.categoryName || '',
+        categoryId: isMulti ? editMultiCatBreakdown[0].categoryId : (editSelectedCategoryId || t.categoryId || ''),
+        categoryName: isMulti ? editMultiCatBreakdown.map(b => b.categoryName).join(', ') : (categoriesList.find(c => c.id === (editSelectedCategoryId || t.categoryId))?.name || t.categoryName || ''),
         fromAccountId: t.fromAccountId || '',
         fromAccountName: t.fromAccountName || '',
         toAccountId: t.toAccountId || '',
         toAccountName: t.toAccountName || '',
-        categoriesBreakdown: t.categoriesBreakdown || [],
+        categoriesBreakdown: isMulti ? editMultiCatBreakdown : (t.categoriesBreakdown || []),
         createdAt: firebase.firestore.FieldValue.serverTimestamp()
       };
 
@@ -1184,7 +1476,6 @@ else if (vName === 'history') { document.getElementById('nav-tab-history').class
       document.getElementById('favorites-modal').classList.add('hidden');
     }
 
-    /* RENDER POP-UP WITH DYNAMIC EQUAL GRID ROWS (1/N RATIO EACH) */
     function renderFavoritesModalList() {
       const container = document.getElementById('favorites-list-container');
       if (!container) return;
@@ -1205,7 +1496,7 @@ else if (vName === 'history') { document.getElementById('nav-tab-history').class
         return;
       }
 
-      const gridRowsCount = itemCount + 1; // Items + Close Button
+      const gridRowsCount = itemCount + 1;
       container.className = `w-full h-full grid grid-rows-${gridRowsCount} gap-2 p-1`;
 
       let html = favoriteItemsList.map(fav => {
@@ -1253,6 +1544,7 @@ else if (vName === 'history') { document.getElementById('nav-tab-history').class
         teamShare: fav.teamShare || 0,
         remainingTeamPending: fav.teamShare || 0,
         isReimburse: !!fav.isReimburse,
+        isMultiCategory: !!fav.isMultiCategory,
         note: fav.note || '',
         date: todayStr,
         accountId: fav.accountId || '',
@@ -1269,7 +1561,7 @@ else if (vName === 'history') { document.getElementById('nav-tab-history').class
       try {
         await db.collection('users').doc(currentUser.uid).collection('transactions').add(payload);
         closeFavoritesModal();
-        triggerSuccessToast(); // 3x duration toast
+        triggerSuccessToast();
       } catch (err) {
         alert("เกิดข้อผิดพลาด: " + err.message);
       }
@@ -1385,6 +1677,7 @@ else if (vName === 'history') { document.getElementById('nav-tab-history').class
 
       selectedAccountId = sub.accountId;
       selectedCategoryId = sub.categoryId;
+      selectedMultiCatIds = [];
       document.getElementById('tx-amount').value = sub.amount;
       document.getElementById('tx-note').value = sub.name;
       document.getElementById('tx-date').value = getTodayDateString();
@@ -1593,15 +1886,22 @@ else if (vName === 'history') { document.getElementById('nav-tab-history').class
       const forms = { expense:'tx-form', income:'tx-form', transfer:'transfer-form', settle:'settle-form', split:'split-form', installment:'installment-form', reimburse:'reimburse-form', 'team-pay':'team-pay-form' };
       document.getElementById(forms[mode]).classList.remove('hidden');
 
-      // Padding-bottom Standard pb-3 สำหรับทุกโหมด
       const scrollContainer = document.getElementById('entry-scroll-container');
       if (scrollContainer) {
         scrollContainer.classList.remove('pb-36');
         scrollContainer.classList.add('pb-3');
       }
 
-      if (mode === 'expense') { currentTxType = 'expense'; renderCategoryButtons(); } 
-      else if (mode === 'income') { currentTxType = 'income'; renderCategoryButtons(); } 
+      if (mode === 'expense') { 
+        if (currentTxType !== 'expense') selectedMultiCatIds = [];
+        currentTxType = 'expense'; 
+        renderCategoryButtons(); 
+      } 
+      else if (mode === 'income') { 
+        if (currentTxType !== 'income') selectedMultiCatIds = [];
+        currentTxType = 'income'; 
+        renderCategoryButtons(); 
+      } 
       else if (mode === 'transfer') renderTransferButtons();
       else if (mode === 'settle') { renderAllAccountButtons(); renderPendingFriendList(); } 
       else if (mode === 'split') { renderAllAccountButtons(); renderSplitCategoryButtons(); }
@@ -1663,28 +1963,43 @@ else if (vName === 'history') { document.getElementById('nav-tab-history').class
       return html;
     }
 
-    function renderCategoryPinnedSelector(selectedId, setGlobalVarFnName, type, rerenderFnName) {
+    function renderCategoryPinnedSelector(selectedId, setGlobalVarFnName, type, rerenderFnName, includeMultiCatBtn = false) {
       const typeCats = categoriesList.filter(c => c.type === type);
       let pinned = typeCats.filter(i => i.isPinned);
 
-      const isSelectedInPinned = pinned.some(i => i.id === selectedId);
-      const selectedItem = typeCats.find(i => i.id === selectedId);
+      const isMultiActive = includeMultiCatBtn && selectedMultiCatIds.length >= 2;
+      const effectiveSelectedId = isMultiActive ? null : selectedId;
+
+      const isSelectedInPinned = pinned.some(i => i.id === effectiveSelectedId);
+      const selectedItem = typeCats.find(i => i.id === effectiveSelectedId);
+
+      const resetMultiPrefix = includeMultiCatBtn ? "selectedMultiCatIds=[]; " : "";
 
       let html = `<div class="flex flex-wrap gap-1.5 items-center">`;
       pinned.forEach(i => {
-        const isSel = i.id === selectedId;
+        const isSel = i.id === effectiveSelectedId;
         const theme = CATEGORY_COLOR_THEMES[i.colorTheme] || (type === 'expense' ? CATEGORY_COLOR_THEMES.rose : CATEGORY_COLOR_THEMES.emerald);
         const styleClass = isSel ? theme.active : theme.inactive;
 
-        html += `<button type="button" onclick="${setGlobalVarFnName}='${i.id}'; ${rerenderFnName}();" class="px-2.5 py-1 rounded-xl text-xs font-semibold transition border ${styleClass}">${escapeHtml(i.name)}</button>`;
+        html += `<button type="button" onclick="${resetMultiPrefix}${setGlobalVarFnName}='${i.id}'; ${rerenderFnName}();" class="px-2.5 py-1 rounded-xl text-xs font-semibold transition border ${styleClass}">${escapeHtml(i.name)}</button>`;
       });
 
       const unpinnedCount = typeCats.length - pinned.length;
-      if (unpinnedCount > 0 || !isSelectedInPinned) {
+      if (unpinnedCount > 0 || (!isSelectedInPinned && effectiveSelectedId)) {
         const extraLabel = (!isSelectedInPinned && selectedItem) ? `${selectedItem.name} ✓` : `+`;
         const extraClass = (!isSelectedInPinned && selectedItem) ? (CATEGORY_COLOR_THEMES[selectedItem.colorTheme]?.active || 'bg-slate-700 text-white') : 'bg-slate-100 text-slate-600 border-slate-300 hover:bg-slate-200 font-bold';
-        html += `<button type="button" onclick="openCategorySelectorModal('${setGlobalVarFnName}', '${type}', '${rerenderFnName}')" class="px-2.5 py-1 rounded-xl text-xs font-medium transition border ${extraClass}">${escapeHtml(extraLabel)}</button>`;
+        html += `<button type="button" onclick="openCategorySelectorModal('${setGlobalVarFnName}', '${type}', '${rerenderFnName}', ${includeMultiCatBtn})" class="px-2.5 py-1 rounded-xl text-xs font-medium transition border ${extraClass}">${escapeHtml(extraLabel)}</button>`;
       }
+
+      // ปุ่ม "เลือกหลายหมวดหมู่" เฉพาะแบบฟอร์ม expense และ income
+      if (includeMultiCatBtn) {
+        const multiBtnLabel = isMultiActive ? `เลือกหลายหมวดหมู่ (${selectedMultiCatIds.length}) ✓` : `เลือกหลายหมวดหมู่`;
+        const multiBtnClass = isMultiActive 
+          ? 'bg-slate-700 text-white border-slate-700 shadow-md ring-2 ring-slate-300' 
+          : 'bg-slate-100 text-slate-600 border-slate-300 hover:bg-slate-200';
+        html += `<button type="button" onclick="openMultiCatSelectModal('entry')" class="px-2.5 py-1 rounded-xl text-xs font-semibold transition border ${multiBtnClass}">${multiBtnLabel}</button>`;
+      }
+
       html += `</div>`;
       return html;
     }
@@ -1706,15 +2021,16 @@ else if (vName === 'history') { document.getElementById('nav-tab-history').class
       document.getElementById('selector-modal').classList.remove('hidden');
     }
 
-    function openCategorySelectorModal(setGlobalVarFnName, type, rerenderFnName) {
+    function openCategorySelectorModal(setGlobalVarFnName, type, rerenderFnName, resetMulti = false) {
       document.getElementById('selector-modal-title').innerText = `เลือกหมวดหมู่${type==='expense'?'รายจ่าย':'รายรับ'}`;
       const container = document.getElementById('selector-grid-container');
       const typeCats = categoriesList.filter(c => c.type === type);
+      const resetMultiPrefix = resetMulti ? "selectedMultiCatIds=[]; " : "";
 
       container.innerHTML = typeCats.map(item => {
         const theme = CATEGORY_COLOR_THEMES[item.colorTheme] || (type==='expense'?CATEGORY_COLOR_THEMES.rose:CATEGORY_COLOR_THEMES.emerald);
         return `
-          <button type="button" onclick="${setGlobalVarFnName}='${item.id}'; ${rerenderFnName}(); closeSelectorModal();" class="p-2.5 rounded-2xl text-xs font-semibold border text-center transition flex items-center justify-between ${theme.inactive}">
+          <button type="button" onclick="${resetMultiPrefix}${setGlobalVarFnName}='${item.id}'; ${rerenderFnName}(); closeSelectorModal();" class="p-2.5 rounded-2xl text-xs font-semibold border text-center transition flex items-center justify-between ${theme.inactive}">
             <span class="truncate font-bold">${escapeHtml(item.name)}</span>
           </button>
         `;
@@ -1733,17 +2049,17 @@ else if (vName === 'history') { document.getElementById('nav-tab-history').class
     }
 
     function renderCategoryButtons() {
-      document.getElementById('category-buttons-container').innerHTML = renderCategoryPinnedSelector(selectedCategoryId, 'selectedCategoryId', currentTxType, 'renderCategoryButtons');
+      document.getElementById('category-buttons-container').innerHTML = renderCategoryPinnedSelector(selectedCategoryId, 'selectedCategoryId', currentTxType, 'renderCategoryButtons', true);
     }
 
     function renderSplitCategoryButtons() { 
-      document.getElementById('split-category-buttons').innerHTML = renderCategoryPinnedSelector(selectedSplitCategoryId, 'selectedSplitCategoryId', 'income', 'renderSplitCategoryButtons'); 
+      document.getElementById('split-category-buttons').innerHTML = renderCategoryPinnedSelector(selectedSplitCategoryId, 'selectedSplitCategoryId', 'income', 'renderSplitCategoryButtons', false); 
     }
     function renderInstCategoryButtons() { 
-      document.getElementById('inst-category-buttons').innerHTML = renderCategoryPinnedSelector(selectedInstCategoryId, 'selectedInstCategoryId', 'expense', 'renderInstCategoryButtons'); 
+      document.getElementById('inst-category-buttons').innerHTML = renderCategoryPinnedSelector(selectedInstCategoryId, 'selectedInstCategoryId', 'expense', 'renderInstCategoryButtons', false); 
     }
     function renderReimbCategoryButtons() { 
-      document.getElementById('reimb-category-buttons').innerHTML = renderCategoryPinnedSelector(selectedReimbCategoryId, 'selectedReimbCategoryId', 'expense', 'renderReimbCategoryButtons'); 
+      document.getElementById('reimb-category-buttons').innerHTML = renderCategoryPinnedSelector(selectedReimbCategoryId, 'selectedReimbCategoryId', 'expense', 'renderReimbCategoryButtons', false); 
     }
 
     function closeSelectorModal() { document.getElementById('selector-modal').classList.add('hidden'); }
@@ -1766,6 +2082,13 @@ else if (vName === 'history') { document.getElementById('nav-tab-history').class
 
       const amt = parseFloat(document.getElementById('tx-amount').value), n = document.getElementById('tx-note').value.trim(), d = document.getElementById('tx-date').value;
       if (isNaN(amt) || amt <= 0) { btn.disabled = false; return alert("จำนวนเงินไม่ถูกต้อง"); }
+
+      // กรณีเลือกหลายหมวดหมู่ (>= 2 หมวดหมู่) ให้เด้ง Pop-up แจกแจงยอดเงิน
+      if (selectedMultiCatIds.length >= 2) {
+        btn.disabled = false;
+        openMultiCatSplitModal(amt);
+        return;
+      }
 
       try {
         if (!selectedCategoryId) { btn.disabled = false; return alert("กรุณาเลือกหมวดหมู่"); }
@@ -2040,6 +2363,49 @@ else if (vName === 'history') { document.getElementById('nav-tab-history').class
       }
     }
 
+    /* EDIT MULTI-CATEGORY HELPERS */
+    function openEditMultiCatSelector() {
+      openMultiCatSelectModal('edit');
+    }
+
+    function renderEditMultiCatList() {
+      const container = document.getElementById('edit-multi-cat-list-container');
+      const totalLbl = document.getElementById('edit-multi-cat-total-lbl');
+      const t = allTransactions.find(x => x.id === editingTxIdInModal);
+      const txType = t?.type || 'expense';
+
+      let sum = 0;
+      container.innerHTML = editMultiCatBreakdown.map((item, idx) => {
+        const cat = categoriesList.find(c => c.id === item.categoryId);
+        const theme = CATEGORY_COLOR_THEMES[cat?.colorTheme] || (txType === 'expense' ? CATEGORY_COLOR_THEMES.rose : CATEGORY_COLOR_THEMES.emerald);
+        const inputId = `edit-mc-amt-${idx}`;
+        const val = parseFloat(item.amount) || 0;
+        sum += val;
+
+        return `
+          <div class="flex items-center justify-between bg-white p-2 rounded-xl border border-slate-200 space-x-2">
+            <div class="flex items-center space-x-2 min-w-0 flex-1">
+              <span class="w-2.5 h-2.5 rounded-full flex-shrink-0 ${theme.bgClass}"></span>
+              <span class="text-xs font-bold text-slate-700 truncate">${escapeHtml(item.categoryName)}</span>
+            </div>
+            <div class="w-28 flex-shrink-0">
+              <input type="text" id="${inputId}" value="${val}" readonly onclick="openCustomKeypad('${inputId}')" oninput="updateEditMultiCatRow(${idx}, this.value)" class="w-full px-2 py-1 text-xs border border-slate-300 rounded-lg bg-slate-50 cursor-pointer text-right font-bold text-slate-800">
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      totalLbl.innerText = sum.toLocaleString(undefined, { minimumFractionDigits: 2 });
+    }
+
+    function updateEditMultiCatRow(idx, newVal) {
+      if (editMultiCatBreakdown[idx]) {
+        editMultiCatBreakdown[idx].amount = parseFloat(newVal) || 0;
+      }
+      const sum = editMultiCatBreakdown.reduce((s, item) => s + (parseFloat(item.amount) || 0), 0);
+      document.getElementById('edit-multi-cat-total-lbl').innerText = sum.toLocaleString(undefined, { minimumFractionDigits: 2 });
+    }
+
     function startEditingTransaction(id, fromHistory = false) {
       const t = allTransactions.find(x => x.id === id);
       if (!t) return;
@@ -2048,13 +2414,13 @@ else if (vName === 'history') { document.getElementById('nav-tab-history').class
       editSelectedAccountId = t.accountId || t.fromAccountId || null;
       editSelectedCategoryId = t.categoryId || null;
 
-      // Show 2D star button only when opened from History
       const starBtn = document.getElementById('btn-save-as-favorite');
       if (starBtn) {
         if (fromHistory) starBtn.classList.remove('hidden');
         else starBtn.classList.add('hidden');
       }
 
+      const isMulti = t.kind === 'transaction' && t.isMultiCategory && t.categoriesBreakdown?.length >= 2;
       const isSplit = t.kind === 'split';
       const isReimb = t.kind === 'transaction' && t.isReimburse;
       const isInst = t.kind === 'transaction' && t.isInstallment;
@@ -2062,6 +2428,7 @@ else if (vName === 'history') { document.getElementById('nav-tab-history').class
       const isSettlement = t.kind === 'settlement';
       const isTeamPay = t.kind === 'team-pay';
 
+      const multiCatFields = document.getElementById('edit-multi-cat-fields');
       const splitFields = document.getElementById('edit-split-fields');
       const reimbFields = document.getElementById('edit-reimb-fields');
       const instFields = document.getElementById('edit-inst-fields');
@@ -2070,6 +2437,7 @@ else if (vName === 'history') { document.getElementById('nav-tab-history').class
       const categorySection = document.getElementById('edit-category-section');
       const subhead = document.getElementById('edit-tx-modal-subhead');
 
+      multiCatFields.classList.add('hidden');
       splitFields.classList.add('hidden');
       reimbFields.classList.add('hidden');
       instFields.classList.add('hidden');
@@ -2077,7 +2445,16 @@ else if (vName === 'history') { document.getElementById('nav-tab-history').class
       normalAmountBox.classList.remove('hidden');
       categorySection.classList.remove('hidden');
 
-      if (isInst) {
+      if (isMulti) {
+        subhead.innerText = "แก้ไขรายการหลายหมวดหมู่ (Multi-Category)";
+        multiCatFields.classList.remove('hidden');
+        categorySection.classList.add('hidden');
+        normalAmountField.classList.remove('grid-cols-2');
+        normalAmountBox.classList.add('hidden');
+
+        editMultiCatBreakdown = t.categoriesBreakdown.map(b => ({ ...b }));
+        renderEditMultiCatList();
+      } else if (isInst) {
         subhead.innerText = "แก้ไขรายการผ่อนชำระ (Installment)";
         instFields.classList.remove('hidden');
 
@@ -2129,6 +2506,7 @@ else if (vName === 'history') { document.getElementById('nav-tab-history').class
 
     function closeEditTxModal() {
       editingTxIdInModal = null;
+      editMultiCatBreakdown = [];
       document.getElementById('edit-tx-modal').classList.add('hidden');
     }
 
@@ -2139,7 +2517,7 @@ else if (vName === 'history') { document.getElementById('nav-tab-history').class
 
     function renderEditModalCategoryButtons(type) {
       const container = document.getElementById('edit-category-buttons-container');
-      container.innerHTML = renderCategoryPinnedSelector(editSelectedCategoryId, 'editSelectedCategoryId', type, `renderEditModalCategoryButtons.bind(null, '${type}')`);
+      container.innerHTML = renderCategoryPinnedSelector(editSelectedCategoryId, 'editSelectedCategoryId', type, `renderEditModalCategoryButtons.bind(null, '${type}')`, false);
     }
 
     document.getElementById('edit-tx-modal-form').addEventListener('submit', async (e) => {
@@ -2157,12 +2535,28 @@ else if (vName === 'history') { document.getElementById('nav-tab-history').class
         accountId: editSelectedAccountId,
       };
 
-      if (catObj && !['transfer', 'settlement', 'team-pay'].includes(t.kind)) {
+      const isMulti = t.kind === 'transaction' && t.isMultiCategory && editMultiCatBreakdown.length >= 2;
+
+      if (isMulti) {
+        let newTotal = 0;
+        for (const item of editMultiCatBreakdown) {
+          const val = parseFloat(item.amount) || 0;
+          if (val <= 0) return alert("ยอดเงินของแต่ละหมวดหมู่ต้องมากกว่า 0");
+          newTotal += val;
+        }
+        newTotal = Math.round(newTotal * 100) / 100;
+
+        updatePayload.amount = newTotal;
+        updatePayload.myShare = newTotal;
+        updatePayload.categoryId = editMultiCatBreakdown[0].categoryId;
+        updatePayload.categoryName = editMultiCatBreakdown.map(b => b.categoryName).join(', ');
+        updatePayload.categoriesBreakdown = editMultiCatBreakdown;
+      } else if (catObj && !['transfer', 'settlement', 'team-pay'].includes(t.kind)) {
         updatePayload.categoryId = catObj.id;
         updatePayload.categoryName = catObj.name;
       }
 
-      if (t.kind === 'transaction' && t.isInstallment) {
+      if (!isMulti && t.kind === 'transaction' && t.isInstallment) {
         const tot = parseFloat(document.getElementById('edit-inst-total-amount').value);
         const totalCount = parseInt(document.getElementById('edit-inst-total-count').value);
         const currentCount = parseInt(document.getElementById('edit-inst-current-count').value);
@@ -2254,7 +2648,7 @@ else if (vName === 'history') { document.getElementById('nav-tab-history').class
         updatePayload.amount = amt;
         updatePayload.fromAccountId = editSelectedAccountId;
         updatePayload.fromAccountName = accountsList.find(a => a.id === editSelectedAccountId)?.name || '';
-      } else {
+      } else if (!isMulti) {
         const amt = parseFloat(document.getElementById('edit-tx-amount').value);
         if (isNaN(amt) || amt <= 0) return alert("กรุณากรอกจำนวนเงินให้ถูกต้อง");
         updatePayload.amount = amt;
@@ -2316,7 +2710,14 @@ else if (vName === 'history') { document.getElementById('nav-tab-history').class
       let totInc = 0, totExp = 0, catIncMap = {}, catExpMap = {};
       allTransactions.forEach(t => {
         if (t.kind === 'transaction') {
-          if (t.type === 'income') { totInc += t.amount; catIncMap[t.categoryName || 'ทั่วไป'] = (catIncMap[t.categoryName || 'ทั่วไป'] || 0) + t.amount; } 
+          if (t.type === 'income') { 
+            totInc += t.amount; 
+            if (t.categoriesBreakdown?.length > 0) {
+              t.categoriesBreakdown.forEach(sub => catIncMap[sub.categoryName] = (catIncMap[sub.categoryName] || 0) + sub.amount);
+            } else {
+              catIncMap[t.categoryName || 'ทั่วไป'] = (catIncMap[t.categoryName || 'ทั่วไป'] || 0) + t.amount; 
+            }
+          } 
           else {
             const expAmt = t.isReimburse ? t.myShare : t.amount; totExp += expAmt;
             if (t.categoriesBreakdown?.length > 0) t.categoriesBreakdown.forEach(sub => catExpMap[sub.categoryName] = (catExpMap[sub.categoryName] || 0) + sub.amount);
@@ -2761,17 +3162,13 @@ else if (vName === 'history') { document.getElementById('nav-tab-history').class
       const color = document.getElementById('modal-acc-color').value;
       const initBal = parseFloat(document.getElementById('modal-acc-balance').value) || 0;
 
-      if (!name) return alert("กรุณาระบุชื่อบัญชี");
+      if (!name) return alert("กรุณากรอกชื่อบัญชี");
 
       try {
         if (id) {
-          await db.collection('users').doc(currentUser.uid).collection('accounts').doc(id).update({
-            name: name, colorTheme: color, initialBalance: initBal
-          });
+          await db.collection('users').doc(currentUser.uid).collection('accounts').doc(id).update({ name: name, colorTheme: color, initialBalance: initBal });
         } else {
-          await db.collection('users').doc(currentUser.uid).collection('accounts').add({
-            name: name, colorTheme: color, initialBalance: initBal, isDefault: false, isPinned: true, createdAt: firebase.firestore.FieldValue.serverTimestamp()
-          });
+          await db.collection('users').doc(currentUser.uid).collection('accounts').add({ name: name, colorTheme: color, initialBalance: initBal, isDefault: false, isPinned: true, createdAt: firebase.firestore.FieldValue.serverTimestamp() });
         }
         closeAccountModal();
       } catch (err) { alert(err.message); }
@@ -2781,7 +3178,6 @@ else if (vName === 'history') { document.getElementById('nav-tab-history').class
       const id = document.getElementById('modal-acc-id').value;
       if (!id) return;
       const acc = accountsList.find(a => a.id === id);
-      if (acc?.isDefault) return alert("ไม่สามารถลบบัญชีหลักของระบบได้");
 
       if (confirm(`คุณแน่ใจหรือว่าต้องการลบบัญชี "${acc?.name}" ?`)) {
         try {
@@ -2792,13 +3188,13 @@ else if (vName === 'history') { document.getElementById('nav-tab-history').class
     }
 
     function openNewCategoryModal(type) {
-      document.getElementById('category-modal-title').innerText = `เพิ่มหมวดหมู่${type==='expense'?'รายจ่าย':'รายรับ'}`;
+      document.getElementById('category-modal-title').innerText = `เพิ่มหมวดหมู่${type === 'expense' ? 'รายจ่าย' : 'รายรับ'}`;
       document.getElementById('modal-cat-id').value = '';
       document.getElementById('modal-cat-type').value = type;
       document.getElementById('modal-cat-name').value = '';
       document.getElementById('modal-cat-delete-container').classList.add('hidden');
 
-      renderSquarePaletteGrid('modal-cat-color-grid', 'modal-cat-color', type==='expense'?'rose':'emerald');
+      renderSquarePaletteGrid('modal-cat-color-grid', 'modal-cat-color', type === 'expense' ? 'rose' : 'emerald');
       document.getElementById('category-edit-modal').classList.remove('hidden');
     }
 
@@ -2809,11 +3205,11 @@ else if (vName === 'history') { document.getElementById('nav-tab-history').class
 
       document.getElementById('category-modal-title').innerText = 'แก้ไขหมวดหมู่';
       document.getElementById('modal-cat-id').value = id;
-      document.getElementById('modal-cat-type').value = cat.type;
+      document.getElementById('modal-cat-type').value = cat.type || 'expense';
       document.getElementById('modal-cat-name').value = cat.name || '';
       document.getElementById('modal-cat-delete-container').classList.remove('hidden');
 
-      renderSquarePaletteGrid('modal-cat-color-grid', 'modal-cat-color', cat.colorTheme || (cat.type==='expense'?'rose':'emerald'));
+      renderSquarePaletteGrid('modal-cat-color-grid', 'modal-cat-color', cat.colorTheme || (cat.type === 'expense' ? 'rose' : 'emerald'));
       document.getElementById('category-edit-modal').classList.remove('hidden');
     }
 
@@ -2826,17 +3222,13 @@ else if (vName === 'history') { document.getElementById('nav-tab-history').class
       const name = document.getElementById('modal-cat-name').value.trim();
       const color = document.getElementById('modal-cat-color').value;
 
-      if (!name) return alert("กรุณาระบุชื่อหมวดหมู่");
+      if (!name) return alert("กรุณากรอกชื่อหมวดหมู่");
 
       try {
         if (id) {
-          await db.collection('users').doc(currentUser.uid).collection('categories').doc(id).update({
-            name: name, colorTheme: color
-          });
+          await db.collection('users').doc(currentUser.uid).collection('categories').doc(id).update({ name: name, colorTheme: color });
         } else {
-          await db.collection('users').doc(currentUser.uid).collection('categories').add({
-            name: name, type: type, colorTheme: color, isPinned: true, createdAt: firebase.firestore.FieldValue.serverTimestamp()
-          });
+          await db.collection('users').doc(currentUser.uid).collection('categories').add({ name: name, type: type, colorTheme: color, isPinned: true, createdAt: firebase.firestore.FieldValue.serverTimestamp() });
         }
         closeCategoryModal();
       } catch (err) { alert(err.message); }
@@ -2855,50 +3247,44 @@ else if (vName === 'history') { document.getElementById('nav-tab-history').class
       }
     }
 
-    async function toggleAccountPin(id, isPinned) { try { await db.collection('users').doc(currentUser.uid).collection('accounts').doc(id).update({ isPinned: isPinned }); } catch (err) { alert(err.message); } }
-    async function toggleCategoryPin(id, isPinned) { try { await db.collection('users').doc(currentUser.uid).collection('categories').doc(id).update({ isPinned: isPinned }); } catch (err) { alert(err.message); } }
-    function escapeHtml(text) { return text ? text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;") : ''; }
-  </script>
+    async function toggleAccountPin(id, newPinState) { await db.collection('users').doc(currentUser.uid).collection('accounts').doc(id).update({ isPinned: newPinState }); }
+    async function toggleCategoryPin(id, newPinState) { await db.collection('users').doc(currentUser.uid).collection('categories').doc(id).update({ isPinned: newPinState }); }
 
-  <!-- DOUBLE TAP ON EMPTY SPACE (Expense & Income Mode Only) -->
-  <script>
-    let lastEmptySpaceTap = 0;
+    function escapeHtml(s) { return !s?'':String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
 
-    document.addEventListener('DOMContentLoaded', () => {
-      const scrollContainer = document.getElementById('entry-scroll-container');
-      
-      if (scrollContainer) {
-        scrollContainer.addEventListener('touchend', function (e) {
-          // 1. ตรวจสอบเฉพาะโหมด 'expense' และ 'income' เท่านั้น
-          if (!['expense', 'income'].includes(currentEntryMode)) return;
+    /* DOUBLE TAP TO OPEN FAVORITES POP-UP */
+    let lastBgTapTime = 0;
+    const entryScrollEl = document.getElementById('entry-scroll-container');
 
-          // 2. ตรวจสอบว่าตำแหน่งที่แตะ ต้องไม่ใช่ Interactive Element
-          const isInteractiveElement = e.target.closest('button, input, select, label, a, .swipe-item-content');
-          if (isInteractiveElement) return;
-
-          const currentTime = new Date().getTime();
-          const tapLength = currentTime - lastEmptySpaceTap;
-
-          // 3. ถ้า Double Tap ภายในเวลาสั้นกว่า 300ms
-          if (tapLength > 0 && tapLength < 300) {
-            e.preventDefault(); // ป้องกัน Zoom หน้าจอ
-            openFavoritesModal(); // เปิด Pop-up รายการด่วน
-            lastEmptySpaceTap = 0;
-          } else {
-            lastEmptySpaceTap = currentTime;
-          }
-        });
+    if (entryScrollEl) {
+      function handleBgDoubleTap(e) {
+        if (e.target.closest('button, input, select, textarea, a, label, [onclick]')) {
+          return;
+        }
+        const now = Date.now();
+        const timeDiff = now - lastBgTapTime;
+        if (timeDiff > 0 && timeDiff < 320) {
+          e.preventDefault();
+          openFavoritesModal();
+          lastBgTapTime = 0;
+        } else {
+          lastBgTapTime = now;
+        }
       }
-    });
-  </script>
 
-  <!-- PWA Service Worker Registration -->
-  <script>
+      entryScrollEl.addEventListener('touchend', handleBgDoubleTap, { passive: false });
+      entryScrollEl.addEventListener('dblclick', (e) => {
+        if (e.target.closest('button, input, select, textarea, a, label, [onclick]')) return;
+        e.preventDefault();
+        openFavoritesModal();
+      });
+    }
+
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
         navigator.serviceWorker.register('./sw.js')
-          .then((reg) => console.log('PWA Service Worker registered:', reg.scope))
-          .catch((err) => console.error('PWA Registration failed:', err));
+          .then(reg => console.log('Service Worker registered:', reg.scope))
+          .catch(err => console.log('Service Worker registration failed:', err));
       });
     }
   </script>
