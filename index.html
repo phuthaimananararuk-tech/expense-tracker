@@ -75,7 +75,7 @@
       <div class="flex flex-col items-center flex-1">
         <div class="flex items-baseline space-x-1">
           <h1 class="text-xl font-black tracking-wider uppercase drop-shadow-xs text-slate-100">จดตังค์</h1>
-          <span class="text-[9px] font-medium text-slate-400 tracking-tight">(v1.56)</span>
+          <span class="text-[9px] font-medium text-slate-400 tracking-tight">(v1.57)</span>
         </div>
         <p class="text-[8px] text-slate-400 tracking-tight font-light">by Phuthai Mananararuk</p>
       </div>
@@ -728,7 +728,7 @@
   <!-- FAVORITES LIST POP-UP -->
   <div id="favorites-modal" class="hidden fixed inset-0 bg-slate-900/50 backdrop-blur-xs flex items-center justify-center p-3 sm:p-4 z-50">
     <div class="bg-white rounded-3xl w-full max-w-md h-[75vh] p-3 shadow-2xl relative flex flex-col border border-slate-200 overflow-hidden">
-      <div id="favorites-list-container" class="w-full h-full"></div>
+      <div id="favorites-list-container" class="w-full h-full flex flex-col gap-2 overflow-hidden"></div>
     </div>
   </div>
 
@@ -1467,7 +1467,9 @@
       }
     }
 
-    /* REALTIME FAVORITES LOGIC (COPY SNAPSHOT) */
+    /* =========================================================================
+       REALTIME FAVORITES LOGIC (DYNAMIC AUTO-FIT & 4-LINE CLOSE BUTTON)
+       ========================================================================= */
     function loadFavoritesRealtime(uid) {
       if (unsubscribeFav) unsubscribeFav();
       unsubscribeFav = db.collection('users').doc(uid).collection('favorites').orderBy('createdAt', 'desc').onSnapshot(snap => {
@@ -1519,50 +1521,82 @@
     }
 
     function openFavoritesModal() {
-      renderFavoritesModalList();
       document.getElementById('favorites-modal').classList.remove('hidden');
+      renderFavoritesModalList();
     }
 
     function closeFavoritesModal() {
       document.getElementById('favorites-modal').classList.add('hidden');
     }
 
+    function autoFitFavoriteTexts() {
+      const cards = document.querySelectorAll('.fav-card-item');
+      cards.forEach(card => {
+        const noteEl = card.querySelector('.fav-note-text');
+        const textWrapper = card.querySelector('.fav-text-wrapper');
+        if (!noteEl || !textWrapper) return;
+
+        // เริ่มต้นที่ขนาด 48px (3 เท่าของ 16px เดิม)
+        let fontSize = 48;
+        const minFontSize = 12;
+        noteEl.style.fontSize = `${fontSize}px`;
+        noteEl.style.lineHeight = '1.15';
+
+        const cardStyle = window.getComputedStyle(card);
+        const padTop = parseFloat(cardStyle.paddingTop) || 0;
+        const padBottom = parseFloat(cardStyle.paddingBottom) || 0;
+        const availableHeight = card.clientHeight - padTop - padBottom;
+        const availableWidth = textWrapper.clientWidth;
+
+        // ลดขนาดฟอนต์ทีละ 2px จนกว่าเนื้อหาจะพอดีทั้งความสูงและความกว้างของการ์ด
+        while (fontSize > minFontSize && (textWrapper.scrollHeight > availableHeight + 1 || noteEl.scrollWidth > availableWidth + 1)) {
+          fontSize -= 2;
+          noteEl.style.fontSize = `${fontSize}px`;
+        }
+      });
+    }
+
+    window.addEventListener('resize', () => {
+      if (!document.getElementById('favorites-modal')?.classList.contains('hidden')) {
+        autoFitFavoriteTexts();
+      }
+    });
+
     function renderFavoritesModalList() {
       const container = document.getElementById('favorites-list-container');
       if (!container) return;
 
       const itemCount = favoriteItemsList.length;
+      const closeBtnHtml = `
+        <button type="button" onclick="closeFavoritesModal()" class="w-full flex-shrink-0 h-[6.5rem] leading-normal bg-slate-200 hover:bg-slate-300 text-slate-800 font-black rounded-2xl text-xl transition flex items-center justify-center shadow-xs">
+          ปิด
+        </button>
+      `;
 
       if (!itemCount) {
-        container.className = "w-full h-full grid grid-rows-2 gap-2 p-1";
         container.innerHTML = `
-          <div class="h-full bg-slate-50 border-2 border-dashed border-slate-200 rounded-2xl flex flex-col items-center justify-center p-4 text-center">
+          <div class="flex-1 min-h-0 bg-slate-50 border-2 border-dashed border-slate-200 rounded-2xl flex flex-col items-center justify-center p-4 text-center">
             <span class="text-base font-bold text-slate-500">ไม่มีรายการด่วน</span>
             <span class="text-xs text-slate-400 mt-1 font-light">สามารถกด ★ เพื่อเพิ่มรายการด่วนได้จากหน้า History</span>
           </div>
-          <button type="button" onclick="closeFavoritesModal()" class="w-full h-full bg-slate-200 hover:bg-slate-300 text-slate-800 font-black rounded-2xl text-xl transition flex items-center justify-center shadow-xs">
-            ปิด
-          </button>
+          ${closeBtnHtml}
         `;
         return;
       }
 
-      const gridRowsCount = itemCount + 1;
-      container.className = `w-full h-full grid grid-rows-${gridRowsCount} gap-2 p-1`;
-
-      let html = favoriteItemsList.map(fav => {
+      const cardsHtml = favoriteItemsList.map(fav => {
         const accName = fav.accountName || accountsList.find(a => a.id === fav.accountId)?.name || (fav.kind === 'transfer' ? `${fav.fromAccountName}➔${fav.toAccountName}` : 'บัญชี');
         const catName = fav.categoryName || 'ทั่วไป';
         const displayAmount = fav.amount || fav.totalAmount || 0;
         const typeColor = fav.type === 'income' ? 'text-emerald-600' : (fav.kind === 'transfer' ? 'text-slate-800' : 'text-rose-600');
 
         return `
-          <div onclick="quickExecuteFavorite('${fav.id}')" class="w-full h-full p-4 bg-slate-50 hover:bg-amber-50/80 active:scale-[0.98] border-2 border-slate-200 hover:border-amber-400 rounded-2xl flex justify-between items-center transition cursor-pointer shadow-xs overflow-hidden">
-            <div class="flex flex-col justify-center min-w-0 pr-2">
-              <span class="text-base font-black text-slate-800 truncate">${escapeHtml(fav.note || 'รายการด่วน')}</span>
-              <span class="text-xs text-slate-500 font-medium truncate">${escapeHtml(accName)} • [${escapeHtml(catName)}]</span>
+          <div onclick="quickExecuteFavorite('${fav.id}')" class="fav-card-item w-full h-full min-h-0 px-4 py-2.5 bg-slate-50 hover:bg-amber-50/80 active:scale-[0.98] border-2 border-slate-200 hover:border-amber-400 rounded-2xl flex justify-between items-center transition cursor-pointer shadow-xs overflow-hidden">
+            <div class="fav-text-wrapper flex flex-col justify-center min-w-0 flex-1 pr-2 overflow-hidden">
+              <span class="fav-note-text font-black text-slate-800 whitespace-normal break-words" style="font-size: 48px; line-height: 1.15;">${escapeHtml(fav.note || 'รายการด่วน')}</span>
+              <span class="text-xs text-slate-500 font-medium truncate mt-0.5 flex-shrink-0">${escapeHtml(accName)} • [${escapeHtml(catName)}]</span>
             </div>
-            <div class="flex items-center space-x-3 flex-shrink-0">
+            <div class="flex items-center space-x-2 flex-shrink-0">
               <span class="text-lg font-black ${typeColor}">${fav.type==='income'?'+':(fav.kind==='transfer'?'':'-')}${displayAmount.toLocaleString(undefined, {minimumFractionDigits: 2})}</span>
               <button onclick="event.stopPropagation(); deleteFavorite('${fav.id}')" class="text-slate-300 hover:text-rose-500 font-bold p-1 text-base transition" title="ลบออกจากรายการด่วน">✕</button>
             </div>
@@ -1570,13 +1604,16 @@
         `;
       }).join('');
 
-      html += `
-        <button type="button" onclick="closeFavoritesModal()" class="w-full h-full bg-slate-200 hover:bg-slate-300 text-slate-800 font-black rounded-2xl text-xl transition flex items-center justify-center shadow-xs">
-          ปิด
-        </button>
+      container.innerHTML = `
+        <div class="flex-1 min-h-0 grid gap-2 overflow-hidden" style="grid-template-rows: repeat(${itemCount}, minmax(0, 1fr));">
+          ${cardsHtml}
+        </div>
+        ${closeBtnHtml}
       `;
 
-      container.innerHTML = html;
+      requestAnimationFrame(() => {
+        autoFitFavoriteTexts();
+      });
     }
 
     async function quickExecuteFavorite(favId) {
@@ -3139,7 +3176,7 @@
                   <button type="button" onclick="toggleCategoryPin('${c.id}', ${!c.isPinned})" class="px-2 py-0.5 rounded-lg text-[9px] font-bold transition ${c.isPinned ? 'bg-slate-100 text-slate-700 border border-slate-200' : 'bg-slate-50 text-slate-400'}">${c.isPinned ? 'ปักหมุด' : 'ซ่อน'}</button>
                   <span class="text-xs font-bold text-slate-700">${escapeHtml(c.name)}</span>
                 </div>
-                <span class="w-2.5 h-2.5 rounded-full ${theme.bgClass}"></span>
+                <span class="w-3 h-3 rounded-full ${theme.bgClass}"></span>
               </div>
             </div>
           `;
@@ -3149,38 +3186,13 @@
       });
     }
 
-    function renderSquarePaletteGrid(gridContainerId, hiddenInputId, selectedColorKey) {
-      const container = document.getElementById(gridContainerId);
-      const hiddenInput = document.getElementById(hiddenInputId);
-      hiddenInput.value = selectedColorKey;
-
-      container.innerHTML = Object.keys(COLOR_PALETTE_16).map(key => {
-        const theme = COLOR_PALETTE_16[key];
-        const isSelected = key === selectedColorKey;
-        const checkColor = key === 'white' ? 'text-slate-800' : 'text-white';
-
-        return `
-          <button type="button" 
-            onclick="selectSquareColor('${gridContainerId}', '${hiddenInputId}', '${key}')"
-            class="h-8 w-full ${theme.bgClass} flex items-center justify-center transition active:scale-95 ${isSelected ? 'relative z-10 ring-2 ring-white shadow-md scale-105' : 'hover:opacity-90'}"
-            title="${key}">
-            ${isSelected ? `<svg class="w-4 h-4 ${checkColor} drop-shadow font-bold" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3.5" d="M5 13l4 4L19 7"/></svg>` : ''}
-          </button>
-        `;
-      }).join('');
-    }
-
-    function selectSquareColor(gridContainerId, hiddenInputId, colorKey) {
-      renderSquarePaletteGrid(gridContainerId, hiddenInputId, colorKey);
-    }
-
     function openNewAccountModal() {
       document.getElementById('account-modal-title').innerText = 'เพิ่มบัญชีใหม่';
       document.getElementById('modal-acc-id').value = '';
       document.getElementById('modal-acc-name').value = '';
       document.getElementById('modal-acc-balance').value = '';
       document.getElementById('modal-acc-delete-container').classList.add('hidden');
-      renderSquarePaletteGrid('modal-acc-color-grid', 'modal-acc-color', 'emerald');
+      selectAccountColorInModal('emerald');
       document.getElementById('account-edit-modal').classList.remove('hidden');
     }
 
@@ -3191,46 +3203,54 @@
 
       document.getElementById('account-modal-title').innerText = 'แก้ไขบัญชี';
       document.getElementById('modal-acc-id').value = id;
-      document.getElementById('modal-acc-name').value = acc.name;
+      document.getElementById('modal-acc-name').value = acc.name || '';
       document.getElementById('modal-acc-balance').value = acc.initialBalance ?? acc.balance ?? 0;
 
-      const deleteContainer = document.getElementById('modal-acc-delete-container');
-      if (accountsList.length <= 1) {
-        deleteContainer.classList.add('hidden');
+      const delBtnContainer = document.getElementById('modal-acc-delete-container');
+      if (acc.isDefault) {
+        delBtnContainer.classList.add('hidden');
       } else {
-        deleteContainer.classList.remove('hidden');
+        delBtnContainer.classList.remove('hidden');
       }
 
-      renderSquarePaletteGrid('modal-acc-color-grid', 'modal-acc-color', acc.colorTheme || 'card');
+      selectAccountColorInModal(acc.colorTheme || 'card');
       document.getElementById('account-edit-modal').classList.remove('hidden');
     }
 
     function closeAccountModal() { document.getElementById('account-edit-modal').classList.add('hidden'); }
 
+    function selectAccountColorInModal(colorKey) {
+      document.getElementById('modal-acc-color').value = colorKey;
+      const grid = document.getElementById('modal-acc-color-grid');
+      grid.innerHTML = Object.keys(COLOR_PALETTE_16).map(k => {
+        const isSelected = k === colorKey;
+        const theme = COLOR_PALETTE_16[k];
+        const checkMarkColor = (k === 'white' || k === 'yellow' || k === 'cyan') ? 'text-slate-900' : 'text-white';
+        return `
+          <button type="button" onclick="selectAccountColorInModal('${k}')" class="h-9 w-full ${theme.bgClass} transition flex items-center justify-center relative hover:opacity-90">
+            ${isSelected ? `<span class="text-sm font-black ${checkMarkColor}">✓</span>` : ''}
+          </button>
+        `;
+      }).join('');
+    }
+
     document.getElementById('account-modal-form').addEventListener('submit', async (e) => {
       e.preventDefault();
       const id = document.getElementById('modal-acc-id').value;
       const name = document.getElementById('modal-acc-name').value.trim();
-      const color = document.getElementById('modal-acc-color').value || 'emerald';
-      const initialBal = parseFloat(document.getElementById('modal-acc-balance').value) || 0;
+      const color = document.getElementById('modal-acc-color').value || 'card';
+      const balVal = parseFloat(document.getElementById('modal-acc-balance').value) || 0;
 
       if (!name) return alert("กรุณากรอกชื่อบัญชี");
 
       try {
         if (id) {
-          await db.collection('users').doc(currentUser.uid).collection('accounts').doc(id).update({ 
-            name: name, 
-            colorTheme: color,
-            initialBalance: initialBal
+          await db.collection('users').doc(currentUser.uid).collection('accounts').doc(id).update({
+            name: name, colorTheme: color, initialBalance: balVal
           });
         } else {
-          await db.collection('users').doc(currentUser.uid).collection('accounts').add({ 
-            name: name, 
-            colorTheme: color, 
-            initialBalance: initialBal, 
-            balance: initialBal, 
-            isPinned: true, 
-            createdAt: firebase.firestore.FieldValue.serverTimestamp() 
+          await db.collection('users').doc(currentUser.uid).collection('accounts').add({
+            name: name, colorTheme: color, initialBalance: balVal, balance: balVal, isDefault: false, isPinned: true, createdAt: firebase.firestore.FieldValue.serverTimestamp()
           });
         }
         closeAccountModal();
@@ -3240,10 +3260,9 @@
     async function confirmDeleteAccountFromModal() {
       const id = document.getElementById('modal-acc-id').value;
       if (!id) return;
-      if (accountsList.length <= 1) return alert("ต้องมีบัญชีอย่างน้อย 1 บัญชี");
       const acc = accountsList.find(a => a.id === id);
 
-      if (confirm(`คุณแน่ใจหรือว่าต้องการลบบัญชี "${acc?.name}" ?`)) {
+      if (confirm(`คุณแน่ใจหรือว่าต้องการลบบัญชี "${acc?.name}" ?\n(ประวัติที่เชื่อมกับบัญชีนี้อาจได้รับผลกระทบ)`)) {
         try {
           await db.collection('users').doc(currentUser.uid).collection('accounts').doc(id).delete();
           closeAccountModal();
@@ -3252,12 +3271,12 @@
     }
 
     function openNewCategoryModal(type) {
-      document.getElementById('category-modal-title').innerText = `เพิ่มหมวดหมู่${type==='expense'?'รายจ่าย':'รายรับ'}`;
+      document.getElementById('category-modal-title').innerText = `เพิ่มหมวดหมู่${type === 'expense' ? 'รายจ่าย' : 'รายรับ'}`;
       document.getElementById('modal-cat-id').value = '';
       document.getElementById('modal-cat-type').value = type;
       document.getElementById('modal-cat-name').value = '';
       document.getElementById('modal-cat-delete-container').classList.add('hidden');
-      renderSquarePaletteGrid('modal-cat-color-grid', 'modal-cat-color', type==='expense'?'rose':'emerald');
+      selectCategoryColorInModal(type === 'expense' ? 'rose' : 'emerald');
       document.getElementById('category-edit-modal').classList.remove('hidden');
     }
 
@@ -3266,31 +3285,51 @@
       const cat = categoriesList.find(c => c.id === id);
       if (!cat) return;
 
-      document.getElementById('category-modal-title').innerText = `แก้ไขหมวดหมู่${cat.type==='expense'?'รายจ่าย':'รายรับ'}`;
+      document.getElementById('category-modal-title').innerText = `แก้ไขหมวดหมู่${cat.type === 'expense' ? 'รายจ่าย' : 'รายรับ'}`;
       document.getElementById('modal-cat-id').value = id;
-      document.getElementById('modal-cat-type').value = cat.type;
-      document.getElementById('modal-cat-name').value = cat.name;
+      document.getElementById('modal-cat-type').value = cat.type || 'expense';
+      document.getElementById('modal-cat-name').value = cat.name || '';
       document.getElementById('modal-cat-delete-container').classList.remove('hidden');
-      renderSquarePaletteGrid('modal-cat-color-grid', 'modal-cat-color', cat.colorTheme || (cat.type==='expense'?'rose':'emerald'));
+
+      selectCategoryColorInModal(cat.colorTheme || (cat.type === 'expense' ? 'rose' : 'emerald'));
       document.getElementById('category-edit-modal').classList.remove('hidden');
     }
 
     function closeCategoryModal() { document.getElementById('category-edit-modal').classList.add('hidden'); }
 
+    function selectCategoryColorInModal(colorKey) {
+      document.getElementById('modal-cat-color').value = colorKey;
+      const grid = document.getElementById('modal-cat-color-grid');
+      grid.innerHTML = Object.keys(COLOR_PALETTE_16).map(k => {
+        const isSelected = k === colorKey;
+        const theme = COLOR_PALETTE_16[k];
+        const checkMarkColor = (k === 'white' || k === 'yellow' || k === 'cyan') ? 'text-slate-900' : 'text-white';
+        return `
+          <button type="button" onclick="selectCategoryColorInModal('${k}')" class="h-9 w-full ${theme.bgClass} transition flex items-center justify-center relative hover:opacity-90">
+            ${isSelected ? `<span class="text-sm font-black ${checkMarkColor}">✓</span>` : ''}
+          </button>
+        `;
+      }).join('');
+    }
+
     document.getElementById('category-modal-form').addEventListener('submit', async (e) => {
       e.preventDefault();
       const id = document.getElementById('modal-cat-id').value;
-      const type = document.getElementById('modal-cat-type').value;
+      const type = document.getElementById('modal-cat-type').value || 'expense';
       const name = document.getElementById('modal-cat-name').value.trim();
-      const color = document.getElementById('modal-cat-color').value || (type==='expense'?'rose':'emerald');
+      const color = document.getElementById('modal-cat-color').value || 'rose';
 
       if (!name) return alert("กรุณากรอกชื่อหมวดหมู่");
 
       try {
         if (id) {
-          await db.collection('users').doc(currentUser.uid).collection('categories').doc(id).update({ name: name, colorTheme: color });
+          await db.collection('users').doc(currentUser.uid).collection('categories').doc(id).update({
+            name: name, colorTheme: color
+          });
         } else {
-          await db.collection('users').doc(currentUser.uid).collection('categories').add({ name: name, type: type, colorTheme: color, isPinned: true, createdAt: firebase.firestore.FieldValue.serverTimestamp() });
+          await db.collection('users').doc(currentUser.uid).collection('categories').add({
+            name: name, type: type, colorTheme: color, isPinned: true, createdAt: firebase.firestore.FieldValue.serverTimestamp()
+          });
         }
         closeCategoryModal();
       } catch (err) { alert(err.message); }
@@ -3309,11 +3348,19 @@
       }
     }
 
-    async function toggleAccountPin(id, s) { await db.collection('users').doc(currentUser.uid).collection('accounts').doc(id).update({ isPinned: s }); }
-    async function toggleCategoryPin(id, s) { await db.collection('users').doc(currentUser.uid).collection('categories').doc(id).update({ isPinned: s }); }
+    async function toggleAccountPin(id, newStatus) {
+      closeActiveSwipedCard();
+      await db.collection('users').doc(currentUser.uid).collection('accounts').doc(id).update({ isPinned: newStatus });
+    }
+
+    async function toggleCategoryPin(id, newStatus) {
+      closeActiveSwipedCard();
+      await db.collection('users').doc(currentUser.uid).collection('categories').doc(id).update({ isPinned: newStatus });
+    }
+
     function escapeHtml(s) { return s ? s.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;") : ''; }
 
-    if ('serviceWorker' in navigator) { window.addEventListener('load', () => navigator.serviceWorker.register('sw.js').catch(() => {})); }
+    if ('serviceWorker' in navigator) { window.addEventListener('load', () => { navigator.serviceWorker.register('./sw.js').catch(err => console.warn(err)); }); }
   </script>
 </body>
 </html>
