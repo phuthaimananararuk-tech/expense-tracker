@@ -30,17 +30,22 @@
       min-height: 100dvh;
     }
 
-    /* แก้ปัญหาช่องวันที่ล้นขอบบน iOS Safari (iPhone 12 mini) */
+    /* แก้ปัญหาช่องวันที่ล้นขอบและยุบตัวเมื่อค่าว่างบน iOS Safari และ Android Chrome */
     input[type="date"] {
       -webkit-appearance: none;
       appearance: none;
       min-width: 0 !important;
       width: 100% !important;
       max-width: 100% !important;
-      display: block;
+      min-height: 2.125rem !important;
+      height: 2.125rem !important;
+      line-height: 1.25rem !important;
+      display: flex !important;
+      align-items: center !important;
     }
     input[type="date"]::-webkit-date-and-time-value {
       text-align: left;
+      min-height: 1.25rem;
     }
 
     .safe-padding-top {
@@ -75,7 +80,7 @@
       <div class="flex flex-col items-center flex-1">
         <div class="flex items-baseline space-x-1">
           <h1 class="text-xl font-black tracking-wider uppercase drop-shadow-xs text-slate-100">จดตังค์</h1>
-          <span class="text-[9px] font-medium text-slate-400 tracking-tight">(v1.58)</span>
+          <span class="text-[9px] font-medium text-slate-400 tracking-tight">(v1.59)</span>
         </div>
         <p class="text-[8px] text-slate-400 tracking-tight font-light">by Phuthai Mananararuk</p>
       </div>
@@ -841,8 +846,14 @@
         <div class="space-y-1.5 border-t border-slate-200 pt-2">
           <label class="block font-semibold text-slate-500">ช่วงวันที่</label>
           <div class="grid grid-cols-2 gap-2">
-            <div class="min-w-0"><span class="text-[10px] text-slate-400">จากวันที่</span><input type="date" id="filter-start-date" class="w-full min-w-0 px-1.5 py-1 border border-slate-300 rounded-xl bg-slate-50 text-[11px] sm:text-xs"></div>
-            <div class="min-w-0"><span class="text-[10px] text-slate-400">ถึงวันที่</span><input type="date" id="filter-end-date" class="w-full min-w-0 px-1.5 py-1 border border-slate-300 rounded-xl bg-slate-50 text-[11px] sm:text-xs"></div>
+            <div class="min-w-0">
+              <span class="block text-[10px] text-slate-400 mb-0.5">จากวันที่</span>
+              <input type="date" id="filter-start-date" class="w-full min-w-0 px-2 py-1.5 border border-slate-300 rounded-xl bg-slate-50 text-[11px] sm:text-xs text-slate-700">
+            </div>
+            <div class="min-w-0">
+              <span class="block text-[10px] text-slate-400 mb-0.5">ถึงวันที่</span>
+              <input type="date" id="filter-end-date" class="w-full min-w-0 px-2 py-1.5 border border-slate-300 rounded-xl bg-slate-50 text-[11px] sm:text-xs text-slate-700">
+            </div>
           </div>
         </div>
       </div>
@@ -3227,14 +3238,16 @@
               </button>
             </div>
             <div class="swipe-item-content relative bg-white p-3 border border-slate-200/80 rounded-2xl flex justify-between items-center z-10 cursor-pointer">
-              <div class="flex items-center space-x-2">
-                <button type="button" onclick="toggleAccountPin('${a.id}', ${!a.isPinned})" class="px-2 py-0.5 rounded-lg text-[9px] font-bold transition ${a.isPinned ? 'bg-slate-100 text-slate-700 border border-slate-300' : 'bg-slate-50 text-slate-400 border border-slate-200'}">
-                  ${a.isPinned ? 'ปักหมุด' : 'ไม่ปักหมุด'}
-                </button>
-                <span class="w-3 h-3 rounded-full ${theme.bgClass}"></span>
-                <span class="text-xs font-bold text-slate-700">${escapeHtml(a.name)}</span>
+              <div class="flex items-center space-x-2.5">
+                <span class="w-4 h-4 rounded-full flex-shrink-0 ${theme.bgClass}"></span>
+                <div class="flex flex-col">
+                  <span class="text-xs font-bold text-slate-700">${escapeHtml(a.name)}</span>
+                  <span class="text-[10px] text-slate-400">คงเหลือ: ${(a.balance || 0).toLocaleString(undefined, {minimumFractionDigits: 2})}</span>
+                </div>
               </div>
-              <span class="text-xs font-bold text-slate-800">${(a.balance || 0).toLocaleString(undefined, {minimumFractionDigits: 2})}</span>
+              <button type="button" onclick="toggleAccountPin('${a.id}', ${!!a.isPinned})" class="p-1.5 rounded-lg transition hover:bg-slate-100" title="ปักหมุด">
+                <span class="text-sm">${a.isPinned ? '📌' : '📍'}</span>
+              </button>
             </div>
           </div>
         `;
@@ -3243,13 +3256,69 @@
       accountsList.forEach(a => attachSwipeGesture(`acc-item-${a.id}`));
     }
 
+    function renderSettingsCategories() {
+      ['expense', 'income'].forEach(type => {
+        const container = document.getElementById(type === 'expense' ? 'expense-cats-list' : 'income-cats-list');
+        if (!container) return;
+
+        const filteredCats = categoriesList.filter(c => c.type === type);
+        container.innerHTML = filteredCats.map(c => {
+          const theme = COLOR_PALETTE_16[c.colorTheme] || (type === 'expense' ? COLOR_PALETTE_16.rose : COLOR_PALETTE_16.emerald);
+          return `
+            <div id="cat-item-${c.id}" class="relative overflow-hidden rounded-2xl bg-slate-700 shadow-2xs">
+              <div class="absolute inset-y-0 right-0 w-16 bg-slate-700 flex items-center justify-center">
+                <button type="button" onclick="openEditCategoryModal('${c.id}')" class="w-full h-full text-white text-xs font-bold flex flex-col items-center justify-center space-y-0.5">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
+                  <span>แก้ไข</span>
+                </button>
+              </div>
+              <div class="swipe-item-content relative bg-white p-2.5 border border-slate-200/80 rounded-2xl flex justify-between items-center z-10 cursor-pointer">
+                <div class="flex items-center space-x-2.5">
+                  <span class="w-4 h-4 rounded-full flex-shrink-0 ${theme.bgClass}"></span>
+                  <span class="text-xs font-bold text-slate-700">${escapeHtml(c.name)}</span>
+                </div>
+                <button type="button" onclick="toggleCategoryPin('${c.id}', ${!!c.isPinned})" class="p-1.5 rounded-lg transition hover:bg-slate-100" title="ปักหมุด">
+                  <span class="text-sm">${c.isPinned ? '📌' : '📍'}</span>
+                </button>
+              </div>
+            </div>
+          `;
+        }).join('');
+
+        filteredCats.forEach(c => attachSwipeGesture(`cat-item-${c.id}`));
+      });
+    }
+
+    function renderSeamlessColorPaletteGrid(gridContainerId, selectedColorKey, hiddenInputId) {
+      const container = document.getElementById(gridContainerId);
+      if (!container) return;
+
+      container.innerHTML = Object.keys(COLOR_PALETTE_16).map(colorKey => {
+        const theme = COLOR_PALETTE_16[colorKey];
+        const isSel = colorKey === selectedColorKey;
+        const innerCheckColor = (colorKey === 'white' || colorKey === 'yellow' || colorKey === 'cyan') ? 'text-slate-900' : 'text-white';
+
+        return `
+          <button type="button" onclick="selectPaletteColor('${gridContainerId}', '${colorKey}', '${hiddenInputId}')" class="h-10 w-full ${theme.bgClass} flex items-center justify-center transition focus:outline-none">
+            ${isSel ? `<span class="text-sm font-black ${innerCheckColor} drop-shadow-2xs">✓</span>` : ''}
+          </button>
+        `;
+      }).join('');
+    }
+
+    function selectPaletteColor(gridContainerId, colorKey, hiddenInputId) {
+      document.getElementById(hiddenInputId).value = colorKey;
+      renderSeamlessColorPaletteGrid(gridContainerId, colorKey, hiddenInputId);
+    }
+
     function openNewAccountModal() {
       document.getElementById('account-modal-title').innerText = 'เพิ่มบัญชีใหม่';
       document.getElementById('modal-acc-id').value = '';
       document.getElementById('modal-acc-name').value = '';
       document.getElementById('modal-acc-balance').value = '';
+      document.getElementById('modal-acc-color').value = 'emerald';
       document.getElementById('modal-acc-delete-container').classList.add('hidden');
-      renderModalColorGrid('modal-acc-color-grid', 'modal-acc-color', 'emerald');
+      renderSeamlessColorPaletteGrid('modal-acc-color-grid', 'emerald', 'modal-acc-color');
       document.getElementById('account-edit-modal').classList.remove('hidden');
     }
 
@@ -3262,46 +3331,38 @@
       document.getElementById('modal-acc-id').value = id;
       document.getElementById('modal-acc-name').value = acc.name || '';
       document.getElementById('modal-acc-balance').value = acc.initialBalance || 0;
-      document.getElementById('modal-acc-delete-container').classList.remove('hidden');
-      renderModalColorGrid('modal-acc-color-grid', 'modal-acc-color', acc.colorTheme || 'card');
+      const color = acc.colorTheme || 'card';
+      document.getElementById('modal-acc-color').value = color;
+
+      if (accountsList.length <= 1) {
+        document.getElementById('modal-acc-delete-container').classList.add('hidden');
+      } else {
+        document.getElementById('modal-acc-delete-container').classList.remove('hidden');
+      }
+
+      renderSeamlessColorPaletteGrid('modal-acc-color-grid', color, 'modal-acc-color');
       document.getElementById('account-edit-modal').classList.remove('hidden');
     }
 
     function closeAccountModal() { document.getElementById('account-edit-modal').classList.add('hidden'); }
 
-    function renderModalColorGrid(gridId, hiddenInputId, currentColor) {
-      document.getElementById(hiddenInputId).value = currentColor;
-      const grid = document.getElementById(gridId);
-
-      grid.innerHTML = Object.keys(COLOR_PALETTE_16).map(colorKey => {
-        const theme = COLOR_PALETTE_16[colorKey];
-        const isSel = colorKey === currentColor;
-        const checkmarkColor = (colorKey === 'white' || colorKey === 'yellow' || colorKey === 'cyan') ? 'text-slate-800' : 'text-white';
-        return `
-          <button type="button" onclick="renderModalColorGrid('${gridId}', '${hiddenInputId}', '${colorKey}')" class="h-10 w-full ${theme.bgClass} flex items-center justify-center transition focus:outline-none">
-            ${isSel ? `<svg class="w-5 h-5 ${checkmarkColor} drop-shadow-xs" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7" /></svg>` : ''}
-          </button>
-        `;
-      }).join('');
-    }
-
     document.getElementById('account-modal-form').addEventListener('submit', async (e) => {
       e.preventDefault();
       const id = document.getElementById('modal-acc-id').value;
       const name = document.getElementById('modal-acc-name').value.trim();
-      const color = document.getElementById('modal-acc-color').value;
-      const initBal = parseFloat(document.getElementById('modal-acc-balance').value) || 0;
+      const bal = parseFloat(document.getElementById('modal-acc-balance').value) || 0;
+      const color = document.getElementById('modal-acc-color').value || 'card';
 
       if (!name) return alert("กรุณากรอกชื่อบัญชี");
 
       try {
         if (id) {
           await db.collection('users').doc(currentUser.uid).collection('accounts').doc(id).update({
-            name: name, colorTheme: color, initialBalance: initBal
+            name: name, initialBalance: bal, colorTheme: color
           });
         } else {
           await db.collection('users').doc(currentUser.uid).collection('accounts').add({
-            name: name, colorTheme: color, initialBalance: initBal, isDefault: false, isPinned: true, createdAt: firebase.firestore.FieldValue.serverTimestamp()
+            name: name, initialBalance: bal, balance: bal, colorTheme: color, isPinned: true, createdAt: firebase.firestore.FieldValue.serverTimestamp()
           });
         }
         closeAccountModal();
@@ -3311,9 +3372,9 @@
     async function confirmDeleteAccountFromModal() {
       const id = document.getElementById('modal-acc-id').value;
       if (!id) return;
-      const acc = accountsList.find(a => a.id === id);
+      if (accountsList.length <= 1) return alert("ต้องเหลือบัญชีอย่างน้อย 1 บัญชี");
 
-      if (confirm(`คุณแน่ใจหรือว่าต้องการลบบัญชี "${acc?.name}" ?`)) {
+      if (confirm("คุณแน่ใจหรือว่าต้องการลบบัญชีนี้? ข้อมูลการเงินอาจได้รับผลกระทบ")) {
         try {
           await db.collection('users').doc(currentUser.uid).collection('accounts').doc(id).delete();
           closeAccountModal();
@@ -3321,44 +3382,8 @@
       }
     }
 
-    async function toggleAccountPin(id, newPinState) {
-      await db.collection('users').doc(currentUser.uid).collection('accounts').doc(id).update({ isPinned: newPinState });
-    }
-
-    function renderSettingsCategories() {
-      const expContainer = document.getElementById('expense-cats-list');
-      const incContainer = document.getElementById('income-cats-list');
-
-      ['expense', 'income'].forEach(type => {
-        const container = type === 'expense' ? expContainer : incContainer;
-        const filtered = categoriesList.filter(c => c.type === type);
-
-        container.innerHTML = filtered.map(c => {
-          const theme = COLOR_PALETTE_16[c.colorTheme] || (type === 'expense' ? COLOR_PALETTE_16.rose : COLOR_PALETTE_16.emerald);
-          return `
-            <div id="cat-item-${c.id}" class="relative overflow-hidden rounded-2xl bg-slate-700 shadow-2xs">
-              <div class="absolute inset-y-0 right-0 w-16 bg-slate-700 flex items-center justify-center">
-                <button type="button" onclick="openEditCategoryModal('${c.id}')" class="w-full h-full text-white text-xs font-bold flex flex-col items-center justify-center space-y-0.5">
-                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
-                  <span>แก้ไข</span>
-                </button>
-              </div>
-              <div class="swipe-item-content relative bg-white p-3 border border-slate-200/80 rounded-2xl flex justify-between items-center z-10 cursor-pointer">
-                <div class="flex items-center space-x-2">
-                  <button type="button" onclick="toggleCategoryPin('${c.id}', ${!c.isPinned})" class="px-2 py-0.5 rounded-lg text-[9px] font-bold transition ${c.isPinned ? 'bg-slate-100 text-slate-700 border border-slate-300' : 'bg-slate-50 text-slate-400 border border-slate-200'}">
-                    ${c.isPinned ? 'ปักหมุด' : 'ไม่ปักหมุด'}
-                  </button>
-                  <span class="w-3 h-3 rounded-full ${theme.bgClass}"></span>
-                  <span class="text-xs font-bold text-slate-700">${escapeHtml(c.name)}</span>
-                </div>
-                <span class="text-[10px] text-slate-400">ปัดซ้าย</span>
-              </div>
-            </div>
-          `;
-        }).join('');
-
-        filtered.forEach(c => attachSwipeGesture(`cat-item-${c.id}`));
-      });
+    async function toggleAccountPin(id, currentPin) {
+      await db.collection('users').doc(currentUser.uid).collection('accounts').doc(id).update({ isPinned: !currentPin });
     }
 
     function openNewCategoryModal(type) {
@@ -3366,9 +3391,11 @@
       document.getElementById('modal-cat-id').value = '';
       document.getElementById('modal-cat-type').value = type;
       document.getElementById('modal-cat-name').value = '';
+      const defColor = type === 'expense' ? 'rose' : 'emerald';
+      document.getElementById('modal-cat-color').value = defColor;
       document.getElementById('modal-cat-delete-container').classList.add('hidden');
-      const defaultColor = type === 'expense' ? 'rose' : 'emerald';
-      renderModalColorGrid('modal-cat-color-grid', 'modal-cat-color', defaultColor);
+
+      renderSeamlessColorPaletteGrid('modal-cat-color-grid', defColor, 'modal-cat-color');
       document.getElementById('category-edit-modal').classList.remove('hidden');
     }
 
@@ -3381,8 +3408,17 @@
       document.getElementById('modal-cat-id').value = id;
       document.getElementById('modal-cat-type').value = cat.type;
       document.getElementById('modal-cat-name').value = cat.name || '';
-      document.getElementById('modal-cat-delete-container').classList.remove('hidden');
-      renderModalColorGrid('modal-cat-color-grid', 'modal-cat-color', cat.colorTheme || (cat.type==='expense'?'rose':'emerald'));
+      const color = cat.colorTheme || (cat.type === 'expense' ? 'rose' : 'emerald');
+      document.getElementById('modal-cat-color').value = color;
+
+      const sameTypeCount = categoriesList.filter(c => c.type === cat.type).length;
+      if (sameTypeCount <= 1) {
+        document.getElementById('modal-cat-delete-container').classList.add('hidden');
+      } else {
+        document.getElementById('modal-cat-delete-container').classList.remove('hidden');
+      }
+
+      renderSeamlessColorPaletteGrid('modal-cat-color-grid', color, 'modal-cat-color');
       document.getElementById('category-edit-modal').classList.remove('hidden');
     }
 
@@ -3393,7 +3429,7 @@
       const id = document.getElementById('modal-cat-id').value;
       const type = document.getElementById('modal-cat-type').value;
       const name = document.getElementById('modal-cat-name').value.trim();
-      const color = document.getElementById('modal-cat-color').value;
+      const color = document.getElementById('modal-cat-color').value || (type === 'expense' ? 'rose' : 'emerald');
 
       if (!name) return alert("กรุณากรอกชื่อหมวดหมู่");
 
@@ -3413,10 +3449,13 @@
 
     async function confirmDeleteCategoryFromModal() {
       const id = document.getElementById('modal-cat-id').value;
+      const type = document.getElementById('modal-cat-type').value;
       if (!id) return;
-      const cat = categoriesList.find(c => c.id === id);
 
-      if (confirm(`คุณแน่ใจหรือว่าต้องการลบหมวดหมู่ "${cat?.name}" ?`)) {
+      const sameTypeCount = categoriesList.filter(c => c.type === type).length;
+      if (sameTypeCount <= 1) return alert("ต้องเหลือหมวดหมู่อย่างน้อย 1 รายการ");
+
+      if (confirm("คุณแน่ใจหรือว่าต้องการลบหมวดหมู่นี้?")) {
         try {
           await db.collection('users').doc(currentUser.uid).collection('categories').doc(id).delete();
           closeCategoryModal();
@@ -3424,11 +3463,17 @@
       }
     }
 
-    async function toggleCategoryPin(id, newPinState) {
-      await db.collection('users').doc(currentUser.uid).collection('categories').doc(id).update({ isPinned: newPinState });
+    async function toggleCategoryPin(id, currentPin) {
+      await db.collection('users').doc(currentUser.uid).collection('categories').doc(id).update({ isPinned: !currentPin });
     }
 
-    function escapeHtml(s) { return s ? s.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;") : ""; }
+    function escapeHtml(s) { return s ? String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;") : ''; }
+
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./sw.js').catch(err => console.warn('SW failed:', err));
+      });
+    }
   </script>
 </body>
 </html>
