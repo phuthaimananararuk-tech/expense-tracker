@@ -149,18 +149,6 @@
               <button type="submit" id="btn-submit-tx-form" class="w-4/5 bg-slate-700 hover:bg-slate-800 text-white font-bold py-2 rounded-xl text-xs shadow-xs transition">+ บันทึกรายการ</button>
               <button type="button" onclick="resetForm('normal')" class="w-1/5 bg-slate-200 hover:bg-slate-300 text-slate-600 font-semibold py-2 rounded-xl text-xs transition">ล้าง</button>
             </div>
-
-            <!-- Subscription Reminders Banner Container -->
-            <div id="subscription-reminder-banner" class="hidden mt-2 bg-[#FF0000] text-white p-2 rounded-xl shadow-xs space-y-1">
-              <div class="flex justify-between items-center text-[11px] font-bold pb-0.5 border-b border-white/20">
-                <span class="flex items-center space-x-1">
-                  <span>🔔</span>
-                  <span>รายจ่ายประจำถึงกำหนดชำระ</span>
-                </span>
-                <span id="sub-banner-count" class="text-[10px] bg-white/20 px-1.5 py-0.2 rounded-full font-semibold">1 รายการ</span>
-              </div>
-              <div id="subscription-reminder-items" class="space-y-1"></div>
-            </div>
           </form>
 
           <!-- Transfer Form -->
@@ -304,6 +292,18 @@
               <button type="button" onclick="resetForm('team-pay')" class="w-1/5 bg-slate-200 hover:bg-slate-300 text-slate-600 font-semibold py-2 rounded-xl text-xs transition">ล้าง</button>
             </div>
           </form>
+        </div>
+
+        <!-- Subscription Reminders Banner Container (ย้ายมาอยู่ล่างสุดของจอ) -->
+        <div id="subscription-reminder-banner" class="hidden mt-2 flex-shrink-0 bg-[#FF0000] text-white p-2 rounded-xl shadow-xs space-y-1">
+          <div class="flex justify-between items-center text-[11px] font-bold pb-0.5 border-b border-white/20">
+            <span class="flex items-center space-x-1">
+              <span>🔔</span>
+              <span>รายจ่ายประจำถึงกำหนดชำระ</span>
+            </span>
+            <span id="sub-banner-count" class="text-[10px] bg-white/20 px-1.5 py-0.2 rounded-full font-semibold">1 รายการ</span>
+          </div>
+          <div id="subscription-reminder-items" class="space-y-1 max-h-24 overflow-y-auto"></div>
         </div>
       </section>
 
