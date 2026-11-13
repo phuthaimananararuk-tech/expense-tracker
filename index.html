@@ -75,7 +75,7 @@
       <div class="flex flex-col items-center flex-1">
         <div class="flex items-baseline space-x-1">
           <h1 class="text-xl font-black tracking-wider uppercase drop-shadow-xs text-slate-100">จดตังค์</h1>
-          <span class="text-[9px] font-medium text-slate-400 tracking-tight">(v1.57)</span>
+          <span class="text-[9px] font-medium text-slate-400 tracking-tight">(v1.58)</span>
         </div>
         <p class="text-[8px] text-slate-400 tracking-tight font-light">by Phuthai Mananararuk</p>
       </div>
@@ -183,8 +183,14 @@
           <!-- Transfer Form -->
           <form id="transfer-form" class="hidden bg-slate-50 p-2.5 sm:p-3 rounded-2xl border border-slate-200/80 space-y-2 select-auto">
             <div class="grid grid-cols-2 gap-2">
-              <div class="min-w-0"><label class="block text-[11px] font-medium text-slate-400 mb-1">ต้นทาง</label><div id="transfer-from-container" class="flex flex-col gap-1"></div></div>
-              <div class="min-w-0"><label class="block text-[11px] font-medium text-slate-400 mb-1">ปลายทาง</label><div id="transfer-to-container" class="flex flex-col gap-1"></div></div>
+              <div class="min-w-0">
+                <label class="block text-[11px] font-medium text-slate-400 mb-1">ต้นทาง</label>
+                <div id="transfer-from-container"></div>
+              </div>
+              <div class="min-w-0">
+                <label class="block text-[11px] font-medium text-slate-400 mb-1">ปลายทาง</label>
+                <div id="transfer-to-container"></div>
+              </div>
             </div>
             <div class="grid grid-cols-2 gap-2">
               <div class="min-w-0"><label class="block text-[11px] font-medium text-slate-400 mb-1">จำนวนเงิน</label><input type="text" id="tr-amount" readonly onclick="openCustomKeypad('tr-amount')" placeholder="0.00" required class="w-full px-2 py-1.5 text-xs border border-slate-300 rounded-xl bg-white cursor-pointer font-bold text-slate-800"></div>
@@ -1157,7 +1163,7 @@
         if (transferFromId && !accountsList.some(a => a.id === transferFromId)) transferFromId = null;
         if (transferToId && !accountsList.some(a => a.id === transferToId)) transferToId = null;
 
-        renderAllAccountButtons(); renderSettingsAccounts(); populateHistoryFilterDropdowns();
+        renderAllAccountButtons(); renderTransferButtons(); renderSettingsAccounts(); populateHistoryFilterDropdowns();
         if (!views.summary.classList.contains('hidden')) renderSummaryAnalyticsUI();
       });
 
@@ -1536,7 +1542,6 @@
         const textWrapper = card.querySelector('.fav-text-wrapper');
         if (!noteEl || !textWrapper) return;
 
-        // เริ่มต้นที่ขนาด 48px (3 เท่าของ 16px เดิม)
         let fontSize = 48;
         const minFontSize = 12;
         noteEl.style.fontSize = `${fontSize}px`;
@@ -1548,7 +1553,6 @@
         const availableHeight = card.clientHeight - padTop - padBottom;
         const availableWidth = textWrapper.clientWidth;
 
-        // ลดขนาดฟอนต์ทีละ 2px จนกว่าเนื้อหาจะพอดีทั้งความสูงและความกว้างของการ์ด
         while (fontSize > minFontSize && (textWrapper.scrollHeight > availableHeight + 1 || noteEl.scrollWidth > availableWidth + 1)) {
           fontSize -= 2;
           noteEl.style.fontSize = `${fontSize}px`;
@@ -2152,9 +2156,93 @@
 
     function closeSelectorModal() { document.getElementById('selector-modal').classList.add('hidden'); }
 
-    function renderTransferButtons() { 
-      document.getElementById('transfer-from-container').innerHTML = accountsList.map(a => `<button type="button" onclick="transferFromId='${a.id}'; if(transferToId==='${a.id}') { const alt=accountsList.find(x=>x.id!=='${a.id}'); if(alt) transferToId=alt.id; } renderTransferButtons()" class="px-2 py-1.5 rounded-xl text-xs font-semibold transition border text-left flex items-center space-x-1 ${a.id === transferFromId ? 'bg-slate-700 text-white border-slate-700' : 'bg-white text-slate-700 border-slate-300'}"><span>${escapeHtml(a.name)}</span></button>`).join(''); 
-      document.getElementById('transfer-to-container').innerHTML = accountsList.map(a => a.id === transferFromId ? `<button type="button" disabled class="px-2 py-1.5 rounded-xl text-xs font-semibold transition border text-left bg-slate-200 text-slate-400 border-slate-200 opacity-40 cursor-not-allowed"><span>${escapeHtml(a.name)}</span></button>` : `<button type="button" onclick="transferToId='${a.id}'; renderTransferButtons()" class="px-2 py-1.5 rounded-xl text-xs font-semibold transition border text-left flex items-center space-x-1 ${a.id === transferToId ? 'bg-slate-700 text-white border-slate-700' : 'bg-white text-slate-700 border-slate-300'}"><span>${escapeHtml(a.name)}</span></button>`).join(''); 
+    /* =========================================================================
+       TRANSFER ACCOUNT POP-UP SELECTOR (ปุ่มสูงคงที่ 3 บรรทัด: h-[4.5rem])
+       ========================================================================= */
+    function renderTransferButtons() {
+      const fromContainer = document.getElementById('transfer-from-container');
+      const toContainer = document.getElementById('transfer-to-container');
+      if (!fromContainer || !toContainer) return;
+
+      const fromAcc = accountsList.find(a => a.id === transferFromId);
+      const toAcc = accountsList.find(a => a.id === transferToId);
+
+      if (fromAcc) {
+        const theme = ACCOUNT_COLOR_THEMES[fromAcc.colorTheme] || ACCOUNT_COLOR_THEMES.card;
+        fromContainer.innerHTML = `
+          <button type="button" onclick="openTransferAccountModal('from')" class="w-full h-[4.5rem] px-2.5 rounded-2xl border transition flex items-center justify-center space-x-1.5 ${theme.active}">
+            <span class="text-sm font-black truncate">${escapeHtml(fromAcc.name)}</span>
+            <span class="text-xs opacity-75 flex-shrink-0">▾</span>
+          </button>
+        `;
+      } else {
+        fromContainer.innerHTML = `
+          <button type="button" onclick="openTransferAccountModal('from')" class="w-full h-[4.5rem] px-2.5 rounded-2xl border-2 border-dashed border-slate-300 bg-white hover:bg-slate-100 text-slate-400 hover:text-slate-600 transition flex items-center justify-center space-x-1">
+            <span class="text-xs font-semibold">เลือกบัญชีต้นทาง</span>
+            <span class="text-xs">▾</span>
+          </button>
+        `;
+      }
+
+      if (toAcc) {
+        const theme = ACCOUNT_COLOR_THEMES[toAcc.colorTheme] || ACCOUNT_COLOR_THEMES.card;
+        toContainer.innerHTML = `
+          <button type="button" onclick="openTransferAccountModal('to')" class="w-full h-[4.5rem] px-2.5 rounded-2xl border transition flex items-center justify-center space-x-1.5 ${theme.active}">
+            <span class="text-sm font-black truncate">${escapeHtml(toAcc.name)}</span>
+            <span class="text-xs opacity-75 flex-shrink-0">▾</span>
+          </button>
+        `;
+      } else {
+        toContainer.innerHTML = `
+          <button type="button" onclick="openTransferAccountModal('to')" class="w-full h-[4.5rem] px-2.5 rounded-2xl border-2 border-dashed border-slate-300 bg-white hover:bg-slate-100 text-slate-400 hover:text-slate-600 transition flex items-center justify-center space-x-1">
+            <span class="text-xs font-semibold">เลือกบัญชีปลายทาง</span>
+            <span class="text-xs">▾</span>
+          </button>
+        `;
+      }
+    }
+
+    function openTransferAccountModal(direction) {
+      document.getElementById('selector-modal-title').innerText = direction === 'from' ? 'เลือกบัญชีต้นทาง' : 'เลือกบัญชีปลายทาง';
+      const container = document.getElementById('selector-grid-container');
+
+      container.innerHTML = accountsList.map(item => {
+        const theme = ACCOUNT_COLOR_THEMES[item.colorTheme] || ACCOUNT_COLOR_THEMES.card;
+        const isDisabled = (direction === 'to' && item.id === transferFromId);
+        const isSelected = (direction === 'from' && item.id === transferFromId) || (direction === 'to' && item.id === transferToId);
+
+        if (isDisabled) {
+          return `
+            <button type="button" disabled class="p-2.5 rounded-2xl text-xs font-semibold border border-slate-200 bg-slate-100 text-slate-400 opacity-40 cursor-not-allowed text-left flex items-center justify-between">
+              <span class="truncate font-bold">${escapeHtml(item.name)}</span>
+              <span class="text-[9px] ml-1">(ต้นทาง)</span>
+            </button>
+          `;
+        }
+
+        const styleClass = isSelected ? theme.active : theme.inactive;
+        return `
+          <button type="button" onclick="selectTransferAccount('${direction}', '${item.id}')" class="p-2.5 rounded-2xl text-xs font-semibold border text-left transition flex items-center justify-between ${styleClass}">
+            <span class="truncate font-bold">${escapeHtml(item.name)}</span>
+            ${isSelected ? '<span class="font-black ml-1">✓</span>' : ''}
+          </button>
+        `;
+      }).join('');
+
+      document.getElementById('selector-modal').classList.remove('hidden');
+    }
+
+    function selectTransferAccount(direction, accId) {
+      if (direction === 'from') {
+        transferFromId = accId;
+        if (transferToId === accId) {
+          transferToId = null;
+        }
+      } else {
+        transferToId = accId;
+      }
+      renderTransferButtons();
+      closeSelectorModal();
     }
 
     async function saveTransactionToDB(payload) {
@@ -3034,7 +3122,7 @@
         });
 
         recalculateAccountBalances();
-        renderAllAccountButtons(); renderSettingsAccounts();
+        renderAllAccountButtons(); renderTransferButtons(); renderSettingsAccounts();
 
         if (!views.summary.classList.contains('hidden')) renderSummaryAnalyticsUI();
 
@@ -3140,13 +3228,13 @@
             </div>
             <div class="swipe-item-content relative bg-white p-3 border border-slate-200/80 rounded-2xl flex justify-between items-center z-10 cursor-pointer">
               <div class="flex items-center space-x-2">
-                <button type="button" onclick="toggleAccountPin('${a.id}', ${!a.isPinned})" class="px-2 py-0.5 rounded-lg text-[9px] font-bold transition ${a.isPinned ? 'bg-slate-100 text-slate-700 border border-slate-200' : 'bg-slate-50 text-slate-400'}">${a.isPinned ? 'ปักหมุด' : 'ซ่อน'}</button>
+                <button type="button" onclick="toggleAccountPin('${a.id}', ${!a.isPinned})" class="px-2 py-0.5 rounded-lg text-[9px] font-bold transition ${a.isPinned ? 'bg-slate-100 text-slate-700 border border-slate-300' : 'bg-slate-50 text-slate-400 border border-slate-200'}">
+                  ${a.isPinned ? 'ปักหมุด' : 'ไม่ปักหมุด'}
+                </button>
+                <span class="w-3 h-3 rounded-full ${theme.bgClass}"></span>
                 <span class="text-xs font-bold text-slate-700">${escapeHtml(a.name)}</span>
               </div>
-              <div class="flex items-center space-x-2">
-                <span class="text-xs font-black text-slate-700">${(a.balance || 0).toLocaleString(undefined, {minimumFractionDigits: 2})}</span>
-                <span class="w-2.5 h-2.5 rounded-full ${theme.bgClass}"></span>
-              </div>
+              <span class="text-xs font-bold text-slate-800">${(a.balance || 0).toLocaleString(undefined, {minimumFractionDigits: 2})}</span>
             </div>
           </div>
         `;
@@ -3155,44 +3243,13 @@
       accountsList.forEach(a => attachSwipeGesture(`acc-item-${a.id}`));
     }
 
-    function renderSettingsCategories() {
-      ['expense', 'income'].forEach(type => {
-        const container = document.getElementById(`${type}-cats-list`);
-        if (!container) return;
-
-        const filtered = categoriesList.filter(c => c.type === type);
-        container.innerHTML = filtered.map(c => {
-          const theme = COLOR_PALETTE_16[c.colorTheme] || (type==='expense'?COLOR_PALETTE_16.rose:COLOR_PALETTE_16.emerald);
-          return `
-            <div id="cat-item-${c.id}" class="relative overflow-hidden rounded-2xl bg-slate-700 shadow-2xs">
-              <div class="absolute inset-y-0 right-0 w-16 bg-slate-700 flex items-center justify-center">
-                <button type="button" onclick="openEditCategoryModal('${c.id}')" class="w-full h-full text-white text-xs font-bold flex flex-col items-center justify-center space-y-0.5">
-                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
-                  <span>แก้ไข</span>
-                </button>
-              </div>
-              <div class="swipe-item-content relative bg-white p-3 border border-slate-200/80 rounded-2xl flex justify-between items-center z-10 cursor-pointer">
-                <div class="flex items-center space-x-2">
-                  <button type="button" onclick="toggleCategoryPin('${c.id}', ${!c.isPinned})" class="px-2 py-0.5 rounded-lg text-[9px] font-bold transition ${c.isPinned ? 'bg-slate-100 text-slate-700 border border-slate-200' : 'bg-slate-50 text-slate-400'}">${c.isPinned ? 'ปักหมุด' : 'ซ่อน'}</button>
-                  <span class="text-xs font-bold text-slate-700">${escapeHtml(c.name)}</span>
-                </div>
-                <span class="w-3 h-3 rounded-full ${theme.bgClass}"></span>
-              </div>
-            </div>
-          `;
-        }).join('');
-
-        filtered.forEach(c => attachSwipeGesture(`cat-item-${c.id}`));
-      });
-    }
-
     function openNewAccountModal() {
       document.getElementById('account-modal-title').innerText = 'เพิ่มบัญชีใหม่';
       document.getElementById('modal-acc-id').value = '';
       document.getElementById('modal-acc-name').value = '';
       document.getElementById('modal-acc-balance').value = '';
       document.getElementById('modal-acc-delete-container').classList.add('hidden');
-      selectAccountColorInModal('emerald');
+      renderModalColorGrid('modal-acc-color-grid', 'modal-acc-color', 'emerald');
       document.getElementById('account-edit-modal').classList.remove('hidden');
     }
 
@@ -3204,31 +3261,25 @@
       document.getElementById('account-modal-title').innerText = 'แก้ไขบัญชี';
       document.getElementById('modal-acc-id').value = id;
       document.getElementById('modal-acc-name').value = acc.name || '';
-      document.getElementById('modal-acc-balance').value = acc.initialBalance ?? acc.balance ?? 0;
-
-      const delBtnContainer = document.getElementById('modal-acc-delete-container');
-      if (acc.isDefault) {
-        delBtnContainer.classList.add('hidden');
-      } else {
-        delBtnContainer.classList.remove('hidden');
-      }
-
-      selectAccountColorInModal(acc.colorTheme || 'card');
+      document.getElementById('modal-acc-balance').value = acc.initialBalance || 0;
+      document.getElementById('modal-acc-delete-container').classList.remove('hidden');
+      renderModalColorGrid('modal-acc-color-grid', 'modal-acc-color', acc.colorTheme || 'card');
       document.getElementById('account-edit-modal').classList.remove('hidden');
     }
 
     function closeAccountModal() { document.getElementById('account-edit-modal').classList.add('hidden'); }
 
-    function selectAccountColorInModal(colorKey) {
-      document.getElementById('modal-acc-color').value = colorKey;
-      const grid = document.getElementById('modal-acc-color-grid');
-      grid.innerHTML = Object.keys(COLOR_PALETTE_16).map(k => {
-        const isSelected = k === colorKey;
-        const theme = COLOR_PALETTE_16[k];
-        const checkMarkColor = (k === 'white' || k === 'yellow' || k === 'cyan') ? 'text-slate-900' : 'text-white';
+    function renderModalColorGrid(gridId, hiddenInputId, currentColor) {
+      document.getElementById(hiddenInputId).value = currentColor;
+      const grid = document.getElementById(gridId);
+
+      grid.innerHTML = Object.keys(COLOR_PALETTE_16).map(colorKey => {
+        const theme = COLOR_PALETTE_16[colorKey];
+        const isSel = colorKey === currentColor;
+        const checkmarkColor = (colorKey === 'white' || colorKey === 'yellow' || colorKey === 'cyan') ? 'text-slate-800' : 'text-white';
         return `
-          <button type="button" onclick="selectAccountColorInModal('${k}')" class="h-9 w-full ${theme.bgClass} transition flex items-center justify-center relative hover:opacity-90">
-            ${isSelected ? `<span class="text-sm font-black ${checkMarkColor}">✓</span>` : ''}
+          <button type="button" onclick="renderModalColorGrid('${gridId}', '${hiddenInputId}', '${colorKey}')" class="h-10 w-full ${theme.bgClass} flex items-center justify-center transition focus:outline-none">
+            ${isSel ? `<svg class="w-5 h-5 ${checkmarkColor} drop-shadow-xs" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7" /></svg>` : ''}
           </button>
         `;
       }).join('');
@@ -3238,19 +3289,19 @@
       e.preventDefault();
       const id = document.getElementById('modal-acc-id').value;
       const name = document.getElementById('modal-acc-name').value.trim();
-      const color = document.getElementById('modal-acc-color').value || 'card';
-      const balVal = parseFloat(document.getElementById('modal-acc-balance').value) || 0;
+      const color = document.getElementById('modal-acc-color').value;
+      const initBal = parseFloat(document.getElementById('modal-acc-balance').value) || 0;
 
       if (!name) return alert("กรุณากรอกชื่อบัญชี");
 
       try {
         if (id) {
           await db.collection('users').doc(currentUser.uid).collection('accounts').doc(id).update({
-            name: name, colorTheme: color, initialBalance: balVal
+            name: name, colorTheme: color, initialBalance: initBal
           });
         } else {
           await db.collection('users').doc(currentUser.uid).collection('accounts').add({
-            name: name, colorTheme: color, initialBalance: balVal, balance: balVal, isDefault: false, isPinned: true, createdAt: firebase.firestore.FieldValue.serverTimestamp()
+            name: name, colorTheme: color, initialBalance: initBal, isDefault: false, isPinned: true, createdAt: firebase.firestore.FieldValue.serverTimestamp()
           });
         }
         closeAccountModal();
@@ -3262,12 +3313,52 @@
       if (!id) return;
       const acc = accountsList.find(a => a.id === id);
 
-      if (confirm(`คุณแน่ใจหรือว่าต้องการลบบัญชี "${acc?.name}" ?\n(ประวัติที่เชื่อมกับบัญชีนี้อาจได้รับผลกระทบ)`)) {
+      if (confirm(`คุณแน่ใจหรือว่าต้องการลบบัญชี "${acc?.name}" ?`)) {
         try {
           await db.collection('users').doc(currentUser.uid).collection('accounts').doc(id).delete();
           closeAccountModal();
         } catch (err) { alert(err.message); }
       }
+    }
+
+    async function toggleAccountPin(id, newPinState) {
+      await db.collection('users').doc(currentUser.uid).collection('accounts').doc(id).update({ isPinned: newPinState });
+    }
+
+    function renderSettingsCategories() {
+      const expContainer = document.getElementById('expense-cats-list');
+      const incContainer = document.getElementById('income-cats-list');
+
+      ['expense', 'income'].forEach(type => {
+        const container = type === 'expense' ? expContainer : incContainer;
+        const filtered = categoriesList.filter(c => c.type === type);
+
+        container.innerHTML = filtered.map(c => {
+          const theme = COLOR_PALETTE_16[c.colorTheme] || (type === 'expense' ? COLOR_PALETTE_16.rose : COLOR_PALETTE_16.emerald);
+          return `
+            <div id="cat-item-${c.id}" class="relative overflow-hidden rounded-2xl bg-slate-700 shadow-2xs">
+              <div class="absolute inset-y-0 right-0 w-16 bg-slate-700 flex items-center justify-center">
+                <button type="button" onclick="openEditCategoryModal('${c.id}')" class="w-full h-full text-white text-xs font-bold flex flex-col items-center justify-center space-y-0.5">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
+                  <span>แก้ไข</span>
+                </button>
+              </div>
+              <div class="swipe-item-content relative bg-white p-3 border border-slate-200/80 rounded-2xl flex justify-between items-center z-10 cursor-pointer">
+                <div class="flex items-center space-x-2">
+                  <button type="button" onclick="toggleCategoryPin('${c.id}', ${!c.isPinned})" class="px-2 py-0.5 rounded-lg text-[9px] font-bold transition ${c.isPinned ? 'bg-slate-100 text-slate-700 border border-slate-300' : 'bg-slate-50 text-slate-400 border border-slate-200'}">
+                    ${c.isPinned ? 'ปักหมุด' : 'ไม่ปักหมุด'}
+                  </button>
+                  <span class="w-3 h-3 rounded-full ${theme.bgClass}"></span>
+                  <span class="text-xs font-bold text-slate-700">${escapeHtml(c.name)}</span>
+                </div>
+                <span class="text-[10px] text-slate-400">ปัดซ้าย</span>
+              </div>
+            </div>
+          `;
+        }).join('');
+
+        filtered.forEach(c => attachSwipeGesture(`cat-item-${c.id}`));
+      });
     }
 
     function openNewCategoryModal(type) {
@@ -3276,7 +3367,8 @@
       document.getElementById('modal-cat-type').value = type;
       document.getElementById('modal-cat-name').value = '';
       document.getElementById('modal-cat-delete-container').classList.add('hidden');
-      selectCategoryColorInModal(type === 'expense' ? 'rose' : 'emerald');
+      const defaultColor = type === 'expense' ? 'rose' : 'emerald';
+      renderModalColorGrid('modal-cat-color-grid', 'modal-cat-color', defaultColor);
       document.getElementById('category-edit-modal').classList.remove('hidden');
     }
 
@@ -3287,37 +3379,21 @@
 
       document.getElementById('category-modal-title').innerText = `แก้ไขหมวดหมู่${cat.type === 'expense' ? 'รายจ่าย' : 'รายรับ'}`;
       document.getElementById('modal-cat-id').value = id;
-      document.getElementById('modal-cat-type').value = cat.type || 'expense';
+      document.getElementById('modal-cat-type').value = cat.type;
       document.getElementById('modal-cat-name').value = cat.name || '';
       document.getElementById('modal-cat-delete-container').classList.remove('hidden');
-
-      selectCategoryColorInModal(cat.colorTheme || (cat.type === 'expense' ? 'rose' : 'emerald'));
+      renderModalColorGrid('modal-cat-color-grid', 'modal-cat-color', cat.colorTheme || (cat.type==='expense'?'rose':'emerald'));
       document.getElementById('category-edit-modal').classList.remove('hidden');
     }
 
     function closeCategoryModal() { document.getElementById('category-edit-modal').classList.add('hidden'); }
 
-    function selectCategoryColorInModal(colorKey) {
-      document.getElementById('modal-cat-color').value = colorKey;
-      const grid = document.getElementById('modal-cat-color-grid');
-      grid.innerHTML = Object.keys(COLOR_PALETTE_16).map(k => {
-        const isSelected = k === colorKey;
-        const theme = COLOR_PALETTE_16[k];
-        const checkMarkColor = (k === 'white' || k === 'yellow' || k === 'cyan') ? 'text-slate-900' : 'text-white';
-        return `
-          <button type="button" onclick="selectCategoryColorInModal('${k}')" class="h-9 w-full ${theme.bgClass} transition flex items-center justify-center relative hover:opacity-90">
-            ${isSelected ? `<span class="text-sm font-black ${checkMarkColor}">✓</span>` : ''}
-          </button>
-        `;
-      }).join('');
-    }
-
     document.getElementById('category-modal-form').addEventListener('submit', async (e) => {
       e.preventDefault();
       const id = document.getElementById('modal-cat-id').value;
-      const type = document.getElementById('modal-cat-type').value || 'expense';
+      const type = document.getElementById('modal-cat-type').value;
       const name = document.getElementById('modal-cat-name').value.trim();
-      const color = document.getElementById('modal-cat-color').value || 'rose';
+      const color = document.getElementById('modal-cat-color').value;
 
       if (!name) return alert("กรุณากรอกชื่อหมวดหมู่");
 
@@ -3348,19 +3424,11 @@
       }
     }
 
-    async function toggleAccountPin(id, newStatus) {
-      closeActiveSwipedCard();
-      await db.collection('users').doc(currentUser.uid).collection('accounts').doc(id).update({ isPinned: newStatus });
+    async function toggleCategoryPin(id, newPinState) {
+      await db.collection('users').doc(currentUser.uid).collection('categories').doc(id).update({ isPinned: newPinState });
     }
 
-    async function toggleCategoryPin(id, newStatus) {
-      closeActiveSwipedCard();
-      await db.collection('users').doc(currentUser.uid).collection('categories').doc(id).update({ isPinned: newStatus });
-    }
-
-    function escapeHtml(s) { return s ? s.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;") : ''; }
-
-    if ('serviceWorker' in navigator) { window.addEventListener('load', () => { navigator.serviceWorker.register('./sw.js').catch(err => console.warn(err)); }); }
+    function escapeHtml(s) { return s ? s.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;") : ""; }
   </script>
 </body>
 </html>
